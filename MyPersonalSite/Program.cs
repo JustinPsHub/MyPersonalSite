@@ -17,6 +17,8 @@ builder.Services.AddControllers(); // <— add this
 builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))); // <— add this
 
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -28,6 +30,9 @@ else
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
+
+
+
 
 app.UseHttpsRedirection();
 app.UseAntiforgery();
@@ -41,5 +46,13 @@ app.MapRazorComponents<App>()
 
 // Map controllers (if you added any)
 app.MapControllers(); // <— add this
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();         // ensure database is up to date
+    await DbInitializer.SeedAsync(db);        // seed once
+}
+
 
 app.Run();
