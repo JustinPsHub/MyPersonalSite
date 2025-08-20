@@ -1,5 +1,6 @@
 using MyPersonalSite.Client.Pages;
 using MyPersonalSite.Components;
+using MyPersonalSite.Shared.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,5 +33,9 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(MyPersonalSite.Client._Imports).Assembly);
+
+app.MapGet("/api/milestones/demo", () =>
+    Results.Json(new[] { new Milestone { Id = 1, Title = "API OK", Date = DateTime.UtcNow } }));
+
 
 app.Run();
