@@ -1,17 +1,24 @@
-using MyPersonalSite.Client.Pages;
+using Microsoft.EntityFrameworkCore;
 using MyPersonalSite.Components;
-using MyPersonalSite.Shared.Models;
+using MyPersonalSite.Data; // <— for AppDbContext
+using MyPersonalSite.Client.Pages; // you already had this
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Razor Components with both interactivity modes
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+// (Optional) traditional APIs; handy for data endpoints
+builder.Services.AddControllers(); // <— add this
+
+// EF Core (SQLite)
+builder.Services.AddDbContext<AppDbContext>(o =>
+    o.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))); // <— add this
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
@@ -19,23 +26,20 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(MyPersonalSite.Client._Imports).Assembly);
+   .AddInteractiveServerRenderMode()
+   .AddInteractiveWebAssemblyRenderMode()
+   .AddAdditionalAssemblies(typeof(MyPersonalSite.Client._Imports).Assembly);
 
-app.MapGet("/api/milestones/demo", () =>
-    Results.Json(new[] { new Milestone { Id = 1, Title = "API OK", Date = DateTime.UtcNow } }));
-
+// Map controllers (if you added any)
+app.MapControllers(); // <— add this
 
 app.Run();
