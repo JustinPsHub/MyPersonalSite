@@ -1,0 +1,9 @@
+﻿@page "/about"
+@using MyPersonalSite.Shared.Models
+
+<h1>About</h1>
+
+@code {
+    private Milestone _demo = new() { Id = 1, Title = "Shared wired up", Date = DateTime.UtcNow };
+}
+<p>Milestone check: @_demo.Title (@_demo.Date.ToShortDateString())</p>
