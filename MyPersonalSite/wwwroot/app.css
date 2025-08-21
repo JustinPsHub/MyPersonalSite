@@ -58,3 +58,10 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+.bar {
+    fill: #6c8cff;
+}
+
+    .bar:hover {
+        opacity: .85;
+    }
