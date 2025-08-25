@@ -7,5 +7,6 @@ namespace MyPersonalSite.Shared.Models
         public int Id { get; set; }
         public string SectionTitle { get; set; }
         public List<ResumeEntry> Entries { get; set; } = new();
+        public int Order { get; set; }
     }
 }

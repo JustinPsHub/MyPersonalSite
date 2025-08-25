@@ -35,5 +35,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
               bp.HasKey("Id");
               bp.Property(p => p.Text).HasMaxLength(400).HasColumnName("BulletPoint");
           });
+
+
     }
 }

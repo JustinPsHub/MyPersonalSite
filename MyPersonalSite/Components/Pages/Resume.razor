@@ -1,70 +1,118 @@
 ﻿@page "/resume"
-@using System.Net.Http.Json
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@using MyPersonalSite.Data
 @using MyPersonalSite.Shared.Models
-@inject IHttpClientFactory HttpFactory
-@inject NavigationManager Nav
+@inject AppDbContext Db
+@inject IJSRuntime JS
 
-<h1 class="display-5 mb-3">Resume</h1>
+<PageTitle>Resume • Justin</PageTitle>
 
-@if (!string.IsNullOrWhiteSpace(_error))
-{
-    <div class="alert alert-danger" role="alert">
-        <strong>Failed to load resume:</strong> @_error
+<div class="container resume-container py-4">
+    <!-- Top bar (hidden when printing) -->
+    <div class="d-print-none d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 mb-0">Resume</h1>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="/files/Justin_Resume.pdf" target="_blank" rel="noopener">Download PDF</a>
+            <button type="button" class="btn btn-primary" @onclick="PrintPage">Print</button>
+        </div>
     </div>
-}
-else if (_sections is null)
-{
-    <p>Loading…</p>
-}
-else if (_sections.Count == 0)
-{
-    <div class="alert alert-info">No resume data available yet.</div>
-}
-else
-{
-    @foreach (var s in _sections)
+
+    <!-- Header / Summary -->
+    <header class="resume-header mb-3">
+        <h2 class="mb-1">Justin — Senior Data / .NET Engineer</h2>
+        <p class="text-muted mb-2">
+            Secure, data-driven .NET engineer with 16 years in federal service and 8 years delivering analytics and applications.
+            I ship maintainable <strong>Blazor/.NET</strong> solutions, dimensional data models, and measurable outcomes.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+            <span class="chip">C#/.NET 9</span>
+            <span class="chip">Blazor (Server + WASM)</span>
+            <span class="chip">EF Core</span>
+            <span class="chip">SQL/SQLite</span>
+            <span class="chip">Power BI (Service &amp; RS)</span>
+            <span class="chip">Azure</span>
+            <span class="chip">DevOps</span>
+        </div>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
     {
-        <section class="mb-4">
-            <h3 class="h4 border-bottom pb-2">@s.SectionTitle</h3>
+        <div class="alert alert-danger" role="alert">
+            <strong>Failed to load resume:</strong> @_error
+        </div>
+    }
+    else if (_sections is null)
+    {
+        <p>Loading…</p>
+    }
+    else if (_sections.Count == 0)
+    {
+        <div class="alert alert-info">No resume data available yet.</div>
+    }
+    else
+    {
+        @foreach (var s in _sections.OrderBy(s => s.Order))
+        {
+            <section class="mb-3">
+                <h3 class="sect">@s.SectionTitle</h3>
 
-            @foreach (var e in s.Entries)
-            {
-                <article class="py-2">
-                    <div class="d-flex flex-wrap align-items-baseline">
-                        <strong class="me-2">@e.Title</strong>
-                        @if (!string.IsNullOrWhiteSpace(e.Organization))
+                @foreach (var e in s.Entries.OrderByDescending(e => e.StartDate))
+                {
+                    <article class="exp mb-2">
+                        <div class="exp-head">
+                            <div>
+                                @if (!string.IsNullOrWhiteSpace(e.Title))
+                                {
+                                    <div class="exp-title">@e.Title</div>
+                                }
+                                <div class="exp-sub text-muted">
+                                    @((!string.IsNullOrWhiteSpace(e.Organization) ? e.Organization : ""))@((!string.IsNullOrWhiteSpace(e.Organization) && !string.IsNullOrWhiteSpace(e.Location)) ? " — " : "")
+                                    @e.Location
+                                </div>
+                            </div>
+                            <div class="exp-dates text-muted">
+                                @FormatDateRange(e.StartDate, e.EndDate)
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(e.Description))
                         {
-                            <span class="text-muted me-2">— @e.Organization</span>
+                            <p class="mb-2">@e.Description</p>
                         }
-                        <span class="badge bg-secondary">
-                            @FormatDateRange(e.StartDate, e.EndDate)
-                        </span>
-                    </div>
 
-                    @if (!string.IsNullOrWhiteSpace(e.Location))
-                    {
-                        <div class="text-muted small">@e.Location</div>
-                    }
+                        @if (e.BulletPoints is { Count: > 0 })
+                        {
+                            <ul class="exp-bullets">
+                                @foreach (var bp in e.BulletPoints.OrderBy(b => b.Order))
+                                {
+                                    <li>@bp.Text</li>
+                                }
+                            </ul>
+                        }
 
-                    @if (!string.IsNullOrWhiteSpace(e.Description))
-                    {
-                        <p class="mt-2 mb-1">@e.Description</p>
-                    }
+                        @if (!string.IsNullOrWhiteSpace(e.TechStack))
+                        {
+                            <div class="stack small text-muted">
+                                <strong>Tech:</strong> @e.TechStack
+                            </div>
+                        }
+                    </article>
+                }
+            </section>
+        }
 
-                    @if (e.BulletPoints is { Count: > 0 })
-                    {
-                        <ul class="mb-2">
-                            @foreach (var bp in e.BulletPoints)
-                            {
-                                <li>@bp.Text</li>
-                            }
-                        </ul>
-                    }
-                </article>
-            }
+        <!-- Certifications (keep static unless you model them) -->
+        <section class="mb-3">
+            <h3 class="sect">Certifications</h3>
+            <ul class="mb-0">
+                <li>Microsoft Azure Fundamentals — 02/12/2023</li>
+                <li>Microsoft Azure Data Fundamentals — 02/18/2023</li>
+                <li>Microsoft Azure AI Fundamentals — 03/18/2023</li>
+            </ul>
         </section>
     }
-}
+</div>
 
 @code {
     private List<ResumeSection>? _sections;
@@ -74,12 +122,16 @@ else
     {
         try
         {
-            using var http = HttpFactory.CreateClient();
+            // Eager-load entries and bullet points
+            _sections = await Db.ResumeSections
+                .Include(s => s.Entries)
+                    .ThenInclude(e => e.BulletPoints)
+                .AsNoTracking()
+                .ToListAsync();
 
-            // Build an absolute URI so this works during prerendering
-            var uri = new Uri(new Uri(Nav.BaseUri), "api/resume/sections");
-
-            _sections = await http.GetFromJsonAsync<List<ResumeSection>>(uri);
+            // Fallback title if missing
+            foreach (var s in _sections.Where(s => string.IsNullOrWhiteSpace(s.SectionTitle)))
+                s.SectionTitle = "Experience";
         }
         catch (Exception ex)
         {
@@ -87,10 +139,8 @@ else
         }
     }
 
+    private Task PrintPage() => JS.InvokeVoidAsync("print").AsTask();
+
     private static string FormatDateRange(DateTime start, DateTime? end)
-    {
-        var s = start.ToString("MMM yyyy");
-        var e = end.HasValue ? end.Value.ToString("MMM yyyy") : "Present";
-        return $"{s} — {e}";
-    }
+        => $"{start:MMM yyyy} – {(end.HasValue ? end.Value.ToString("MMM yyyy") : "Present")}";
 }

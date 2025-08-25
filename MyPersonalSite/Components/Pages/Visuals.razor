@@ -5,58 +5,168 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
-<h1 class="display-5 mb-3">Yearly Entries</h1>
-<p class="text-muted">Counts of resume entries by start year (demo of .NET + EF Core + D3).</p>
+<h1 class="display-5 mb-3">Visuals</h1>
+<p class="text-muted">Interactive charts powered by EF Core + minimal APIs + D3.</p>
 
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <div class="alert alert-danger"><strong>Error:</strong> @_error</div>
 }
-else if (_data is null)
+else if (_years is null || _orgsRaw is null)
 {
     <p>Loading…</p>
 }
 else
 {
-    <div class="container">
-        <div id="entries-per-year-chart" style="width:100%; max-width:900px;"></div>
+    <div class="row gy-4">
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Entries per Year</h5>
+                    <small class="text-muted">Data points: @_years.Count</small>
+                    <div id="entries-per-year-chart" style="width:100%; max-width:900px; min-height:420px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0">Entries by Organization</h5>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm" style="width:auto" @onchange="OnSortChanged">
+                                <option value="countDesc" selected>Count ↓</option>
+                                <option value="countAsc">Count ↑</option>
+                                <option value="labelAsc">A–Z</option>
+                                <option value="labelDesc">Z–A</option>
+                            </select>
+                            <input class="form-control form-control-sm" style="width:90px" type="number" min="3" max="25" step="1"
+                                   @bind="_topN" @bind:event="oninput" />
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        Showing @((_orgsView?.Count ?? 0)) of @((_orgsRaw?.Count ?? 0))
+                    </small>
+
+                    <div id="entries-by-org-chart" style="width:100%; max-width:900px; min-height:300px;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
 @code {
-    private List<YearCount>? _data;
+    // Data
+    private List<YearCount>? _years;
+    private List<OrgCount>? _orgsRaw;
+    private List<OrgCount>? _orgsView;
+
+    // UI state
+    private string _sort = "countDesc";
+    private int _topN = 10;
     private string? _error;
-    private bool _chartRendered;
+
+    // Render state
+    private bool _d3Ready;
+    private bool _yearDrawn;
+    private bool _orgDrawn;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             using var http = HttpFactory.CreateClient();
-            var uri = new Uri(new Uri(Nav.BaseUri), "api/metrics/entries-per-year");
-            _data = await http.GetFromJsonAsync<List<YearCount>>(uri);
+            var baseUri = new Uri(Nav.BaseUri);
+
+            _years = await http.GetFromJsonAsync<List<YearCount>>(new Uri(baseUri, "api/metrics/entries-per-year"));
+            _orgsRaw = await http.GetFromJsonAsync<List<OrgCount>>(new Uri(baseUri, "api/metrics/entries-by-org"));
+
+            ApplyOrgView();
         }
         catch (Exception ex) { _error = ex.Message; }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_chartRendered || _data is null) return;
+        // Keep trying until both charts are drawn
+        if ((_years is null && _orgsView is null) || (_yearDrawn && _orgDrawn)) return;
 
-        try
+        // wait for D3 just once
+        if (!_d3Ready)
         {
-            await JS.InvokeVoidAsync("d3Interop.renderBarChart",
-                "#entries-per-year-chart",
-                _data,
-                new { height = 420 });
-            _chartRendered = true;
+            _d3Ready = await JS.InvokeAsync<bool>("d3Interop.waitForD3");
+            if (!_d3Ready)
+            {
+                await Task.Delay(100);
+                StateHasChanged();
+                return;
+            }
         }
-        catch (InvalidOperationException)
+
+        // Draw year chart
+        if (!_yearDrawn && _years is not null)
         {
-            await Task.Delay(75);
-            StateHasChanged(); // retry after interactivity
+            try
+            {
+                await JS.InvokeVoidAsync("d3Interop.renderBarChart",
+                    "#entries-per-year-chart",
+                    _years,
+                    new { height = 420 });
+                _yearDrawn = true;
+            }
+            catch
+            {
+                await Task.Delay(100);
+                StateHasChanged();
+                return;
+            }
+        }
+
+        // Draw org chart
+        if (!_orgDrawn && _orgsView is not null)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("d3Interop.renderHorizontalBarChart",
+                    "#entries-by-org-chart",
+                    _orgsView,
+                    new { barHeight = 28, sort = _sort });
+                _orgDrawn = true;
+            }
+            catch
+            {
+                await Task.Delay(100);
+                StateHasChanged();
+                return;
+            }
         }
     }
 
+    private void ApplyOrgView()
+    {
+        if (_orgsRaw is null) return;
+        IEnumerable<OrgCount> q = _orgsRaw;
+
+        _orgsView = _sort switch
+        {
+            "countAsc" => q.OrderBy(x => x.count).Take(_topN).ToList(),
+            "labelAsc" => q.OrderBy(x => x.org).Take(_topN).ToList(),
+            "labelDesc" => q.OrderByDescending(x => x.org).Take(_topN).ToList(),
+            _ => q.OrderByDescending(x => x.count).Take(_topN).ToList(), // countDesc
+        };
+
+        // Re-draw org chart on next render
+        _orgDrawn = false;
+    }
+
+    private void OnSortChanged(ChangeEventArgs e)
+    {
+        _sort = e.Value?.ToString() ?? "countDesc";
+        ApplyOrgView();
+        StateHasChanged();
+    }
+
     private sealed class YearCount { public int year { get; set; } public int count { get; set; } }
+    private sealed class OrgCount { public string org { get; set; } = ""; public int count { get; set; } }
 }

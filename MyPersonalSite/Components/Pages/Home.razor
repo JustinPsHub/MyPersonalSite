@@ -1,7 +1,151 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@inject IHttpClientFactory HttpFactory
+@inject NavigationManager Nav
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Justin • .NET / Blazor / Data</PageTitle>
 
-<h1>Hello, world!</h1>
+<!-- HERO (dense) -->
+<div class="hero-gradient home-hero">
+    @* removed text-white on the wrapper *@
+    <div class="container py-4">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-7">
+                <h1 class="hero-title text-white">I build secure, data-driven .NET apps.</h1>
+                <p class="lead-sm text-hero-muted mb-3">
+                    16 yrs in federal service • 8 yrs data analyst/dev • Focused on <strong>Blazor</strong>, <strong>C#</strong>, and <strong>data engineering</strong>.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-primary btn-md" href="/resume">View Resume</a>
+                    <a class="btn btn-outline-light btn-md" href="/visuals">See D3 Visuals</a>
+                    <a class="btn btn-outline-light btn-md" href="/about">About Me</a>
+                </div>
+            </div>
 
-Welcome to your new app.
+            <!-- Live site stats -->
+            <div class="col-lg-5">
+                <div class="glass compact hero-card text-dark">
+                    @* force dark text in the white card *@
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h2 class="h6 mb-0 text-muted">Live site stats</h2>
+                        <span class="badge bg-light text-dark">EF Core</span>
+                    </div>
+
+                    @* ...leave the stats markup exactly as you have it ... *@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- BODY (denser sections) -->
+<div class="container py-4">
+
+    <!-- At a glance -->
+    <section class="section-tight mb-4">
+        <h2 class="section-title mb-3">At a glance</h2>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="tile">
+                    <div class="tile-title">Full-stack Blazor</div>
+                    <div class="tile-text">Server + WASM interactivity, clean components, JS interop when it adds value.</div>
+                    <div class="chips">
+                        <span class="chip">C# / .NET 9</span><span class="chip">Blazor</span><span class="chip">Razor</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="tile">
+                    <div class="tile-title">Data engineering</div>
+                    <div class="tile-text">Modeling, APIs, and making insight obvious with interactive visuals.</div>
+                    <div class="chips">
+                        <span class="chip">EF Core</span><span class="chip">SQL/SQLite</span><span class="chip">LINQ</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="tile">
+                    <div class="tile-title">Secure by default</div>
+                    <div class="tile-text">HTTPS, antiforgery, validation/options, layered architecture.</div>
+                    <div class="chips">
+                        <span class="chip">Middleware</span><span class="chip">Options</span><span class="chip">Validation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured (compact) -->
+    <section class="section-tight mb-4">
+        <h2 class="section-title mb-3">Featured</h2>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card tile-card h-100">
+                    <div class="card-body">
+                        <div class="tile-title mb-1">Interactive Visuals</div>
+                        <p class="tile-text mb-2">D3 + Blazor interop with EF Core data. Sorting, tooltips, responsive charts.</p>
+                        <a class="btn btn-primary btn-sm" href="/visuals">Open Visuals</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card tile-card h-100">
+                    <div class="card-body">
+                        <div class="tile-title mb-1">Resume</div>
+                        <p class="tile-text mb-2">Print-ready resume page (or PDF) backed by a clean data model.</p>
+                        <a class="btn btn-outline-primary btn-sm" href="/resume">View Resume</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech stack (single line wrap) -->
+    <section class="section-tight">
+        <h2 class="section-title mb-2">Tech I use</h2>
+        <div class="d-flex flex-wrap gap-2">
+            @foreach (var t in Tech)
+            {
+                <span class="chip">@t</span>
+            }
+        </div>
+    </section>
+
+    <!-- Bottom CTA (tight) -->
+    <section class="mt-4">
+        <div class="callout glass compact d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
+            <div>
+                <h3 class="h6 mb-1">Let’s build something great.</h3>
+                <p class="mb-0 text-muted">Open to .NET/Blazor and data engineering roles.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary btn-sm" href="/about">About Me</a>
+                <a class="btn btn-outline-primary btn-sm" href="/visuals">See Visuals</a>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+@code {
+    private sealed class DbStats { public int items { get; set; } public int sections { get; set; } public int entries { get; set; } }
+    private DbStats? _stats;
+
+    private static readonly string[] Tech = new[]
+    {
+    "C# / .NET 9", "Blazor (Server + WASM)", "EF Core", "SQLite", "SQL Server",
+    "REST / Minimal APIs", "LINQ", "D3.js interop", "DI", "Options/Config", "Azure-ready"
+  };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            using var http = HttpFactory.CreateClient();
+            var uri = new Uri(new Uri(Nav.BaseUri), "api/debug/db-stats");
+            _stats = await http.GetFromJsonAsync<DbStats>(uri);
+        }
+        catch { /* ok if endpoint isn't there—UI falls back */ }
+    }
+}

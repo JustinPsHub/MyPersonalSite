@@ -10,5 +10,7 @@ namespace MyPersonalSite.Shared.Models
         public DateTime? EndDate { get; set; }
         public string Location { get; set; }
         public List<BulletPoint> BulletPoints { get; set; } = new();
+
+        public string TechStack { get; set; }
     }
 }
