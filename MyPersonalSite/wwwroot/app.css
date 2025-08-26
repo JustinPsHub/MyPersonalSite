@@ -11,7 +11,7 @@ a, .btn-link {
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
+    background: #1b6ec2;
     border-color: #1861ac;
 }
 
@@ -123,10 +123,10 @@ body {
     background: var(--glass);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,0.6);
+    border: 1px solid rgba(255,255,255,.6);
     border-radius: 14px;
     padding: 1rem;
-    box-shadow: 0 8px 24px rgba(2,12,27,0.07);
+    box-shadow: 0 8px 24px rgba(2,12,27,.07);
 }
 
     .glass.compact, .tile-card .card-body {
@@ -201,16 +201,62 @@ body {
 }
 
 /* =====================================================================
-   Hero
+   Hero (image-backed)
 ===================================================================== */
 .home-hero {
     padding-block: 1.75rem;
 }
 
+/* gradient fallback if image fails */
 .hero-gradient {
-    /* Fallback gradient behind the image if it fails to load */
     background: radial-gradient(1200px 400px at -10% -20%, #5b8def 0, rgba(91,141,239,0) 60%), linear-gradient(135deg, #1f2a44 0%, #2a3352 60%, #121826 100%);
     background-color: #1f2a44;
+}
+
+/* photo hero with overlay + focal controls */
+.hero-photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    min-height: clamp(260px,36vh,420px);
+    margin-bottom: 1rem;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+}
+
+    .hero-bg img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: 36% 78%; /* keep the dog in frame on desktop */
+    }
+
+.hero-photo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(80% 60% at 10% 0%, rgba(91,141,239,.45) 0%, rgba(91,141,239,0) 60%), linear-gradient(to bottom, rgba(18,24,38,.55), rgba(18,24,38,.35) 40%, rgba(18,24,38,.55));
+    mix-blend-mode: multiply;
+}
+
+:root[data-theme="dark"] .hero-photo::before {
+    background: radial-gradient(80% 60% at 10% 0%, rgba(91,141,239,.55) 0%, rgba(91,141,239,0) 60%), linear-gradient(to bottom, rgba(12,16,28,.65), rgba(12,16,28,.45) 40%, rgba(12,16,28,.65));
+}
+
+.hero-photo .container {
+    position: relative;
+    z-index: 1;
+    padding-block: 1.1rem;
 }
 
 .hero-title {
@@ -218,6 +264,8 @@ body {
     line-height: 1.15;
     margin-bottom: .5rem;
     font-size: clamp(1.6rem, 2.4vw + 1rem, 2.6rem);
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
 }
 
 .text-hero-muted {
@@ -225,11 +273,13 @@ body {
 }
 
 .hero-card {
+    position: relative;
+    z-index: 2;
     background: rgba(255,255,255,.92);
     color: #1f2a44;
 }
 
-/* Mini stats */
+/* Mini stats in hero */
 .mini-stat {
     min-width: 92px;
 }
@@ -246,66 +296,8 @@ body {
     font-size: .8rem;
 }
 
-/* Photo-backed hero using <picture> (best LCP + focal control) */
-.hero-photo {
-    position: relative;
-    border-radius: 14px;
-    overflow: hidden;
-    min-height: clamp(260px, 36vh, 420px);
-}
-
-.hero-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    display: block;
-}
-
-    .hero-bg img {
-        width: 100%;
-        height: 100%;
-        display: block;
-        object-fit: cover;
-        object-position: 36% 78%;
-    }
-/* keep the dog in frame */
-.hero-photo .container {
-    position: relative;
-    z-index: 1;
-}
-
-/* Brand tint + vignette overlay */
-.hero-photo::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background: radial-gradient(80% 60% at 10% 0%, rgba(91,141,239,.45) 0%, rgba(91,141,239,0) 60%), linear-gradient(to bottom, rgba(18,24,38,.55), rgba(18,24,38,.35) 40%, rgba(18,24,38,.55));
-    mix-blend-mode: multiply;
-}
-
-:root[data-theme="dark"] .hero-photo::before {
-    background: radial-gradient(80% 60% at 10% 0%, rgba(91,141,239,.55) 0%, rgba(91,141,239,0) 60%), linear-gradient(to bottom, rgba(12,16,28,.65), rgba(12,16,28,.45) 40%, rgba(12,16,28,.65));
-}
-
-/* Readable text on hero image */
-.hero-photo .hero-title {
-    color: #fff;
-    text-shadow: 0 1px 2px rgba(0,0,0,.35);
-}
-
-.hero-photo .text-hero-muted {
-    color: rgba(255,255,255,.92) !important;
-}
-
-.hero-photo .hero-card {
-    background: rgba(255,255,255,.92);
-    color: #1f2a44;
-}
-
-/* Mobile tuning */
-@media (max-width: 768px) {
+/* Phones: pan image more left/down so the dog shows; stack stats under title */
+@media (max-width:768px) {
     .home-hero {
         padding-block: 1.1rem;
     }
@@ -313,11 +305,11 @@ body {
     .hero-bg img {
         object-position: 28% 88%;
     }
-    /* pan left & down on phones so the dog shows */
+
     .hero-card {
         margin-top: .75rem;
     }
-    /* stats card stacks below the headline */
+
     .btn-md {
         padding: .45rem .9rem;
     }
@@ -337,13 +329,13 @@ body {
     .bar:hover {
         opacity: .85;
     }
-/* force-fill bars even if a global style sets rect { fill:none } */
+
 svg .d3-bar, svg .d3-hbar {
     fill: #5b8def !important;
     opacity: .9;
 }
 
-/* Cards */
+/* Cards / callout */
 .card {
     border: 0;
     border-radius: 14px;
@@ -353,13 +345,12 @@ svg .d3-bar, svg .d3-hbar {
         padding: 1.25rem;
     }
 
-/* Callout */
 .callout {
     border-left: 4px solid var(--brand);
 }
 
-/* Less vertical whitespace on large screens */
-@media (min-width: 992px) {
+/* Trim vertical whitespace on large screens */
+@media (min-width:992px) {
     .container.py-5 {
         padding-top: 2rem !important;
         padding-bottom: 2rem !important;
@@ -428,7 +419,7 @@ svg .d3-bar, svg .d3-hbar {
     margin-top: .35rem;
 }
 
-/* Print */
+/* Print tweaks */
 @media print {
     .d-print-none {
         display: none !important;
@@ -451,4 +442,133 @@ svg .d3-bar, svg .d3-hbar {
     .sect {
         break-after: avoid;
     }
+}
+
+/* =====================================================================
+   Shell (desktop sidebar + mobile drawer)
+===================================================================== */
+.app {
+    min-height: 100vh;
+}
+
+.nav-host {
+    flex: 0 0 260px;
+}
+/* reserve sidebar space on desktop */
+main.flex-fill {
+    min-width: 0;
+}
+
+.app-sidebar {
+    width: 260px;
+    padding: .75rem;
+    color: #fff;
+    background: linear-gradient(180deg,#1f2a44 0%,#2a3352 60%,#121826 100%);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: auto;
+    border-right: 1px solid var(--border);
+}
+
+    .app-sidebar .nav-link {
+        color: rgba(255,255,255,.92);
+        border-radius: 10px;
+        padding: .55rem .75rem;
+    }
+
+        .app-sidebar .nav-link.active {
+            background: rgba(255,255,255,.14);
+            color: #fff;
+        }
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: .5rem .75rem;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Hidden checkbox used for the mobile drawer */
+.menu-toggle {
+    position: fixed;
+    left: -9999px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Off-canvas drawer */
+@media (max-width:992px) {
+    .app {
+        position: relative;
+    }
+
+    .nav-host .app-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform .2s ease;
+        z-index: 1040;
+    }
+
+    .menu-toggle:checked ~ .nav-host .app-sidebar {
+        transform: translateX(0);
+    }
+
+    .sidebar-overlay {
+        display: none;
+    }
+
+    .menu-toggle:checked ~ .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.35);
+        z-index: 1030;
+    }
+}
+
+/* Home page layout guards (structural, not cosmetic) */
+.home-page {
+    display: block;
+    width: 100%;
+}
+
+    .home-page > .hero-photo {
+        display: block;
+        width: 100%;
+        float: none;
+        clear: both;
+    }
+
+/* Keep the hero image focal point and proper stacking */
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+}
+
+    .hero-bg img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: 36% 78%;
+    }
+
+@media (max-width:768px) {
+    .hero-bg img {
+        object-position: 28% 88%;
+    }
+}
+
+/* Make sure the content container never becomes a flex row from upstream styles */
+article.content {
+    display: block;
 }

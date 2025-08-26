@@ -6,72 +6,80 @@
 
 <PageTitle>Justin • .NET / Blazor / Data</PageTitle>
 
-<!-- HERO -->
-<!-- HERO -->
-<div class="hero-gradient home-hero hero-photo">
-    <picture class="hero-bg">
-        <source srcset='@Assets["img/hero-farm-tech.avif"]' type="image/avif" />
-        <source srcset='@Assets["img/hero-farm-tech.webp"]' type="image/webp" />
-        <img src='@Assets["img/hero-farm-tech.png"]'
-             alt="" loading="eager" decoding="async" fetchpriority="high" />
-    </picture>
+<HeadContent>
+    <link rel="preload" as="image"
+          href='@Assets["img/hero-farm-tech-1600.avif"]'
+          imagesrcset='@Assets["img/hero-farm-tech-800.avif"] 800w,
+                       @Assets["img/hero-farm-tech-1200.avif"] 1200w,
+                       @Assets["img/hero-farm-tech-1600.avif"] 1600w'
+          fetchpriority="high" />
+</HeadContent>
 
-    <div class="container py-4">
-        <!-- ( existing headline, buttons, stats card) -->
-      
+<div class="container home-page py-3">
 
-        <div class="row align-items-center g-3">
+    <!-- HERO -->
+    <section class="hero-gradient home-hero hero-photo position-relative rounded-4 overflow-hidden">
+        <picture class="hero-bg">
+            <source type="image/avif"
+                    srcset='@Assets["img/hero-farm-tech-800.avif"] 800w,
+                            @Assets["img/hero-farm-tech-1200.avif"] 1200w,
+                            @Assets["img/hero-farm-tech-1600.avif"] 1600w'
+                    sizes="(max-width: 576px) 100vw, (max-width: 992px) 92vw, 1200px" />
+            <source type="image/webp"
+                    srcset='@Assets["img/hero-farm-tech-800.webp"] 800w,
+                            @Assets["img/hero-farm-tech-1200.webp"] 1200w,
+                            @Assets["img/hero-farm-tech-1600.webp"] 1600w'
+                    sizes="(max-width: 576px) 100vw, (max-width: 992px) 92vw, 1200px" />
+            <img src='@Assets["img/hero-farm-tech.png"]' alt="" loading="eager" decoding="async" fetchpriority="high" />
+        </picture>
 
-
-
-            <div class="col-lg-7">
-                <h1 class="hero-title text-white">I build secure, data-driven .NET apps.</h1>
-                <p class="lead-sm text-hero-muted mb-3">
-                    16 yrs in federal service • 8 yrs data analyst/dev • Focused on <strong>Blazor</strong>, <strong>C#</strong>, and <strong>data engineering</strong>.
-                </p>
-                <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-primary btn-md" href="/resume">View Resume</a>
-                    <a class="btn btn-outline-light btn-md" href="/visuals">See D3 Visuals</a>
-                    <a class="btn btn-outline-light btn-md" href="/about">About Me</a>
-                    <button class="btn btn-outline-light btn-md ms-auto theme-toggle" @onclick="ToggleTheme">
-                        @(_theme == "dark" ? "🌙 Dark" : "☀️ Light")
-                    </button>
-                </div>
-            </div>
-
-            <div class="col-lg-5">
-                <div class="glass compact hero-card">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h2 class="h6 mb-0 text-muted">Live site stats</h2>
-                        <span class="badge bg-light text-dark">EF Core</span>
+        <div class="py-4 px-3 px-md-4 position-relative" style="z-index:1;">
+            <div class="row g-3 align-items-start">
+                <div class="col-12 col-lg-7">
+                    <h1 class="hero-title text-white">I build secure, data-driven .NET apps.</h1>
+                    <p class="lead-sm text-hero-muted mb-3">
+                        16 yrs in federal service • 8 yrs data analyst/dev • Focused on <strong>Blazor</strong>, <strong>C#</strong>, and <strong>data engineering</strong>.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-primary btn-md" href="/resume">View Resume</a>
+                        <a class="btn btn-outline-light btn-md" href="/visuals">See D3 Visuals</a>
+                        <a class="btn btn-outline-light btn-md" href="/about">About Me</a>
+                        <button class="btn btn-outline-light btn-md ms-auto theme-toggle" @onclick="ToggleTheme">
+                            @(_theme == "dark" ? "🌙 Dark" : "☀️ Light")
+                        </button>
                     </div>
+                </div>
 
-                    @if (_stats is null)
-                    {
-                        <div class="d-flex gap-4 flex-wrap">
-                            <div class="mini-stat"><div class="placeholder col-6 mb-1" style="height:24px"></div><div class="mini-label">Resume entries</div></div>
-                            <div class="mini-stat"><div class="placeholder col-6 mb-1" style="height:24px"></div><div class="mini-label">Sections</div></div>
-                            <div class="mini-stat"><div class="placeholder col-6 mb-1" style="height:24px"></div><div class="mini-label">Items</div></div>
+                <div class="col-12 col-lg-5 d-flex justify-content-lg-end">
+                    <div class="glass compact hero-card">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h2 class="h6 mb-0 text-muted">Live site stats</h2>
+                            <span class="badge bg-light text-dark">EF Core</span>
                         </div>
-                    }
-                    else
-                    {
-                        <div class="d-flex gap-4 flex-wrap">
-                            <div class="mini-stat"><div id="stat-entries" class="mini-value">@_stats.entries</div><div class="mini-label">Resume entries</div></div>
-                            <div class="mini-stat"><div id="stat-sections" class="mini-value">@_stats.sections</div><div class="mini-label">Sections</div></div>
-                            <div class="mini-stat"><div id="stat-items" class="mini-value">@_stats.items</div><div class="mini-label">Items</div></div>
-                        </div>
-                    }
+
+                        @if (_stats is null)
+                        {
+                            <div class="d-flex gap-4 flex-wrap">
+                                <div class="mini-stat"><div class="placeholder col-6 mb-1" style="height:24px"></div><div class="mini-label">Resume entries</div></div>
+                                <div class="mini-stat"><div class="placeholder col-6 mb-1" style="height:24px"></div><div class="mini-label">Sections</div></div>
+                                <div class="mini-stat"><div class="placeholder col-6 mb-1" style="height:24px"></div><div class="mini-label">Items</div></div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex gap-4 flex-wrap">
+                                <div class="mini-stat"><div id="stat-entries" class="mini-value">@_stats.entries</div><div class="mini-label">Resume entries</div></div>
+                                <div class="mini-stat"><div id="stat-sections" class="mini-value">@_stats.sections</div><div class="mini-label">Sections</div></div>
+                                <div class="mini-stat"><div id="stat-items" class="mini-value">@_stats.items</div><div class="mini-label">Items</div></div>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
-
         </div>
-    </div>
-</div>
+    </section>
 
-<!-- BODY -->
-<div class="container py-4">
-
+    <!-- BODY -->
     <section class="section-tight mb-4">
         <h2 class="section-title mb-3">At a glance</h2>
         <div class="row g-3">
@@ -151,7 +159,6 @@
             </div>
         </div>
     </section>
-
 </div>
 
 @code {
@@ -162,9 +169,9 @@
 
     private static readonly string[] Tech = new[]
     {
-    "C# / .NET 9", "Blazor (Server + WASM)", "EF Core", "SQLite", "SQL Server",
-    "REST / Minimal APIs", "LINQ", "D3.js interop", "DI", "Options/Config", "Azure-ready"
-  };
+        "C# / .NET 9", "Blazor (Server + WASM)", "EF Core", "SQLite", "SQL Server",
+        "REST / Minimal APIs", "LINQ", "D3.js interop", "DI", "Options/Config", "Azure-ready"
+    };
 
     protected override async Task OnInitializedAsync()
     {

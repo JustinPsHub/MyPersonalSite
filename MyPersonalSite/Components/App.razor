@@ -1,37 +1,26 @@
-﻿<!DOCTYPE html>
+﻿@* Components/App.razor *@
+<!DOCTYPE html>
 <html lang="en">
-
-    @* At the top of Components/App.razor (or anywhere inside) *@
-
-<HeadContent>
-    <!-- CDN (no inline) -->
-    <script src='@Assets["js/site.js"]'></script>
-</HeadContent>
-
-
-
-
-
-
-
-
-
-
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <base href="/" />
+
+    <!-- Styles -->
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["MyPersonalSite.styles.css"]" />
-    <ImportMap />
-    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <!-- Dynamic head contributions from pages/components -->
     <HeadOutlet />
+
+    <!-- Scripts (served from server wwwroot; no inline JS to satisfy CSP) -->
+    <script src='@Assets["js/site.js"]' defer></script>
+    <script src='@Assets["js/d3Interop.js"]' defer></script>
 </head>
 
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
 </body>
-
 </html>

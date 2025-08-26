@@ -42,23 +42,10 @@ builder.Services.AddRateLimiter(_ =>
     });
 });
 
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<AppDbContext>();
-
-// Optional: Application Insights (set ConnectionString in appsettings or Azure)
-builder.Services.AddApplicationInsightsTelemetry();
+// Health checks (basic endpoint; remove DB-specific checker to avoid extra package)
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseWebAssemblyDebugging();
-}
-else
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseHsts();
-}
 
 // --- DB migrate & seed on startup ---
 using (var scope = app.Services.CreateScope())
@@ -68,27 +55,53 @@ using (var scope = app.Services.CreateScope())
     await DbInitializer.SeedAsync(db);  // seed sample data (idempotent)
 }
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+
+    // Dev CSP: allow inline for the Blazor import map / tooling noise
+    app.Use(async (ctx, next) =>
+    {
+        var h = ctx.Response.Headers;
+        h["Content-Security-Policy"] =
+            "default-src 'self'; " +
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " + // dev: allow inline import map
+            "style-src 'self' 'unsafe-inline'; " +
+            "img-src 'self' data:; font-src 'self' data:; " +
+            "connect-src 'self' wss: https:; " +
+            "base-uri 'self'; frame-ancestors 'none'";
+        h["X-Content-Type-Options"] = "nosniff";
+        h["Referrer-Policy"] = "strict-origin-when-cross-origin";
+        h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+        await next();
+    });
+}
+else
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseHsts();
+
+    // Prod CSP: strict (no inline scripts)
+    app.Use(async (ctx, next) =>
+    {
+        var h = ctx.Response.Headers;
+        h["Content-Security-Policy"] =
+            "default-src 'self'; " +
+            "script-src 'self' https://cdn.jsdelivr.net; " + // drop jsdelivr if you serve D3 locally
+            "style-src 'self' 'unsafe-inline'; " +
+            "img-src 'self' data:; font-src 'self' data:; " +
+            "connect-src 'self' wss: https:; " +
+            "base-uri 'self'; frame-ancestors 'none'";
+        h["X-Content-Type-Options"] = "nosniff";
+        h["Referrer-Policy"] = "strict-origin-when-cross-origin";
+        h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+        await next();
+    });
+}
+
 app.UseHttpsRedirection();
 app.UseResponseCompression();
 app.UseAntiforgery();
-
-// --- Security headers / CSP ---
-app.Use(async (ctx, next) =>
-{
-    var h = ctx.Response.Headers;
-    // If you serve D3 locally via @Assets, you can drop jsdelivr from script-src.
-    h["Content-Security-Policy"] =
-        "default-src 'self'; " +
-        "script-src 'self' https://cdn.jsdelivr.net; " +   // keep only if you use CDN for D3
-        "style-src 'self' 'unsafe-inline'; " +             // Bootstrap inline styles
-        "img-src 'self' data:; font-src 'self' data:; " +
-        "connect-src 'self' wss: https:; " +               // Blazor circuit + APIs
-        "base-uri 'self'; frame-ancestors 'none'";
-    h["X-Content-Type-Options"] = "nosniff";
-    h["Referrer-Policy"] = "strict-origin-when-cross-origin";
-    h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
-    await next();
-});
 
 app.UseRateLimiter();
 app.UseOutputCache();
@@ -99,9 +112,11 @@ app.MapStaticAssets();
 // ---- API GROUP (all /api/* gets rate-limited) ----
 var api = app.MapGroup("/api").RequireRateLimiting("api");
 
-// Health (probes) — keep minimal JSON and add /healthz for infra probes
-api.MapGet("/health", () => Results.Ok(new { ok = true }));
+// Health (infra probes)
 app.MapHealthChecks("/healthz");
+
+// Simple health for UI
+api.MapGet("/health", () => Results.Ok(new { ok = true }));
 
 // Debug stats
 api.MapGet("/debug/db-stats", async (AppDbContext db) =>

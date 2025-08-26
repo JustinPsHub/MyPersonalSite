@@ -1,55 +1,51 @@
 ﻿// wwwroot/js/site.js
-(function () {
-    // Mark that JS is active (lets CSS apply reveal only when JS works)
-    document.documentElement.classList.add("js");
+window.site = (function () {
+    const KEY = "theme";
 
-    const api = {
-        getTheme() {
-            try {
-                return localStorage.getItem("theme")
-                    || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-            } catch { return "light"; }
-        },
-        setTheme(t) {
-            try { localStorage.setItem("theme", t); } catch { }
-            document.documentElement.dataset.theme = t;
-        },
-        initTheme() { api.setTheme(api.getTheme()); },
+    function applyTheme(theme) {
+        const t = theme === "dark" ? "dark" : "light";
+        const root = document.documentElement;
+        root.setAttribute("data-theme", t);
+        try { localStorage.setItem(KEY, t); } catch { }
+        return t;
+    }
 
-        animateCount(selector, to, duration = 900) {
-            const el = document.querySelector(selector);
-            if (!el) return;
-            const from = parseFloat(el.textContent || "0") || 0;
-            const start = performance.now();
-            const step = now => {
-                const p = Math.min(1, (now - start) / duration);
-                const v = Math.round(from + (to - from) * p);
-                el.textContent = v.toLocaleString();
-                if (p < 1) requestAnimationFrame(step);
-            };
-            requestAnimationFrame(step);
-        },
+    function getTheme() {
+        try {
+            const saved = localStorage.getItem(KEY);
+            if (saved === "dark" || saved === "light") return saved;
+        } catch { }
+        return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
+            ? "dark" : "light";
+    }
 
-        revealOnScroll() {
-            const els = document.querySelectorAll(".reveal");
-            if (!("IntersectionObserver" in window)) {
-                els.forEach(el => el.classList.add("reveal-in"));
-                return;
-            }
-            const io = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (e.isIntersecting) { e.target.classList.add("reveal-in"); io.unobserve(e.target); }
-                });
-            }, { threshold: 0.12 });
-            els.forEach(el => io.observe(el));
+    function setTheme(theme) { return applyTheme(theme); }
+    function initTheme() { document.documentElement.classList.add("js"); return applyTheme(getTheme()); }
+
+    function animateCount(selector, value, durationMs = 700) {
+        const el = document.querySelector(selector);
+        if (!el) return;
+        const start = Number(el.textContent || 0) || 0;
+        const diff = value - start;
+        if (diff === 0) { el.textContent = String(value); return; }
+        const t0 = performance.now();
+        function step(t) {
+            const p = Math.min(1, (t - t0) / durationMs);
+            const eased = 1 - Math.pow(1 - p, 3);
+            el.textContent = String(Math.round(start + diff * eased));
+            if (p < 1) requestAnimationFrame(step);
         }
-    };
+        requestAnimationFrame(step);
+    }
 
-    // Auto-init on first load
-    document.addEventListener("DOMContentLoaded", () => {
-        try { api.initTheme(); api.revealOnScroll(); } catch { }
-    });
+    function revealOnScroll() {
+        const items = Array.from(document.querySelectorAll(".reveal"));
+        if (!items.length) return;
+        const io = new IntersectionObserver((entries) => {
+            for (const e of entries) if (e.isIntersecting) { e.target.classList.add("reveal-in"); io.unobserve(e.target); }
+        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.08 });
+        items.forEach(el => io.observe(el));
+    }
 
-    // Expose to Blazor
-    window.site = api;
+    return { initTheme, getTheme, setTheme, animateCount, revealOnScroll };
 })();
