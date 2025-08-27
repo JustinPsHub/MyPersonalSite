@@ -1,0 +1,23 @@
+﻿@namespace MyPersonalSite.Components.Shared
+@* Reusable chip grid. Use defaults or pass your own list via Items. *@
+@code {
+    [Parameter] public IEnumerable<string>? Items { get; set; }
+
+    private static readonly string[] DefaultItems = new[]
+    {
+        "C# / .NET 9", "Blazor (Server + WASM)", "ASP.NET Razor",
+        "EF Core", "SQL Server", "SQLite",
+        "LINQ", "REST / Minimal APIs",
+        "Azure", "Azure DevOps (Repos/Boards/Wikis/Pipelines)", "CI/CD",
+        "Power BI (Service/RS)", "DAX", "SSIS",
+        "JavaScript", "D3.js interop", "Options/Config", "Security (CSP/Headers/RateLimits)"
+    };
+
+    private IEnumerable<string> GetItems() => Items ?? DefaultItems;
+}
+<div class="d-flex flex-wrap gap-2 chips">
+    @foreach (var t in GetItems())
+    {
+        <span class="chip">@t</span>
+    }
+</div>

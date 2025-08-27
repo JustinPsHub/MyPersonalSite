@@ -6,19 +6,9 @@
 
 <PageTitle>Justin • .NET / Blazor / Data</PageTitle>
 
-<HeadContent>
-    <link rel="preload" as="image"
-          href='@Assets["img/hero-farm-tech-1600.avif"]'
-          imagesrcset='@Assets["img/hero-farm-tech-800.avif"] 800w,
-                       @Assets["img/hero-farm-tech-1200.avif"] 1200w,
-                       @Assets["img/hero-farm-tech-1600.avif"] 1600w'
-          fetchpriority="high" />
-</HeadContent>
-
-<div class="container home-page py-3">
-
+<div class="home-page">
     <!-- HERO -->
-    <section class="hero-gradient home-hero hero-photo position-relative rounded-4 overflow-hidden">
+    <div class="hero-gradient home-hero hero-photo">
         <picture class="hero-bg">
             <source type="image/avif"
                     srcset='@Assets["img/hero-farm-tech-800.avif"] 800w,
@@ -30,15 +20,18 @@
                             @Assets["img/hero-farm-tech-1200.webp"] 1200w,
                             @Assets["img/hero-farm-tech-1600.webp"] 1600w'
                     sizes="(max-width: 576px) 100vw, (max-width: 992px) 92vw, 1200px" />
-            <img src='@Assets["img/hero-farm-tech.png"]' alt="" loading="eager" decoding="async" fetchpriority="high" />
+            <img src='@Assets["img/hero-farm-tech.png"]'
+                 alt="Farmhouse with dog and tech overlay"
+                 loading="eager" decoding="async" fetchpriority="high" />
         </picture>
 
-        <div class="py-4 px-3 px-md-4 position-relative" style="z-index:1;">
-            <div class="row g-3 align-items-start">
-                <div class="col-12 col-lg-7">
+        <div class="container py-4">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-7">
                     <h1 class="hero-title text-white">I build secure, data-driven .NET apps.</h1>
                     <p class="lead-sm text-hero-muted mb-3">
-                        16 yrs in federal service • 8 yrs data analyst/dev • Focused on <strong>Blazor</strong>, <strong>C#</strong>, and <strong>data engineering</strong>.
+                        16 yrs in federal service • 8 yrs data analyst/dev • Focused on
+                        <strong>Blazor</strong>, <strong>C#</strong>, and <strong>data engineering</strong>.
                     </p>
                     <div class="d-flex flex-wrap gap-2">
                         <a class="btn btn-primary btn-md" href="/resume">View Resume</a>
@@ -50,7 +43,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-5 d-flex justify-content-lg-end">
+                <div class="col-lg-5">
                     <div class="glass compact hero-card">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h2 class="h6 mb-0 text-muted">Live site stats</h2>
@@ -77,88 +70,172 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+
+    <div class="clearfix d-block w-100"></div>
 
     <!-- BODY -->
-    <section class="section-tight mb-4">
-        <h2 class="section-title mb-3">At a glance</h2>
-        <div class="row g-3">
-            <div class="col-md-4 reveal">
-                <div class="tile">
-                    <div class="tile-title">Full-stack Blazor</div>
-                    <div class="tile-text">Server + WASM interactivity, clean components, JS interop when it adds value.</div>
-                    <div class="chips">
-                        <span class="chip">C# / .NET 9</span><span class="chip">Blazor</span><span class="chip">Razor</span>
+    <div class="container py-4">
+        <!-- At a glance -->
+        <section class="section-tight mb-4">
+            <h2 class="section-title mb-3">At a glance</h2>
+            <div class="row g-3">
+                <div class="col-md-4 reveal">
+                    <div class="tile">
+                        <div class="tile-title">Full-stack Blazor</div>
+                        <div class="tile-text">Server + WASM interactivity, clean components, JS interop when it adds value.</div>
+                        <div class="chips">
+                            <span class="chip">C# / .NET 9</span><span class="chip">Blazor</span><span class="chip">Razor</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 reveal">
+                    <div class="tile">
+                        <div class="tile-title">Data engineering</div>
+                        <div class="tile-text">Modeling, APIs, and making insight obvious with interactive visuals.</div>
+                        <div class="chips">
+                            <span class="chip">EF Core</span><span class="chip">SQL/SQLite</span><span class="chip">LINQ</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 reveal">
+                    <div class="tile">
+                        <div class="tile-title">Secure by default</div>
+                        <div class="tile-text">HTTPS, antiforgery, validation/options, layered architecture.</div>
+                        <div class="chips">
+                            <span class="chip">Middleware</span><span class="chip">Options</span><span class="chip">Validation</span>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 reveal">
                 <div class="tile">
-                    <div class="tile-title">Data engineering</div>
-                    <div class="tile-text">Modeling, APIs, and making insight obvious with interactive visuals.</div>
+                    <div class="tile-title">Automation & Security</div>
+                    <div class="tile-text">
+                        Own <strong>Power BI RLS</strong> security tables and refresh logic.
+                        Automate with <strong>PowerShell</strong>, <strong>Power BI REST API</strong>, and <strong>Microsoft Graph</strong>.
+                    </div>
                     <div class="chips">
-                        <span class="chip">EF Core</span><span class="chip">SQL/SQLite</span><span class="chip">LINQ</span>
+                        <span class="chip">PowerShell</span><span class="chip">Power BI REST</span>
+                        <span class="chip">Microsoft Graph</span><span class="chip">RLS</span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 reveal">
-                <div class="tile">
-                    <div class="tile-title">Secure by default</div>
-                    <div class="tile-text">HTTPS, antiforgery, validation/options, layered architecture.</div>
-                    <div class="chips">
-                        <span class="chip">Middleware</span><span class="chip">Options</span><span class="chip">Validation</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <section class="section-tight mb-4">
-        <h2 class="section-title mb-3">Featured</h2>
-        <div class="row g-3">
-            <div class="col-md-6 reveal">
-                <div class="card tile-card h-100">
-                    <div class="card-body">
-                        <div class="tile-title mb-1">Interactive Visuals</div>
-                        <p class="tile-text mb-2">D3 + Blazor interop with EF Core data. Sorting, tooltips, responsive charts.</p>
-                        <a class="btn btn-primary btn-sm" href="/visuals">Open Visuals</a>
+        </section>
+
+        <!-- NEW: Skills snapshot (mirrors resume groupings) -->
+        <section class="section-tight mb-4">
+            <h2 class="section-title mb-3">Skills snapshot</h2>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Languages &amp; Frameworks</div>
+                        <div class="chips">
+                            @foreach (var s in SkillsLanguages)
+                            {
+                                <span class="chip">@s</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Data &amp; BI</div>
+                        <div class="chips">
+                            @foreach (var s in SkillsDataBI)
+                            {
+                                <span class="chip">@s</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Cloud &amp; DevOps</div>
+                        <div class="chips">
+                            @foreach (var s in SkillsCloudDevOps)
+                            {
+                                <span class="chip">@s</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Visualization &amp; Interop</div>
+                        <div class="chips">
+                            @foreach (var s in SkillsVizInterop)
+                            {
+                                <span class="chip">@s</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Security &amp; Ops</div>
+                        <div class="chips">
+                            @foreach (var s in SkillsSecOps)
+                            {
+                                <span class="chip">@s</span>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 reveal">
-                <div class="card tile-card h-100">
-                    <div class="card-body">
-                        <div class="tile-title mb-1">Resume</div>
-                        <p class="tile-text mb-2">Print-ready resume page (or PDF) backed by a clean data model.</p>
-                        <a class="btn btn-outline-primary btn-sm" href="/resume">View Resume</a>
+        </section>
+
+        <!-- Featured -->
+        <section class="section-tight mb-4">
+            <h2 class="section-title mb-3">Featured</h2>
+            <div class="row g-3">
+                <div class="col-md-6 reveal">
+                    <div class="card tile-card h-100">
+                        <div class="card-body">
+                            <div class="tile-title mb-1">Interactive Visuals</div>
+                            <p class="tile-text mb-2">D3 + Blazor interop with EF Core data. Sorting, tooltips, responsive charts.</p>
+                            <a class="btn btn-primary btn-sm" href="/visuals">Open Visuals</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 reveal">
+                    <div class="card tile-card h-100">
+                        <div class="card-body">
+                            <div class="tile-title mb-1">Resume</div>
+                            <p class="tile-text mb-2">Print-ready resume page (or PDF) backed by a clean data model.</p>
+                            <a class="btn btn-outline-primary btn-sm" href="/resume">View Resume</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="section-tight">
-        <h2 class="section-title mb-2">Tech I use</h2>
-        <div class="d-flex flex-wrap gap-2">
-            @foreach (var t in Tech)
-            {
-                <span class="chip">@t</span>
-            }
-        </div>
-    </section>
+        <!-- Tech strip (kept) -->
+        <section class="section-tight">
+            <h2 class="section-title mb-2">Tech I use</h2>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var t in Tech)
+                {
+                    <span class="chip">@t</span>
+                }
+            </div>
+        </section>
 
-    <section class="mt-4">
-        <div class="callout glass compact d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 reveal">
-            <div>
-                <h3 class="h6 mb-1">Let’s build something great.</h3>
-                <p class="mb-0 text-muted">Open to .NET/Blazor and data engineering roles.</p>
+        <!-- CTA -->
+        <section class="mt-4">
+            <div class="callout glass compact d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 reveal">
+                <div>
+                    <h3 class="h6 mb-1">Let’s build something great.</h3>
+                    <p class="mb-0 text-muted">Open to .NET/Blazor and data engineering roles.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a class="btn btn-primary btn-sm" href="/about">About Me</a>
+                    <a class="btn btn-outline-primary btn-sm" href="/visuals">See Visuals</a>
+                </div>
             </div>
-            <div class="d-flex gap-2">
-                <a class="btn btn-primary btn-sm" href="/about">About Me</a>
-                <a class="btn btn-outline-primary btn-sm" href="/visuals">See Visuals</a>
-            </div>
-        </div>
-    </section>
+        </section>
+    </div>
 </div>
 
 @code {
@@ -167,10 +244,48 @@
     private bool _animated;
     private string _theme = "light";
 
+    // New skills groupings (explicitly calling out your expertise areas)
+    private static readonly string[] SkillsLanguages = new[]
+    {
+        "C# / .NET 9", "ASP.NET (Server & WASM)", "Razor / Blazor", "LINQ"
+    };
+
+    private static readonly string[] SkillsDataBI = new[]
+    {
+        "SQL Server", "SQLite", "EF Core", "SSIS",
+        "Power BI Service", "Power BI Report Server",
+        "SSMS", "Azure Data Studio",
+        "Dimensional Modeling", "DAX"
+    };
+
+    private static readonly string[] SkillsCloudDevOps = new[]
+    {
+        "Azure", "Azure DevOps (Repos/Boards/Wikis/Pipelines)", "CI/CD",
+        "Azure Data Factory (ELT)", "Azure Functions (.NET)"
+    };
+
+    private static readonly string[] SkillsVizInterop = new[]
+    {
+        "D3.js Interop", "JavaScript", "Blazor JS interop"
+    };
+
+    private static readonly string[] SkillsSecOps = new[]
+    {
+        "Security Headers / CSP", "Rate Limiting", "Health Checks",
+        "RLS (Power BI)", "Python & Data Science Env Mgmt"
+    };
+
+    // Existing “Tech I use” strip
     private static readonly string[] Tech = new[]
     {
-        "C# / .NET 9", "Blazor (Server + WASM)", "EF Core", "SQLite", "SQL Server",
-        "REST / Minimal APIs", "LINQ", "D3.js interop", "DI", "Options/Config", "Azure-ready"
+        "C# / .NET 9", "Blazor (Server + WASM)", "ASP.NET Razor", "EF Core", "SQL Server",
+        "SQLite", "REST / Minimal APIs", "LINQ", "D3.js interop", "Power BI (Service/RS)",
+        "SSIS", "JavaScript", "Azure", "Azure DevOps (Repos/Boards/Wikis/Pipelines)",
+        "CI/CD", "Options/Config", "Security (CSP/Headers/RateLimits)",
+        "Azure Data Factory (ELT)", "Azure Functions (.NET)", "SSMS", "Azure Data Studio",
+        "Python Env Management","PowerShell", "Power BI REST API", "Microsoft Graph", "Azure Functions",
+"Azure Data Factory (ELT)", "SSMS", "Azure Data Studio", "Row-Level Security (RLS)"
+
     };
 
     protected override async Task OnInitializedAsync()

@@ -11,14 +11,19 @@
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["MyPersonalSite.styles.css"]" />
 
-    <!-- Dynamic head contributions from pages/components -->
+    <!-- Head contributions from pages/components -->
     <HeadOutlet />
 
-    <!-- Scripts (served from server wwwroot; no inline JS to satisfy CSP) -->
-    <script src='@Assets["js/site.js"]' defer></script>
-    <script src='@Assets["js/d3Interop.js"]' defer></script>
-</head>
+    <!-- Scripts (order matters: D3 first, then your interop, then site.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"
+            integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i"
+            crossorigin="anonymous"
+            defer></script>
 
+    <script src='@Assets["js/d3Interop.js"]' defer></script>
+    <script src='@Assets["js/site.js"]' defer></script>
+
+</head>
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>

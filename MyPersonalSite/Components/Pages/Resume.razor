@@ -1,38 +1,45 @@
 ﻿@page "/resume"
-@rendermode InteractiveServer
-@using Microsoft.EntityFrameworkCore
-@using MyPersonalSite.Data
+@using System.Net.Http.Json
+@using MyPersonalSite.Shared.DTOs
 @using MyPersonalSite.Shared.Models
-@inject AppDbContext Db
+@inject IHttpClientFactory HttpFactory
+@inject NavigationManager Nav
 @inject IJSRuntime JS
+@using MyPersonalSite.Components.Shared
 
-<PageTitle>Resume • Justin</PageTitle>
+<PageTitle>Resume • Justin — .NET / Blazor / Data</PageTitle>
 
-<div class="container resume-container py-4">
-    <!-- Top bar (hidden when printing) -->
-    <div class="d-print-none d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h4 mb-0">Resume</h1>
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary" href="/files/Justin_Resume.pdf" target="_blank" rel="noopener">Download PDF</a>
-            <button type="button" class="btn btn-primary" @onclick="PrintPage">Print</button>
+<section class="resume-container mx-auto px-2 px-md-0" itemscope itemtype="https://schema.org/Person">
+    <!-- Header -->
+    <header class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3 resume-header">
+        <div>
+            <h1 class="h3 mb-1" itemprop="name">Justin</h1>
+            <div class="d-flex flex-wrap gap-2 mb-1">
+                <span class="chip" itemprop="jobTitle">.NET / Blazor Engineer</span>
+                <span class="chip">Data Engineering</span>
+                <span class="chip">EF Core • SQL</span>
+                <link itemprop="url" href="@Nav.BaseUri" />
+            </div>
+            <p class="mb-0 text-muted small">
+                Builds secure, data-driven .NET applications, owns Power BI RLS & platform governance, and ships automation with ADF, Azure Functions, and PowerShell.
+            </p>
         </div>
-    </div>
 
-    <!-- Header / Summary -->
-    <header class="resume-header mb-3">
-        <h2 class="mb-1">Justin — Senior Data / .NET Engineer</h2>
-        <p class="text-muted mb-2">
-            Secure, data-driven .NET engineer with 16 years in federal service and 8 years delivering analytics and applications.
-            I ship maintainable <strong>Blazor/.NET</strong> solutions, dimensional data models, and measurable outcomes.
-        </p>
-        <div class="d-flex flex-wrap gap-2">
-            <span class="chip">C#/.NET 9</span>
-            <span class="chip">Blazor (Server + WASM)</span>
-            <span class="chip">EF Core</span>
-            <span class="chip">SQL/SQLite</span>
-            <span class="chip">Power BI (Service &amp; RS)</span>
-            <span class="chip">Azure</span>
-            <span class="chip">DevOps</span>
+        <div class="d-flex flex-column align-items-stretch align-items-md-end gap-2">
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-primary btn-sm" href="/about" aria-label="About Justin">About</a>
+                <button class="btn btn-outline-secondary btn-sm d-print-none" @onclick="PrintAsync" aria-label="Print this resume or save as PDF">
+                    Print / PDF
+                </button>
+                <a class="btn btn-outline-secondary btn-sm d-print-none" href="/api/resume" aria-label="Download resume data as JSON">
+                    JSON
+                </a>
+            </div>
+            <div class="d-flex flex-wrap gap-2 small text-muted">
+                <span class="chip">Washington, DC</span>
+                <a class="chip" href="mailto:someone@example.com" rel="noopener">Email</a>
+                <a class="chip" href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+            </div>
         </div>
     </header>
 
@@ -46,92 +53,201 @@
     {
         <p>Loading…</p>
     }
-    else if (_sections.Count == 0)
-    {
-        <div class="alert alert-info">No resume data available yet.</div>
-    }
     else
     {
-        @foreach (var s in _sections.OrderBy(s => s.Order))
-        {
-            <section class="mb-3">
-                <h3 class="sect">@s.SectionTitle</h3>
+        <!-- Highlights -->
+        <section class="mb-3" id="highlights">
+            <h2 class="sect">Highlights</h2>
+            <div class="exp">
+                <ul class="exp-bullets">
+                    <li>Lead engineer for Treasury’s shared analytics platform serving <strong>600+</strong> devs/analysts; secure runtime governance for Python/R and automated package deployments.</li>
+                    <li>Migrated <strong>600+</strong> projects to Azure DevOps; standardized Repos, Boards, Wikis, Pipelines and retired an enterprise license.</li>
+                    <li>Expert administration of <strong>Power BI Service</strong> and <strong>Power BI Report Server</strong> (upgrades, URL/config tuning, uptime restoration).</li>
+                    <li>Production <strong>Azure Data Factory</strong> ELT and <strong>.NET Azure Functions</strong> for automation and data integration.</li>
+                    <li>Heavy, effective use of <strong>SSMS</strong> and <strong>Azure Data Studio</strong> for modeling, ETL support, and live data ops.</li>
+                    <li>Own enterprise <strong>Row-Level Security</strong> (RLS) design & security tables; refresh and sync roles via .NET/PowerShell automation.</li>
+                    <li>Automate platform ops with <strong>PowerShell</strong>, <strong>Power BI REST</strong>, and <strong>Microsoft Graph</strong> (provisioning, dataset refreshes, access policies, audit).</li>
+                </ul>
+            </div>
+        </section>
 
-                @foreach (var e in s.Entries.OrderByDescending(e => e.StartDate))
-                {
-                    <article class="exp mb-2">
-                        <div class="exp-head">
-                            <div>
-                                @if (!string.IsNullOrWhiteSpace(e.Title))
-                                {
+        <!-- Skills -->
+        <section class="mb-3" id="skills">
+            <h2 class="sect">Skills</h2>
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Languages &amp; Frameworks</div>
+                        <div class="chips">
+                            @Chip("C# / .NET 9") @Chip("ASP.NET (Server & WASM)")
+                            @Chip("Razor/Blazor") @Chip("LINQ")
+                            @Chip("JavaScript (interop)")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Data &amp; BI</div>
+                        <div class="chips">
+                            @Chip("SQL Server / SQLite") @Chip("EF Core") @Chip("SSIS")
+                            @Chip("Power BI Service") @Chip("Power BI Report Server") @Chip("DAX")
+                            @Chip("Dimensional Modeling")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Cloud &amp; DevOps</div>
+                        <div class="chips">
+                            @Chip("Azure") @Chip("Azure Data Factory") @Chip("Azure Function Apps")
+                            @Chip("Azure DevOps (Repos/Boards/Wikis/Pipelines)") @Chip("CI/CD") @Chip("Git")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Analytics Tooling</div>
+                        <div class="chips">
+                            @Chip("SSMS") @Chip("Azure Data Studio") @Chip("Python env governance") @Chip("R runtime governance")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Security &amp; Ops</div>
+                        <div class="chips">
+                            @Chip("RLS (Power BI)") @Chip("Security tables ownership")
+                            @Chip("CSP / Headers") @Chip("Rate Limiting") @Chip("Health Checks")
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fixed: put Automation & APIs INSIDE the row -->
+                <div class="col-md-6">
+                    <div class="tile h-100">
+                        <div class="tile-title mb-1">Automation &amp; APIs</div>
+                        <div class="chips">
+                            @Chip("PowerShell") @Chip("Power BI REST API")
+                            @Chip("Microsoft Graph") @Chip("Azure Functions")
+                            @Chip("Azure Data Factory (ELT)")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certifications -->
+        <section class="mb-3" id="certs">
+            <h2 class="sect">Certifications</h2>
+            <div class="exp">
+                <div class="d-flex flex-wrap gap-2 mb-1">
+                    <a class="chip" href="https://www.credly.com/badges/fd62d8eb-1d69-4b3b-9138-44c50c2e86ae" target="_blank" rel="noopener">Azure Fundamentals (2/12/2023)</a>
+                    <a class="chip" href="https://www.credly.com/badges/fd62d8eb-1d69-4b3b-9138-44c50c2e86ae" target="_blank" rel="noopener">Azure Data Fundamentals (2/18/2023)</a>
+                    <a class="chip" href="https://www.credly.com/badges/fd62d8eb-1d69-4b3b-9138-44c50c2e86ae" target="_blank" rel="noopener">Azure AI Fundamentals (3/18/2023)</a>
+                </div>
+                <div class="text-muted small">Credly profile linked.</div>
+            </div>
+        </section>
+
+        <!-- Professional Training -->
+        <section class="mb-3" id="training">
+            <h2 class="sect">Professional Training</h2>
+            <div class="exp">
+                <div class="exp-head">
+                    <div class="exp-title">Code Kentucky • Software Development with C# Bootcamp</div>
+                </div>
+                <ul class="exp-bullets">
+                    <li>Session 1: <strong>Jan 2022 – Apr 2022</strong></li>
+                    <li>Session 2: <strong>May 2022 – Aug 2022</strong></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- DB-backed sections (Experience, Education, etc.) -->
+        @if (_sections.Count == 0)
+        {
+            <div class="alert alert-info">No resume data available yet.</div>
+        }
+        else
+        {
+            @foreach (var s in _sections)
+            {
+                <section class="mb-4">
+                    <h3 class="h5 border-bottom pb-2">@s.SectionTitle</h3>
+
+                    @foreach (var e in s.Entries)
+                    {
+                        var isTreasuryRole = IsTreasuryTenure(e);
+
+                        <article class="exp">
+                            <div class="exp-head">
+                                <div>
                                     <div class="exp-title">@e.Title</div>
-                                }
-                                <div class="exp-sub text-muted">
-                                    @((!string.IsNullOrWhiteSpace(e.Organization) ? e.Organization : ""))@((!string.IsNullOrWhiteSpace(e.Organization) && !string.IsNullOrWhiteSpace(e.Location)) ? " — " : "")
-                                    @e.Location
+                                    @if (!string.IsNullOrWhiteSpace(e.Organization))
+                                    {
+                                        <div class="exp-sub">@e.Organization</div>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(e.Location))
+                                    {
+                                        <div class="text-muted small">@e.Location</div>
+                                    }
+                                </div>
+                                <div class="text-nowrap">
+                                    <span class="badge bg-primary-subtle text-primary">
+                                        @FormatDateRange(e.StartDate, e.EndDate)
+                                    </span>
                                 </div>
                             </div>
-                            <div class="exp-dates text-muted">
-                                @FormatDateRange(e.StartDate, e.EndDate)
-                            </div>
-                        </div>
 
-                        @if (!string.IsNullOrWhiteSpace(e.Description))
-                        {
-                            <p class="mb-2">@e.Description</p>
-                        }
+                            @if (!string.IsNullOrWhiteSpace(e.Description))
+                            {
+                                <p class="mb-2">@e.Description</p>
+                            }
 
-                        @if (e.BulletPoints is { Count: > 0 })
-                        {
-                            <ul class="exp-bullets">
-                                @foreach (var bp in e.BulletPoints.OrderBy(b => b.Order))
-                                {
-                                    <li>@bp.Text</li>
-                                }
-                            </ul>
-                        }
+                            @if (e.BulletPoints is { Count: > 0 } || isTreasuryRole)
+                            {
+                                <ul class="exp-bullets">
+                                    @if (e.BulletPoints is { Count: > 0 })
+                                    {
+                                        foreach (var bp in e.BulletPoints.OrderBy(b => b.Order))
+                                        {
+                                            <li>@bp.Text</li>
+                                        }
+                                    }
 
-                        @if (!string.IsNullOrWhiteSpace(e.TechStack))
-                        {
-                            <div class="stack small text-muted">
-                                <strong>Tech:</strong> @e.TechStack
-                            </div>
-                        }
-                    </article>
-                }
-            </section>
+                                    @* Append expertise for your Treasury role without changing DB *@
+                                    @if (isTreasuryRole)
+                                    {
+                                        <li><strong>Power BI platforms:</strong> Admin/support for <em>Power BI Service</em> & <em>Report Server</em> (upgrades, URL/config tuning, uptime restoration).</li>
+                                        <li><strong>Azure integration:</strong> Production <em>Azure Data Factory</em> ELT and <em>.NET Azure Functions</em> for automation/ingestion.</li>
+                                        <li><strong>Data science envs:</strong> Solo ownership of <em>Python</em> & R runtime governance (config, package deploys, debugging, security reviews).</li>
+                                        <li><strong>Developer tooling:</strong> Daily use of <em>SSMS</em> and <em>Azure Data Studio</em> for modeling, ETL support, and live data ops.</li>
+                                    }
+                                </ul>
+                            }
+                        </article>
+                    }
+                </section>
+            }
         }
-
-        <!-- Certifications (keep static unless you model them) -->
-        <section class="mb-3">
-            <h3 class="sect">Certifications</h3>
-            <ul class="mb-0">
-                <li>Microsoft Azure Fundamentals — 02/12/2023</li>
-                <li>Microsoft Azure Data Fundamentals — 02/18/2023</li>
-                <li>Microsoft Azure AI Fundamentals — 03/18/2023</li>
-            </ul>
-        </section>
     }
-</div>
+</section>
 
 @code {
-    private List<ResumeSection>? _sections;
+    private List<ResumeSectionDto>? _sections;
     private string? _error;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Eager-load entries and bullet points
-            _sections = await Db.ResumeSections
-                .Include(s => s.Entries)
-                    .ThenInclude(e => e.BulletPoints)
-                .AsNoTracking()
-                .ToListAsync();
-
-            // Fallback title if missing
-            foreach (var s in _sections.Where(s => string.IsNullOrWhiteSpace(s.SectionTitle)))
-                s.SectionTitle = "Experience";
+            using var http = HttpFactory.CreateClient();
+            var uri = new Uri(new Uri(Nav.BaseUri), "api/resume");
+            _sections = await http.GetFromJsonAsync<List<ResumeSectionDto>>(uri);
         }
         catch (Exception ex)
         {
@@ -139,8 +255,51 @@
         }
     }
 
-    private Task PrintPage() => JS.InvokeVoidAsync("print").AsTask();
+    // Reusable chip
+    private RenderFragment Chip(string text) => __builder =>
+    {
+        __builder.OpenElement(0, "span");
+        __builder.AddAttribute(1, "class", "chip");
+        __builder.AddContent(2, text);
+        __builder.CloseElement();
+    };
 
+    // Identify Treasury tenure without hard-coding IDs
+    private static bool IsTreasuryTenure(ResumeEntryDto e)
+        => (e.Organization?.Contains("Treasury", StringComparison.OrdinalIgnoreCase) ?? false)
+           && e.StartDate >= new DateTime(2022, 11, 1);
+
+    // Tenure formatting (viewer’s current date)
     private static string FormatDateRange(DateTime start, DateTime? end)
-        => $"{start:MMM yyyy} – {(end.HasValue ? end.Value.ToString("MMM yyyy") : "Present")}";
+    {
+        var to = (end ?? DateTime.Today);
+        if (to < start) to = start;
+
+        var monthDiff = (to.Year - start.Year) * 12 + (to.Month - start.Month) - (to.Day < start.Day ? 1 : 0);
+        var years = Math.Max(0, monthDiff / 12);
+        var months = Math.Max(0, monthDiff % 12);
+
+        string tenure;
+        if (years == 0 && months == 0)
+        {
+            var days = (to - start).Days;
+            tenure = $"{days} day{(days == 1 ? "" : "s")}";
+        }
+        else
+        {
+            var parts = new List<string>();
+            if (years > 0) parts.Add($"{years} yr{(years > 1 ? "s" : "")}");
+            if (months > 0) parts.Add($"{months} mo{(months > 1 ? "s" : "")}");
+            tenure = string.Join(" ", parts);
+        }
+
+        var startStr = start.ToString("MMM yyyy");
+        var endStr = end.HasValue ? end.Value.ToString("MMM yyyy") : "Present";
+        return $"{startStr} — {endStr} • {tenure}";
+    }
+
+    private async Task PrintAsync()
+    {
+        try { await JS.InvokeVoidAsync("print"); } catch { }
+    }
 }

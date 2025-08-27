@@ -10,6 +10,8 @@ window.site = (function () {
         return t;
     }
 
+
+
     function getTheme() {
         try {
             const saved = localStorage.getItem(KEY);
