@@ -222,6 +222,7 @@ body {
     overflow: hidden;
     min-height: clamp(260px,36vh,420px);
     margin-bottom: 1rem;
+    isolation: isolate; /* keep overlays from affecting later content */
 }
 
 .hero-bg {
@@ -236,7 +237,7 @@ body {
         height: 100%;
         display: block;
         object-fit: cover;
-        object-position: 36% 78%; /* keep the dog in frame on desktop */
+        object-position: 36% 78%;
     }
 
 .hero-photo::before {
@@ -279,24 +280,7 @@ body {
     color: #1f2a44;
 }
 
-/* Mini stats in hero */
-.mini-stat {
-    min-width: 92px;
-}
-
-.mini-value {
-    font-weight: 800;
-    font-size: 1.25rem;
-    line-height: 1;
-}
-
-.mini-label {
-    color: #5c6a86;
-    font-weight: 600;
-    font-size: .8rem;
-}
-
-/* Phones: pan image more left/down so the dog shows; stack stats under title */
+/* Phones: pan image more left/down so the dog shows */
 @media (max-width:768px) {
     .home-hero {
         padding-block: 1.1rem;
@@ -313,6 +297,25 @@ body {
     .btn-md {
         padding: .45rem .9rem;
     }
+}
+
+/* ===== Layout guards: keep the hero on its own row ===== */
+.hero-section {
+    display: block;
+    width: 100%;
+    float: none;
+    clear: both;
+    grid-column: 1 / -1; /* works if a parent uses CSS Grid */
+}
+
+    .hero-section + .container {
+        clear: both;
+        width: 100%;
+        grid-column: 1 / -1;
+    }
+/* If any upstream container disables wrapping, allow wrapping so 100% items break lines */
+main, .content, .container, .row {
+    flex-wrap: wrap;
 }
 
 /* =====================================================================
@@ -546,29 +549,65 @@ main.flex-fill {
         clear: both;
     }
 
-/* Keep the hero image focal point and proper stacking */
-.hero-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    display: block;
-}
-
-    .hero-bg img {
-        width: 100%;
-        height: 100%;
-        display: block;
-        object-fit: cover;
-        object-position: 36% 78%;
-    }
-
-@media (max-width:768px) {
-    .hero-bg img {
-        object-position: 28% 88%;
-    }
-}
-
 /* Make sure the content container never becomes a flex row from upstream styles */
 article.content {
     display: block;
+}
+
+/* =====================================================================
+   About page — readability + spacing
+===================================================================== */
+
+/* Slightly taller hero on About */
+.hero-tall {
+    min-height: clamp(320px, 46vh, 560px);
+}
+
+/* Darker global overlay so the art recedes under text */
+.about-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(90% 70% at 12% 16%, rgba(12,16,28,.70) 0%, rgba(12,16,28,0) 56%), linear-gradient(to bottom, rgba(12,16,28,.72), rgba(12,16,28,.54) 40%, rgba(12,16,28,.76));
+}
+
+/* Stronger left-to-right scrim where the copy sits */
+.about-hero .hero-scrim {
+    position: absolute;
+    inset: 0 45% 0 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(8,12,20,.82) 0%, rgba(8,12,20,.56) 60%, rgba(8,12,20,0) 100%);
+    mix-blend-mode: multiply;
+}
+
+/* Brighter, crisper hero text */
+.about-hero .hero-title {
+    color: #fff;
+    text-shadow: 0 3px 12px rgba(0,0,0,.68), 0 0 2px rgba(0,0,0,.9);
+}
+
+.about-hero .text-hero-body {
+    color: rgba(255,255,255,.99) !important;
+    text-shadow: 0 2px 10px rgba(0,0,0,.6);
+}
+
+/* Keep dog/barn framed slightly to the right */
+.about-hero .hero-bg img {
+    object-position: 40% 78%;
+}
+
+@media (max-width:768px) {
+    .about-hero .hero-bg img {
+        object-position: 30% 88%;
+    }
+}
+
+/* Spacer so the following content never hugs the hero */
+.hero-break {
+    height: .25rem;
+    display: block;
+    clear: both;
 }

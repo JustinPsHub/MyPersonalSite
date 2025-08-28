@@ -1,132 +1,186 @@
 ﻿@page "/about"
 @rendermode InteractiveServer
-
 @using System.Globalization
 
-<div class="container py-4">
-    <header class="mb-4">
-        <h1 class="display-4 fw-semibold">Hi, I’m Justin.</h1>
-        <p class="lead text-muted">
-            Federal public service veteran turned builder—8+ years as a data analyst/developer,
-            now targeting roles in <strong>.NET / Blazor</strong> and <strong>data engineering</strong>.
-            I like designing secure, production-ready apps and making data tell a story.
-        </p>
-    </header>
+<PageTitle>About • Justin</PageTitle>
 
-    <!-- Quick stats -->
-    <div class="row g-3 mb-4">
-        <div class="col-12 col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <div class="fs-1 fw-bold">@TotalYears+ yrs</div>
-                    <div class="text-muted">Federal experience</div>
+<div class="about-page">
+    <!-- NEW wrapper makes layout column-stacked -->
+    <!-- ===== HERO (full-width, top of page) ===== -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-photo hero-gradient hero-tall about-hero">
+                <picture class="hero-bg">
+                    <img src="@HeroSrc" alt="" loading="eager" fetchpriority="high" />
+                </picture>
+
+                <div class="hero-scrim" aria-hidden="true"></div>
+
+                <div class="container py-4 py-md-5">
+                    <div class="row">
+                        <div class="col-12 col-xl-9">
+                            <div class="hero-copy">
+                                <h1 class="hero-title mb-2">Hi, I’m Justin.</h1>
+                                <p class="lead text-hero-body mb-0">
+                                    Senior engineer with 16 years in federal service — I lead enterprise data engineering,
+                                    secure app development in <strong>.NET/Blazor</strong>, and enterprise modeling and
+                                    <strong>row-level security</strong> in <strong>Power BI</strong>. I’m the go-to developer
+                                    on my team for Azure solutions, automation, and building production-ready apps.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="hero-break"></div>
+
+    <!-- ===== BODY ===== -->
+    <div class="container py-4 z-body">
+        <!-- Quick stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="fs-1 fw-bold">@TotalYears+ yrs</div>
+                        <div class="text-muted">Federal experience</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="fs-1 fw-bold">@DevYears+ yrs</div>
+                        <div class="text-muted">Data analyst & developer</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="fs-1 fw-bold">Azure • .NET • Power BI</div>
+                        <div class="text-muted">What I focus on today</div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <div class="fs-1 fw-bold">@DevYears+ yrs</div>
-                    <div class="text-muted">Data analyst & developer</div>
+
+        <!-- What I do well -->
+        <section class="mb-4">
+            <h2 class="h4 mb-3">What I’m good at</h2>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    Building <strong>secure .NET/Blazor apps</strong> with EF Core and clean architecture,
+                    hardened with CSP, rate-limiting, and antiforgery.
+                </li>
+                <li class="list-group-item">
+                    Leading <strong>enterprise Power BI</strong>: model design,
+                    <strong>row-level security</strong> patterns, security tables, and automation of refreshes and access via
+                    .NET, PowerShell, and REST APIs.
+                </li>
+                <li class="list-group-item">
+                    Delivering <strong>Azure solutions</strong>—Data Factory pipelines, Function Apps, and DevOps
+                    lifecycles for automation and scalable data workflows.
+                </li>
+                <li class="list-group-item">
+                    Turning data into insight with interactive visuals (like the D3 pages on this site).
+                </li>
+            </ul>
+        </section>
+
+        <!-- Tools -->
+        <section class="mb-4">
+            <h2 class="h4 mb-3">Tools I enjoy</h2>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var t in TechStack)
+                {
+                    <span class="badge rounded-pill bg-primary-subtle text-primary border">@t</span>
+                }
+            </div>
+        </section>
+
+        <!-- Snapshot -->
+        <section class="mb-4">
+            <h2 class="h4 mb-3">Snapshot</h2>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h3 class="h6 text-uppercase text-muted">Recent focus</h3>
+                            <ul class="mb-0">
+                                <li>Enterprise Power BI governance (RLS, automation, audit readiness)</li>
+                                <li>Azure Data Factory ELT pipelines and .NET Function Apps</li>
+                                <li>Full-stack Blazor apps with secure defaults</li>
+                                <li>DevOps pipelines, repos, and wikis at scale</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h3 class="h6 text-uppercase text-muted">Where I am</h3>
+                            <p class="mb-2">
+                                I live on a 40-acre farmstead in <strong>Hillsboro, Ohio</strong>,
+                                where my wife, dog, and I are committed to long-term stewardship of our land.
+                            </p>
+                            <p class="mb-0 text-muted">
+                                Remote work is ideal, but I can commute occasionally to
+                                <strong>Cincinnati</strong>, <strong>Dayton</strong>, or <strong>Columbus</strong>.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-12 col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <div class="fs-1 fw-bold">Blazor • .NET • Data</div>
-                    <div class="text-muted">What I’m focused on next</div>
+        </section>
+
+        <!-- CTA -->
+        <section class="mb-5">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div>
+                        <h2 class="h4 mb-1">Want the details?</h2>
+                        <p class="mb-0 text-muted">See my resume or explore the visuals to get a feel for my work.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-primary" href="/resume">View Resume</a>
+                        <a class="btn btn-outline-secondary" href="/visuals">See Visuals</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
-
-    <!-- What I do well -->
-    <section class="mb-4">
-        <h2 class="h4 mb-3">What I’m good at</h2>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                Building <strong>secure</strong>, modern .NET apps with Blazor (server + WASM interactivity), EF Core, and SQLite/Postgres/SQL Server.
-            </li>
-            <li class="list-group-item">
-                Data modeling, ETL-ish glue, API-first design, and turning datasets into useful visuals (like the D3 pages on this site).
-            </li>
-            <li class="list-group-item">
-                Shipping: clean architecture, configuration-as-code, observability basics, and pragmatic testing.
-            </li>
-        </ul>
-    </section>
-
-    <!-- Tech stack chips -->
-    <section class="mb-4">
-        <h2 class="h4 mb-3">Tools I enjoy</h2>
-        <div class="d-flex flex-wrap gap-2">
-            @foreach (var t in TechStack)
-            {
-                <span class="badge rounded-pill bg-primary-subtle text-primary border">@t</span>
-            }
-        </div>
-    </section>
-
-    <!-- Career snapshot -->
-    <section class="mb-4">
-        <h2 class="h4 mb-3">Snapshot</h2>
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h3 class="h6 text-uppercase text-muted">Recent focus</h3>
-                        <ul class="mb-0">
-                            <li>Blazor Web App template (server + client interactivity)</li>
-                            <li>EF Core with <code>SQLite</code> for a compact, demo-friendly DB</li>
-                            <li>D3.js for interactive charts (via JS interop)</li>
-                            <li>Secure-by-default middleware (antiforgery, HTTPS, auth-ready)</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h3 class="h6 text-uppercase text-muted">Looking for</h3>
-                        <ul class="mb-0">
-                            <li>.NET developer / Blazor engineer roles</li>
-                            <li>Data engineering roles with strong C#/.NET ecosystems</li>
-                            <li>Teams that care about maintainability, security, and impact</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Call to action -->
-    <section class="mb-5">
-        <div class="card shadow-sm">
-            <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-2">
-                <div>
-                    <h2 class="h4 mb-1">Want the details?</h2>
-                    <p class="mb-0 text-muted">See my resume or explore the visuals to get a feel for my work.</p>
-                </div>
-                <div class="d-flex gap-2">
-                    <a class="btn btn-primary" href="/resume">View Resume</a>
-                    <a class="btn btn-outline-secondary" href="/visuals">See Visuals</a>
-                </div>
-            </div>
-        </div>
-    </section>
 </div>
 
 @code {
-    // Known from our chat
     private const int TotalYears = 16;
     private const int DevYears = 8;
 
+    private string HeroSrc => GetSeason() switch
+    {
+        "winter" => "/img/hero-winter.png",
+        "summer" => "/img/summer-hero.png",
+        "autumn" => "/img/autumn-hero.png",
+        _ => "/img/about-hero.png"
+    };
+
+    private static string GetSeason()
+    {
+        var m = DateTime.Now.Month;
+        if (m == 12 || m <= 2) return "winter";
+        if (m >= 6 && m <= 8) return "summer";
+        if (m >= 9 && m <= 11) return "autumn";
+        return "spring";
+    }
+
     private static readonly string[] TechStack = new[]
     {
-        "C# / .NET 9", "Blazor (Server + WASM interactivity)",
-        "EF Core", "SQLite", "REST APIs", "D3.js",
-        "LINQ", "Dependency Injection", "Configuration & Options",
-        "Azure-ready (App Service/Static Web Apps/Containers)"
+        "C# / .NET 9", "Blazor (Server + WASM)", "EF Core", "SQL Server / SQLite",
+        "Power BI Service & Report Server", "Row-Level Security", "Azure Data Factory",
+        "Azure Functions", "Azure DevOps", "CI/CD", "PowerShell",
+        "Power BI REST API", "Microsoft Graph", "D3.js"
     };
 }
