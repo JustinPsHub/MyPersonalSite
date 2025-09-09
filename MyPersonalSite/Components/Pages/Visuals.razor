@@ -5,100 +5,109 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
+<PageTitle>Visuals Dashboard • Justin — .NET / Blazor / Data</PageTitle>
+
 <HeadContent>
     <script src='@Assets["js/visuals-extra.js"]' defer></script>
 </HeadContent>
 
-<h1 class="display-5 mb-3">Visuals</h1>
-<p class="text-muted">Interactive charts powered by EF Core + minimal APIs + D3.</p>
+<div class="container py-4">
+    <h1 class="display-5 mb-1">Visuals Dashboard</h1>
+    <p class="text-muted mb-4">Interactive charts powered by EF Core + minimal APIs + D3.</p>
 
-@if (!string.IsNullOrWhiteSpace(_error))
-{
-    <div class="alert alert-danger"><strong>Error:</strong> @_error</div>
-}
-else if (_years is null || _orgsRaw is null || _kpis is null || _velocity is null || _ado is null)
-{
-    <p>Loading…</p>
-}
-else
-{
-    <!-- KPI strip -->
-    <div class="card shadow-sm mb-3">
-        <div class="card-body">
-            <h5 class="card-title">Impact at a glance</h5>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2">
-                @for (var i = 0; i < _kpis.Count; i++)
-                {
-                    var k = _kpis[i];
-                    <div class="col">
-                        <div class="tile d-flex justify-content-between align-items-center h-100">
-                            <div>
-                                <div class="text-muted small">@k.label</div>
-                                <div id="@($"kpi-spark-{i}")" style="width:140px;height:28px"></div>
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <div class="alert alert-danger"><strong>Error:</strong> @_error</div>
+    }
+    else if (_years is null || _orgsRaw is null || _kpis is null || _velocity is null || _ado is null)
+    {
+        <div class="text-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- KPI strip -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Impact at a glance</h5>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2">
+                    @for (var i = 0; i < _kpis.Count; i++)
+                    {
+                        var k = _kpis[i];
+                        <div class="col">
+                            <div class="tile d-flex justify-content-between align-items-center h-100">
+                                <div>
+                                    <div class="text-muted small">@k.label</div>
+                                    <div id="@($"kpi-spark-{i}")" style="width:140px;height:28px"></div>
+                                </div>
+                                <div class="fs-4 fw-bold text-primary">@k.value</div>
                             </div>
-                            <div class="fs-4 fw-bold text-primary">@k.value</div>
                         </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row gy-4">
+            <!-- Delivery velocity -->
+            <div class="col-12 col-xl-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Delivery velocity (last 4 years)</h5>
+                        <div id="velocity-chart" style="width:100%; max-width:900px; min-height:240px;"></div>
                     </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="row gy-4">
-        <!-- Delivery velocity -->
-        <div class="col-12 col-xl-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Delivery velocity (last 4 years)</h5>
-                    <div id="velocity-chart" style="width:100%; max-width:900px; min-height:240px;"></div>
                 </div>
             </div>
-        </div>
 
-        <!-- ADO bullet -->
-        <div class="col-12 col-xl-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">ADO migrations vs goal</h5>
-                    <div id="ado-bullet" style="width:100%; max-width:900px; min-height:56px;"></div>
+            <!-- ADO bullet -->
+            <div class="col-12 col-xl-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">ADO migrations vs goal</h5>
+                        <div id="ado-bullet" style="width:100%; max-width:900px; min-height:56px;"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Your existing charts -->
-        <div class="col-12 col-xl-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Entries per Year</h5>
-                    <small class="text-muted">Data points: @_years.Count</small>
-                    <div id="entries-per-year-chart" style="width:100%; max-width:900px; min-height:420px;"></div>
+            <!-- Entries per Year -->
+            <div class="col-12 col-xl-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Entries per Year</h5>
+                        <small class="text-muted">Data points: @_years.Count</small>
+                        <div id="entries-per-year-chart" style="width:100%; max-width:900px; min-height:420px;"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-12 col-xl-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="card-title mb-0">Entries by Organization</h5>
-                        <div class="d-flex gap-2">
-                            <select class="form-select form-select-sm" style="width:auto" @onchange="OnSortChanged">
-                                <option value="countDesc" selected>Count ↓</option>
-                                <option value="countAsc">Count ↑</option>
-                                <option value="labelAsc">A–Z</option>
-                                <option value="labelDesc">Z–A</option>
-                            </select>
-                            <input class="form-control form-control-sm" style="width:90px" type="number" min="3" max="25" step="1"
-                                   @bind="_topN" @bind:event="oninput" />
+            <!-- Entries by Organization -->
+            <div class="col-12 col-xl-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="card-title mb-0">Entries by Organization</h5>
+                            <div class="d-flex gap-2">
+                                <select class="form-select form-select-sm" style="width:auto" @onchange="OnSortChanged">
+                                    <option value="countDesc" selected>Count ↓</option>
+                                    <option value="countAsc">Count ↑</option>
+                                    <option value="labelAsc">A–Z</option>
+                                    <option value="labelDesc">Z–A</option>
+                                </select>
+                                <input class="form-control form-control-sm" style="width:90px" type="number" min="3" max="25" step="1"
+                                       @bind="_topN" @bind:event="oninput" />
+                            </div>
                         </div>
+                        <small class="text-muted">Showing @((_orgsView?.Count ?? 0)) of @((_orgsRaw?.Count ?? 0))</small>
+                        <div id="entries-by-org-chart" style="width:100%; max-width:900px; min-height:300px;"></div>
                     </div>
-                    <small class="text-muted">Showing @((_orgsView?.Count ?? 0)) of @((_orgsRaw?.Count ?? 0))</small>
-                    <div id="entries-by-org-chart" style="width:100%; max-width:900px; min-height:300px;"></div>
                 </div>
             </div>
         </div>
-    </div>
-}
+    }
+</div>
 
 @code {
     // --- data for existing charts ---
