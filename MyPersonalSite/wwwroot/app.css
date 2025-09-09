@@ -1057,6 +1057,33 @@ svg .d3-bar, svg .d3-hbar {
         opacity: 1;
     }
 
+/* === D3 visual polish === */
+.d3-axis-x text, .d3-axis-y text {
+    fill: var(--muted);
+}
+
+.d3-axis-x path, .d3-axis-x line,
+.d3-axis-y path, .d3-axis-y line {
+    stroke: var(--border);
+}
+
+.d3-grid-x line, .d3-grid-y line {
+    stroke: var(--border);
+}
+
+#d3-tooltip {
+    /* colors set inline by JS from CSS vars; this is a safety fallback */
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(2,12,27,.15);
+}
+
+/* A tiny lift on hover for bars (in addition to the shadow) */
+svg .d3-bar:hover, svg .d3-hbar:hover {
+    opacity: .98;
+}
 
 
 
