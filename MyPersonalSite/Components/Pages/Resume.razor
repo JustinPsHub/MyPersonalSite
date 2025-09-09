@@ -1,4 +1,5 @@
-﻿@page "/resume"
+﻿@rendermode InteractiveServer
+@page "/resume"
 @using System.Net.Http.Json
 @using System.Text.RegularExpressions
 @using MyPersonalSite.Shared.DTOs
@@ -10,67 +11,48 @@
 
 <PageTitle>Resume • Justin — .NET / Blazor / Data</PageTitle>
 
-<div class="resume-page">
-    <!-- ===== HERO (same structure as About) ===== -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="hero-photo hero-gradient hero-tall about-hero">
-                <picture class="hero-bg">
-                    <img src="/img/hero-winter.png" alt="Winter scene hero" loading="eager" fetchpriority="high" />
-                </picture>
+<!-- Quiet heading for a11y -->
+<div class="container-fluid pt-3">
+    <h1 class="visually-hidden">Resume</h1>
+    <meta itemprop="name" content="Justin Palmer" />
+    <meta itemprop="email" content="justinraypalmer@gmail.com" />
+</div>
 
-                <div class="hero-scrim" aria-hidden="true"></div>
-
-                <div class="container py-4 py-md-5">
-                    <div class="row">
-                        <div class="col-12 col-xl-9">
-                            <div class="hero-copy">
-                                <h1 class="hero-title mb-2">Resume</h1>
-                                <p class="lead text-hero-body mb-0">
-                                    .NET / Blazor engineer focused on secure, data-driven apps and enterprise BI.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <div class="hero-break"></div>
-
-    <!-- ===== BODY ===== -->
-    <section class="resume-container mx-auto px-2 px-md-0" itemscope itemtype="https://schema.org/Person">
-        <!-- Header -->
+<section class="resume-container">
+    <div class="resume-inner">
+        <!-- HEADER -->
         <header class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3 resume-header">
             <div>
-                <h1 class="h3 mb-1" itemprop="name">Justin</h1>
+                <h2 class="h3 mb-1" itemprop="name">Justin Palmer</h2>
                 <div class="d-flex flex-wrap gap-2 mb-1">
                     <span class="chip" itemprop="jobTitle">.NET / Blazor Engineer</span>
                     <span class="chip">Data Engineering</span>
-                    <span class="chip">EF Core • SQL</span>
+                    <span class="chip">EF Core • SQL Server</span>
                     <link itemprop="url" href="@Nav.BaseUri" />
                 </div>
                 <p class="mb-0 text-muted small">
-                    Builds secure .NET apps, owns Power BI governance (incl. RLS), and automates data workflows with ADF, Azure Functions, and PowerShell.
+                    Builds secure ASP.NET Core/Blazor apps with EF/SQL; leads CI/CD in Azure DevOps; integrates analytics with
+                    Power BI (governed RLS, refresh &amp; access automation).
                 </p>
             </div>
 
             <div class="d-flex flex-column align-items-stretch align-items-md-end gap-2">
-                <div class="d-flex gap-2">
-                    <a class="btn btn-outline-primary btn-sm" href="/about" aria-label="About Justin">About</a>
-                    <button class="btn btn-outline-secondary btn-sm d-print-none" @onclick="PrintAsync" aria-label="Print this resume or save as PDF">
-                        Print / PDF
-                    </button>
-                    <a class="btn btn-outline-secondary btn-sm d-print-none" href="/api/resume" aria-label="Download resume data as JSON">
-                        JSON
-                    </a>
+                <div class="d-flex gap-2 align-items-center">
+                    <details class="export-dd d-print-none">
+                        <summary class="btn btn-outline-secondary btn-sm" aria-label="Export options">Export ▾</summary>
+                        <div class="menu">
+                            <button class="dropdown-item" @onclick="PrintFullAsync">PDF (full)</button>
+                            <button class="dropdown-item" @onclick="ExportWordFullAsync">Word (full)</button>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item" @onclick="PrintShortAsync">PDF (1-page)</button>
+                            <button class="dropdown-item" @onclick="ExportWordShortAsync">Word (1-page)</button>
+                        </div>
+                    </details>
                 </div>
+
                 <div class="d-flex flex-wrap gap-2 small text-muted">
-                    <span class="chip">Washington, DC</span>
-                    <a class="chip" href="mailto:someone@example.com" rel="noopener">Email</a>
-                    <a class="chip" href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+                    <span class="chip">Hillsboro, Ohio</span>
+                    <a class="chip" href="mailto:justinraypalmer@gmail.com" rel="noopener">justinraypalmer@gmail.com</a>
                 </div>
             </div>
         </header>
@@ -87,7 +69,111 @@
         }
         else
         {
-            <!-- Highlights -->
+            <!-- ===================== 1-PAGE SUMMARY (Karl-inspired) ===================== -->
+            <!-- Hidden on page; used by print/export -->
+            <section id="resume-summary" class="d-none" itemscope itemtype="https://schema.org/Person">
+                <header class="rs-header">
+                    <div class="rs-nameblock">
+                        <h1 class="rs-name">Justin Palmer</h1>
+                        <div class="rs-role">Senior .NET / Blazor &amp; Data Engineering</div>
+                        <p class="rs-tag">
+                            Secure ASP.NET Core delivery • Power BI Service admin (RLS, automation) • Azure Functions &amp; ADF ELT • EF Core/SQL • Python &amp; PowerShell.
+                        </p>
+                    </div>
+                    <div class="rs-contact">
+                        Hillsboro, OH · <a href="mailto:justinraypalmer@gmail.com">justinraypalmer@gmail.com</a> · <span>@Nav.BaseUri</span>
+                    </div>
+                </header>
+
+                <div class="rs-grid">
+                    <!-- LEFT RAIL -->
+                    <aside class="rs-left">
+                        <section class="rs-block">
+                            <h3 class="rs-label">Skills</h3>
+                            <ul class="rs-list">
+                                <li><strong>.NET/Blazor:</strong> C#, Razor, APIs, LINQ</li>
+                                <li><strong>Data/BI:</strong> SQL Server, EF Core, DAX, Power BI (Service/RS, RLS)</li>
+                                <li><strong>Cloud/DevOps:</strong> Azure, ADO Pipelines, CI/CD, Git</li>
+                                <li><strong>Automation:</strong> Azure Functions, ADF, PowerShell, Graph</li>
+                                <li><strong>Security:</strong> CSP/headers, validation, antiforgery</li>
+                            </ul>
+                        </section>
+
+                        <section class="rs-block">
+                            <h3 class="rs-label">Certifications</h3>
+                            <ul class="rs-list">
+                                <li>Azure Fundamentals (AZ-900)</li>
+                                <li>Azure Data Fundamentals (DP-900)</li>
+                                <li>Azure AI Fundamentals (AI-900)</li>
+                            </ul>
+                        </section>
+
+                        <section class="rs-block">
+                            <h3 class="rs-label">Education</h3>
+                            @foreach (var ed in GetEducation(1))
+                            {
+                                <div class="rs-edu">
+                                    <div class="rs-edu-title">@ed.Title</div>
+                                    @if (!string.IsNullOrWhiteSpace(ed.Organization))
+                                    {
+                                        <div class="rs-edu-org">@ed.Organization</div>
+                                    }
+                                    <div class="rs-edu-dates">@FormatDateRange(ed.StartDate, ed.EndDate)</div>
+                                </div>
+                            }
+                        </section>
+                    </aside>
+
+                    <!-- RIGHT MAIN -->
+                    <main class="rs-right">
+                        <section class="rs-block">
+                            <h3 class="rs-label">Experience</h3>
+
+                            @foreach (var ex in GetExperience(3))
+                            {
+                                <div class="rs-job">
+                                    <div class="rs-job-head">
+                                        <div>
+                                            <div class="rs-job-title">@ex.Title</div>
+                                            @if (!string.IsNullOrWhiteSpace(ex.Organization))
+                                            {
+                                                <div class="rs-job-org">@ex.Organization</div>
+                                            }
+                                        </div>
+                                        <div class="rs-job-dates">@FormatDateRange(ex.StartDate, ex.EndDate)</div>
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(ex.Description))
+                                    {
+                                        <div class="rs-job-desc">@Shorten(ex.Description, 160)</div>
+                                    }
+
+                                    @if (TakeBullets(ex, 3).Any())
+                                    {
+                                        <ul class="rs-bullets">
+                                            @foreach (var p in TakeBullets(ex, 3))
+                                            {
+                                                <li>@p</li>
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            }
+                        </section>
+
+                        <section class="rs-block">
+                            <h3 class="rs-label">Selected Projects</h3>
+                            <ul class="rs-bullets">
+                                <li>Azure <strong>Function Apps</strong> for user lifecycle &amp; governance; pipelines to capture <strong>Power BI activity</strong> for audit dashboards.</li>
+                                <li><strong>ADF ELT</strong> and orchestration integrating line-of-business sources into dimensional models; <strong>EF Core</strong> APIs.</li>
+                                <li>Enterprise <strong>RLS</strong> patterns with security tables; automated refresh/access flows; capacity hygiene and tuning.</li>
+                            </ul>
+                        </section>
+                    </main>
+                </div>
+            </section>
+            <!-- =================== /1-PAGE SUMMARY =================== -->
+            <!-- ===== TOP-OF-PAGE: Highlights → Experience → Education ===== -->
             <section class="mb-3" id="highlights">
                 <h2 class="sect">Highlights</h2>
                 <div class="exp">
@@ -101,7 +187,84 @@
                 </div>
             </section>
 
-            <!-- Skills -->
+            <section class="mb-3" id="experience">
+                <h2 class="sect">Experience</h2>
+
+                @foreach (var e in GetExperienceAll())
+                {
+                    var bullets = e.BulletPoints?.OrderBy(b => b.Order).Take(MaxBullets);
+                    <article class="exp">
+                        <div class="exp-head">
+                            <div>
+                                <div class="exp-title">@e.Title</div>
+                                @if (!string.IsNullOrWhiteSpace(e.Organization))
+                                {
+                                    <div class="exp-sub">@e.Organization</div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(e.Location))
+                                {
+                                    <div class="text-muted small">@e.Location</div>
+                                }
+                            </div>
+                            <div class="text-nowrap">
+                                <span class="badge bg-primary-subtle text-primary">
+                                    @FormatDateRange(e.StartDate, e.EndDate)
+                                </span>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(e.Description))
+                        {
+                            <p class="mb-2 small text-muted">@Shorten(e.Description, 160)</p>
+                        }
+
+                        @if (bullets?.Any() == true)
+                        {
+                            <ul class="exp-bullets">
+                                @foreach (var bp in bullets!)
+                                {
+                                    <li>@bp.Text</li>
+                                }
+                            </ul>
+                        }
+                    </article>
+                }
+            </section>
+
+            <section class="mb-3" id="education">
+                <h2 class="sect">Education</h2>
+
+                @foreach (var ed in GetEducationAll())
+                {
+                    <article class="exp">
+                        <div class="exp-head">
+                            <div>
+                                <div class="exp-title">@ed.Title</div>
+                                @if (!string.IsNullOrWhiteSpace(ed.Organization))
+                                {
+                                    <div class="exp-sub">@ed.Organization</div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(ed.Location))
+                                {
+                                    <div class="text-muted small">@ed.Location</div>
+                                }
+                            </div>
+                            <div class="text-nowrap">
+                                <span class="badge bg-primary-subtle text-primary">
+                                    @FormatDateRange(ed.StartDate, ed.EndDate)
+                                </span>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(ed.Description))
+                        {
+                            <p class="mb-2 small text-muted">@Shorten(ed.Description, 140)</p>
+                        }
+                    </article>
+                }
+            </section>
+
+            <!-- ===== BELOW THE FOLD: Skills, Certifications, Other DB-backed sections ===== -->
             <section class="mb-3" id="skills">
                 <h2 class="sect">Skills</h2>
                 <div class="row g-2">
@@ -109,48 +272,43 @@
                         <div class="tile h-100">
                             <div class="tile-title mb-1">Languages &amp; Frameworks</div>
                             <div class="chips">
-                                @Chip("C# / .NET 9") @Chip("ASP.NET (Server & WASM)")
-                                @Chip("Razor/Blazor") @Chip("LINQ")
-                                @Chip("JavaScript (interop)")
+                                @Chip("C# / .NET") @Chip("ASP.NET (Server & WASM)")
+                                @Chip("Python") @Chip("T-SQL") @Chip("R")
+                                @Chip("PowerShell")
+                                @Chip("Razor/Blazor") @Chip("REST APIs") @Chip("LINQ")
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="tile h-100">
                             <div class="tile-title mb-1">Data &amp; BI</div>
                             <div class="chips">
-                                @Chip("SQL Server / SQLite") @Chip("EF Core") @Chip("SSIS")
-                                @Chip("Power BI Service") @Chip("Power BI Report Server") @Chip("DAX")
-                                @Chip("Dimensional Modeling")
+                                @Chip("SQL Server / SQLite") @Chip("EF Core") @Chip("SSIS") @Chip("Postgres")
+                                @Chip("Power BI (Service/RS, RLS)") @Chip("DAX") @Chip("Dimensional Modeling")
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="tile h-100">
                             <div class="tile-title mb-1">Cloud &amp; DevOps</div>
                             <div class="chips">
-                                @Chip("Azure") @Chip("Azure Data Factory") @Chip("Azure Function Apps")
-                                @Chip("Azure DevOps (Repos/Boards/Wikis/Pipelines)") @Chip("CI/CD") @Chip("Git")
+                                @Chip("Azure") @Chip("Azure DevOps (Repos/Boards/Wikis/Pipelines)")
+                                @Chip("CI/CD") @Chip("Git") @Chip("Azure Functions") @Chip("Azure Data Factory")
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Automation &amp; APIs</div>
+                            <div class="tile-title mb-1">Security &amp; Delivery</div>
                             <div class="chips">
-                                @Chip("PowerShell") @Chip("Power BI REST API")
-                                @Chip("Microsoft Graph") @Chip("Azure Functions")
-                                @Chip("Azure Data Factory (ELT)")
+                                @Chip("CSP / Headers / Validation") @Chip("Antiforgery") @Chip("Rate Limiting")
+                                @Chip("Agile / Scrum") @Chip("Mentoring & Reviews")
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Certifications -->
             <section class="mb-3" id="certs">
                 <h2 class="sect">Certifications</h2>
                 <div class="exp">
@@ -163,16 +321,14 @@
                 </div>
             </section>
 
-            <!-- DB-backed sections -->
             @if (_sections.Count == 0)
             {
                 <div class="alert alert-info">No resume data available yet.</div>
             }
             else
             {
-                @foreach (var s in _sections)
+                @foreach (var s in GetOtherSections())
                 {
-                    // Experience newest first
                     IEnumerable<ResumeEntryDto> entries = s.Entries;
                     if (s.SectionTitle?.Contains("Experience", StringComparison.OrdinalIgnoreCase) == true)
                     {
@@ -228,13 +384,12 @@
                 }
             }
         }
-    </section>
-</div>
+    </div>
+</section>
 
 @code {
     private List<ResumeSectionDto>? _sections;
     private string? _error;
-
     private const int MaxBullets = 4;
 
     protected override async Task OnInitializedAsync()
@@ -294,8 +449,66 @@
         return $"{startStr} — {endStr} • {tenure}";
     }
 
-    private async Task PrintAsync()
+    // ===== Robust helpers for 1-pager and ordering =====
+    private static readonly string[] ExpKeys = new[] { "Experience", "Employment", "Work History", "Professional Experience" };
+    private static readonly string[] EduKeys = new[] { "Education", "Academic" };
+
+    private IEnumerable<ResumeEntryDto> GetExperienceAll()
     {
-        try { await JS.InvokeVoidAsync("print"); } catch { }
+        var secs = _sections?
+            .Where(s => !string.IsNullOrWhiteSpace(s.SectionTitle) &&
+                        ExpKeys.Any(k => s.SectionTitle!.Contains(k, StringComparison.OrdinalIgnoreCase)))
+            ?? Enumerable.Empty<ResumeSectionDto>();
+
+        return secs.SelectMany(s => s.Entries)
+                   .OrderByDescending(e => e.EndDate ?? DateTime.MaxValue)
+                   .ThenByDescending(e => e.StartDate);
     }
+
+    private IEnumerable<ResumeEntryDto> GetExperience(int take = 2)
+        => GetExperienceAll().Take(take);
+
+    private IEnumerable<ResumeEntryDto> GetEducationAll()
+    {
+        var secs = _sections?
+            .Where(s => !string.IsNullOrWhiteSpace(s.SectionTitle) &&
+                        EduKeys.Any(k => s.SectionTitle!.Contains(k, StringComparison.OrdinalIgnoreCase)))
+            ?? Enumerable.Empty<ResumeSectionDto>();
+
+        return secs.SelectMany(s => s.Entries)
+                   .OrderByDescending(e => e.EndDate ?? DateTime.MaxValue)
+                   .ThenByDescending(e => e.StartDate);
+    }
+
+    private IEnumerable<ResumeEntryDto> GetEducation(int take = 1)
+        => GetEducationAll().Take(take);
+
+    // Sections other than Experience/Education (shown after the top blocks)
+    private IEnumerable<ResumeSectionDto> GetOtherSections()
+    {
+        if (_sections is null) return Enumerable.Empty<ResumeSectionDto>();
+        return _sections
+            .Where(s =>
+                !string.IsNullOrWhiteSpace(s.SectionTitle) &&
+                !ExpKeys.Any(k => s.SectionTitle!.Contains(k, StringComparison.OrdinalIgnoreCase)) &&
+                !EduKeys.Any(k => s.SectionTitle!.Contains(k, StringComparison.OrdinalIgnoreCase))
+            );
+    }
+
+    private static IEnumerable<string> TakeBullets(ResumeEntryDto e, int count)
+        => e.BulletPoints?.OrderBy(b => b.Order).Select(b => b.Text).Take(count)
+           ?? Enumerable.Empty<string>();
+
+    // === Exports (resume.js must provide resume.printResume / resume.exportWord) ===
+    private Task PrintFullAsync()
+        => JS.InvokeVoidAsync("resume.printResume", ".resume-container").AsTask();
+
+    private Task ExportWordFullAsync()
+        => JS.InvokeVoidAsync("resume.exportWord", ".resume-container", "Justin-Resume").AsTask();
+
+    private Task PrintShortAsync()
+        => JS.InvokeVoidAsync("resume.printResume", "#resume-summary").AsTask();
+
+    private Task ExportWordShortAsync()
+        => JS.InvokeVoidAsync("resume.exportWord", "#resume-summary", "Justin-Resume-1pg").AsTask();
 }

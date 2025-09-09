@@ -6,9 +6,8 @@
 @inject IJSRuntime JS
 
 <HeadContent>
-    <script src='@Assets["js/d3Interop.js"]'></script>
+    <script src='@Assets["js/visuals-extra.js"]' defer></script>
 </HeadContent>
-
 
 <h1 class="display-5 mb-3">Visuals</h1>
 <p class="text-muted">Interactive charts powered by EF Core + minimal APIs + D3.</p>
@@ -17,13 +16,56 @@
 {
     <div class="alert alert-danger"><strong>Error:</strong> @_error</div>
 }
-else if (_years is null || _orgsRaw is null)
+else if (_years is null || _orgsRaw is null || _kpis is null || _velocity is null || _ado is null)
 {
     <p>Loading…</p>
 }
 else
 {
+    <!-- KPI strip -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Impact at a glance</h5>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2">
+                @for (var i = 0; i < _kpis.Count; i++)
+                {
+                    var k = _kpis[i];
+                    <div class="col">
+                        <div class="tile d-flex justify-content-between align-items-center h-100">
+                            <div>
+                                <div class="text-muted small">@k.label</div>
+                                <div id="@($"kpi-spark-{i}")" style="width:140px;height:28px"></div>
+                            </div>
+                            <div class="fs-4 fw-bold text-primary">@k.value</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
     <div class="row gy-4">
+        <!-- Delivery velocity -->
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Delivery velocity (last 4 years)</h5>
+                    <div id="velocity-chart" style="width:100%; max-width:900px; min-height:240px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADO bullet -->
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">ADO migrations vs goal</h5>
+                    <div id="ado-bullet" style="width:100%; max-width:900px; min-height:56px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Your existing charts -->
         <div class="col-12 col-xl-6">
             <div class="card shadow-sm">
                 <div class="card-body">
@@ -50,10 +92,7 @@ else
                                    @bind="_topN" @bind:event="oninput" />
                         </div>
                     </div>
-                    <small class="text-muted">
-                        Showing @((_orgsView?.Count ?? 0)) of @((_orgsRaw?.Count ?? 0))
-                    </small>
-
+                    <small class="text-muted">Showing @((_orgsView?.Count ?? 0)) of @((_orgsRaw?.Count ?? 0))</small>
                     <div id="entries-by-org-chart" style="width:100%; max-width:900px; min-height:300px;"></div>
                 </div>
             </div>
@@ -62,10 +101,15 @@ else
 }
 
 @code {
-    // Data
+    // --- data for existing charts ---
     private List<YearCount>? _years;
     private List<OrgCount>? _orgsRaw;
     private List<OrgCount>? _orgsView;
+
+    // --- new data ---
+    private List<KpiItem>? _kpis;
+    private List<MonthCount>? _velocity;
+    private BulletModel? _ado;
 
     // UI state
     private string _sort = "countDesc";
@@ -74,8 +118,7 @@ else
 
     // Render state
     private bool _d3Ready;
-    private bool _yearDrawn;
-    private bool _orgDrawn;
+    private bool _yearDrawn, _orgDrawn, _kpiDrawn, _velDrawn, _adoDrawn;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,8 +127,14 @@ else
             using var http = HttpFactory.CreateClient();
             var baseUri = new Uri(Nav.BaseUri);
 
-            _years = await http.GetFromJsonAsync<List<YearCount>>(new Uri(baseUri, "api/metrics/entries-per-year"));
+            // existing
+            _years   = await http.GetFromJsonAsync<List<YearCount>>(new Uri(baseUri, "api/metrics/entries-per-year"));
             _orgsRaw = await http.GetFromJsonAsync<List<OrgCount>>(new Uri(baseUri, "api/metrics/entries-by-org"));
+
+            // new
+            _kpis     = await http.GetFromJsonAsync<List<KpiItem>>(new Uri(baseUri, "api/metrics/kpis"));
+            _velocity = await http.GetFromJsonAsync<List<MonthCount>>(new Uri(baseUri, "api/metrics/velocity-monthly"));
+            _ado      = await http.GetFromJsonAsync<BulletModel>(new Uri(baseUri, "api/metrics/ado-migrations"));
 
             ApplyOrgView();
         }
@@ -94,57 +143,70 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Keep trying until both charts are drawn
-        if ((_years is null && _orgsView is null) || (_yearDrawn && _orgDrawn)) return;
+        if ((_years is null && _orgsView is null) || (_yearDrawn && _orgDrawn && _kpiDrawn && _velDrawn && _adoDrawn)) return;
 
-        // wait for D3 just once
         if (!_d3Ready)
         {
-            _d3Ready = await JS.InvokeAsync<bool>("d3Interop.waitForD3");
-            if (!_d3Ready)
-            {
-                await Task.Delay(100);
-                StateHasChanged();
-                return;
-            }
+            try { _d3Ready = await JS.InvokeAsync<bool>("d3Interop.waitForD3"); }
+            catch { await Task.Delay(50); StateHasChanged(); return; }
+            if (!_d3Ready) { await Task.Delay(50); StateHasChanged(); return; }
         }
 
-        // Draw year chart
+        // KPI sparklines
+        if (!_kpiDrawn && _kpis is not null)
+        {
+            try
+            {
+                for (var i = 0; i < _kpis.Count; i++)
+                {
+                    await JS.InvokeVoidAsync("d3Interop.renderSparkline", $"#kpi-spark-{i}", _kpis[i].spark, new { width = 140, height = 28 });
+                }
+                _kpiDrawn = true;
+            }
+            catch { await Task.Delay(50); StateHasChanged(); return; }
+        }
+
+        // Delivery velocity
+        if (!_velDrawn && _velocity is not null)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("d3Interop.renderMonthlyBars", "#velocity-chart", _velocity, new { height = 240 });
+                _velDrawn = true;
+            }
+            catch { await Task.Delay(50); StateHasChanged(); return; }
+        }
+
+        // ADO bullet
+        if (!_adoDrawn && _ado is not null)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("d3Interop.renderBulletChart", "#ado-bullet", _ado, new { height = 56 });
+                _adoDrawn = true;
+            }
+            catch { await Task.Delay(50); StateHasChanged(); return; }
+        }
+
+        // Your existing charts
         if (!_yearDrawn && _years is not null)
         {
             try
             {
-                await JS.InvokeVoidAsync("d3Interop.renderBarChart",
-                    "#entries-per-year-chart",
-                    _years,
-                    new { height = 420 });
+                await JS.InvokeVoidAsync("d3Interop.renderBarChart", "#entries-per-year-chart", _years, new { height = 420 });
                 _yearDrawn = true;
             }
-            catch
-            {
-                await Task.Delay(100);
-                StateHasChanged();
-                return;
-            }
+            catch { await Task.Delay(100); StateHasChanged(); return; }
         }
 
-        // Draw org chart
         if (!_orgDrawn && _orgsView is not null)
         {
             try
             {
-                await JS.InvokeVoidAsync("d3Interop.renderHorizontalBarChart",
-                    "#entries-by-org-chart",
-                    _orgsView,
-                    new { barHeight = 28, sort = _sort });
+                await JS.InvokeVoidAsync("d3Interop.renderHorizontalBarChart", "#entries-by-org-chart", _orgsView, new { barHeight = 28, sort = _sort });
                 _orgDrawn = true;
             }
-            catch
-            {
-                await Task.Delay(100);
-                StateHasChanged();
-                return;
-            }
+            catch { await Task.Delay(100); StateHasChanged(); return; }
         }
     }
 
@@ -155,13 +217,11 @@ else
 
         _orgsView = _sort switch
         {
-            "countAsc" => q.OrderBy(x => x.count).Take(_topN).ToList(),
-            "labelAsc" => q.OrderBy(x => x.org).Take(_topN).ToList(),
+            "countAsc"  => q.OrderBy(x => x.count).Take(_topN).ToList(),
+            "labelAsc"  => q.OrderBy(x => x.org).Take(_topN).ToList(),
             "labelDesc" => q.OrderByDescending(x => x.org).Take(_topN).ToList(),
-            _ => q.OrderByDescending(x => x.count).Take(_topN).ToList(), // countDesc
+            _           => q.OrderByDescending(x => x.count).Take(_topN).ToList(),
         };
-
-        // Re-draw org chart on next render
         _orgDrawn = false;
     }
 
@@ -172,6 +232,10 @@ else
         StateHasChanged();
     }
 
+    // DTOs for this page
     private sealed class YearCount { public int year { get; set; } public int count { get; set; } }
     private sealed class OrgCount { public string org { get; set; } = ""; public int count { get; set; } }
+    private sealed class KpiItem { public string label { get; set; } = ""; public int value { get; set; } public int[] spark { get; set; } = Array.Empty<int>(); public double? target { get; set; } }
+    private sealed class MonthCount { public string month { get; set; } = ""; public int count { get; set; } }
+    private sealed class BulletModel { public double value { get; set; } public double? target { get; set; } public double? max { get; set; } }
 }

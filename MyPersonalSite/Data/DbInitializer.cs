@@ -112,7 +112,8 @@ public static class DbInitializer
                 )
             });
 
-        // IRS — Internal Revenue Agent (Sep 2009 – Nov 2017)
+        // IRS — Internal Revenue Agent (Sep
+        // – Nov 2017)
         UpsertExperience(
             experience,
             start: new DateTime(2009, 9, 1),
@@ -162,7 +163,7 @@ public static class DbInitializer
                 Title = "Master of Business Administration (MBA)",
                 Organization = "Murray State University",
                 Location = "Murray, KY, United States",
-                StartDate = new DateTime(2012, 12, 1),
+                StartDate = new DateTime(2010, 12, 1),
                 EndDate = new DateTime(2012, 12, 1),
                 Description = "MBA with a 4.0 GPA; emphasis in finance, strategy, and analytics.",
                 BulletPoints = Bullets(
@@ -180,8 +181,8 @@ public static class DbInitializer
                 Title = "Bachelor of Science, Accounting",
                 Organization = "University of Kentucky",
                 Location = "Lexington, KY, United States",
-                StartDate = new DateTime(2009, 6, 1),
-                EndDate = new DateTime(2009, 6, 1),
+                StartDate = new DateTime(2006, 8, 1),
+                EndDate = new DateTime(2009, 8, 1),
                 Description = "BS in Accounting with strong foundations in financial reporting, auditing, taxation, and information systems.",
                 BulletPoints = Bullets(
                     "GPA: 3.4 / 4.0 (136 semester hours)",

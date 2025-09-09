@@ -4,7 +4,7 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
-<PageTitle>Justin • .NET / Blazor / Data</PageTitle>
+<PageTitle>Justin • .NET / Blazor / Data — Open to New Roles</PageTitle>
 
 <div class="home-page">
     <!-- HERO -->
@@ -25,18 +25,36 @@
                  loading="eager" decoding="async" fetchpriority="high" />
         </picture>
 
+        <!-- NEW: dim overlay -->
+        <div class="hero-scrim" aria-hidden="true"></div>
+
         <div class="container py-4">
             <div class="row align-items-center g-3">
                 <div class="col-lg-7">
-                    <h1 class="hero-title text-white">I build secure, data-driven .NET apps.</h1>
-                    <p class="lead-sm text-hero-muted mb-3">
+                    <h1 class="hero-title text-white">I build secure, data-driven .NET apps—now open to new opportunities.</h1>
+                    <p class="lead-sm text-hero-muted mb-2">
                         16 yrs in federal service • 8 yrs data analyst/dev • Focused on
                         <strong>Blazor</strong>, <strong>C#</strong>, and <strong>data engineering</strong>.
                     </p>
-                    <div class="d-flex flex-wrap gap-2">
+
+                    <!-- Certs (linked) + chatbot status -->
+                    <p class="text-hero-muted mb-3">
+                        <a href="@Az900Url" target="_blank" rel="noopener" class="text-reset link-underline link-underline-opacity-0">Azure Fundamentals (AZ-900)</a> •
+                        <a href="@Ai900Url" target="_blank" rel="noopener" class="text-reset link-underline link-underline-opacity-0">Azure AI Fundamentals (AI-900)</a> •
+                        <a href="@Dp900Url" target="_blank" rel="noopener" class="text-reset link-underline link-underline-opacity-0">Azure Data Fundamentals (DP-900)</a> •
+                        <span class="ms-2">Actively developing an <strong>OpenAI-powered chatbot</strong> in a Blazor app</span>
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
                         <a class="btn btn-primary btn-md" href="/resume">View Resume</a>
                         <a class="btn btn-outline-light btn-md" href="/visuals">See D3 Visuals</a>
                         <a class="btn btn-outline-light btn-md" href="/about">About Me</a>
+
+                        <span class="badge bg-light text-dark">Federal technologist (16 yrs)</span>
+                        <a class="badge bg-secondary" href="@Az900Url" target="_blank" rel="noopener">AZ-900</a>
+                        <a class="badge bg-secondary" href="@Ai900Url" target="_blank" rel="noopener">AI-900</a>
+                        <a class="badge bg-secondary" href="@Dp900Url" target="_blank" rel="noopener">DP-900</a>
+
                         <button class="btn btn-outline-light btn-md ms-auto theme-toggle" @onclick="ToggleTheme">
                             @(_theme == "dark" ? "🌙 Dark" : "☀️ Light")
                         </button>
@@ -76,21 +94,22 @@
 
     <!-- BODY -->
     <div class="container py-4">
-        <!-- At a glance -->
+
+        <!-- At a glance (now 6 tiles; balanced grid) -->
         <section class="section-tight mb-4">
             <h2 class="section-title mb-3">At a glance</h2>
-            <div class="row g-3">
-                <div class="col-md-4 reveal">
-                    <div class="tile">
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+                <div class="col reveal">
+                    <div class="tile h-100">
                         <div class="tile-title">Full-stack Blazor</div>
-                        <div class="tile-text">Server + WASM interactivity, clean components, JS interop when it adds value.</div>
+                        <div class="tile-text">Server + WASM, clean components, JS interop when it adds value.</div>
                         <div class="chips">
                             <span class="chip">C# / .NET 9</span><span class="chip">Blazor</span><span class="chip">Razor</span>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 reveal">
-                    <div class="tile">
+                <div class="col reveal">
+                    <div class="tile h-100">
                         <div class="tile-title">Data engineering</div>
                         <div class="tile-text">Modeling, APIs, and making insight obvious with interactive visuals.</div>
                         <div class="chips">
@@ -98,8 +117,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 reveal">
-                    <div class="tile">
+                <div class="col reveal">
+                    <div class="tile h-100">
                         <div class="tile-title">Secure by default</div>
                         <div class="tile-text">HTTPS, antiforgery, validation/options, layered architecture.</div>
                         <div class="chips">
@@ -107,90 +126,57 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4 reveal">
-                <div class="tile">
-                    <div class="tile-title">Automation & Security</div>
-                    <div class="tile-text">
-                        Own <strong>Power BI RLS</strong> security tables and refresh logic.
-                        Automate with <strong>PowerShell</strong>, <strong>Power BI REST API</strong>, and <strong>Microsoft Graph</strong>.
+                <div class="col reveal">
+                    <div class="tile h-100">
+                        <div class="tile-title">Automation & Security</div>
+                        <div class="tile-text">
+                            Own <strong>Power BI RLS</strong>, refresh automation, and access flows.
+                        </div>
+                        <div class="chips">
+                            <span class="chip">PowerShell</span><span class="chip">Power BI REST</span><span class="chip">Microsoft Graph</span>
+                        </div>
                     </div>
-                    <div class="chips">
-                        <span class="chip">PowerShell</span><span class="chip">Power BI REST</span>
-                        <span class="chip">Microsoft Graph</span><span class="chip">RLS</span>
+                </div>
+                <div class="col reveal">
+                    <div class="tile h-100">
+                        <div class="tile-title">AI & Chatbots</div>
+                        <div class="tile-text">Azure OpenAI + Blazor; retrieval-ready patterns.</div>
+                        <div class="chips">
+                            <span class="chip">OpenAI</span><span class="chip">Azure</span><span class="chip">RAG-ready</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col reveal">
+                    <div class="tile h-100">
+                        <div class="tile-title">Enterprise modeling</div>
+                        <div class="tile-text">Dimensional models, DAX, and governed BI at scale.</div>
+                        <div class="chips">
+                            <span class="chip">Power BI</span><span class="chip">RLS</span><span class="chip">DAX</span>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </section>
 
-        <!-- NEW: Skills snapshot (mirrors resume groupings) -->
+        <!-- Certifications & Highlights (replaces Skills snapshot) -->
         <section class="section-tight mb-4">
-            <h2 class="section-title mb-3">Skills snapshot</h2>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="tile h-100">
-                        <div class="tile-title mb-1">Languages &amp; Frameworks</div>
-                        <div class="chips">
-                            @foreach (var s in SkillsLanguages)
-                            {
-                                <span class="chip">@s</span>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="tile h-100">
-                        <div class="tile-title mb-1">Data &amp; BI</div>
-                        <div class="chips">
-                            @foreach (var s in SkillsDataBI)
-                            {
-                                <span class="chip">@s</span>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="tile h-100">
-                        <div class="tile-title mb-1">Cloud &amp; DevOps</div>
-                        <div class="chips">
-                            @foreach (var s in SkillsCloudDevOps)
-                            {
-                                <span class="chip">@s</span>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="tile h-100">
-                        <div class="tile-title mb-1">Visualization &amp; Interop</div>
-                        <div class="chips">
-                            @foreach (var s in SkillsVizInterop)
-                            {
-                                <span class="chip">@s</span>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="tile h-100">
-                        <div class="tile-title mb-1">Security &amp; Ops</div>
-                        <div class="chips">
-                            @foreach (var s in SkillsSecOps)
-                            {
-                                <span class="chip">@s</span>
-                            }
-                        </div>
-                    </div>
-                </div>
+            <h2 class="section-title mb-2">Certifications & highlights</h2>
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <a class="badge bg-success-subtle text-success border" href="@Az900Url" target="_blank" rel="noopener">Azure Fundamentals (AZ-900)</a>
+                <a class="badge bg-success-subtle text-success border" href="@Ai900Url" target="_blank" rel="noopener">Azure AI Fundamentals (AI-900)</a>
+                <a class="badge bg-success-subtle text-success border" href="@Dp900Url" target="_blank" rel="noopener">Azure Data Fundamentals (DP-900)</a>
+                <span class="badge bg-primary-subtle text-primary border">OpenAI chatbot • Blazor front-end (active development)</span>
+                <span class="badge bg-secondary-subtle text-body border">Power BI RLS ownership</span>
+                <span class="badge bg-warning-subtle text-warning border">Secure-by-default patterns</span>
             </div>
+            <p class="mb-0 text-muted small">Quietly open to .NET/Blazor, data engineering, and AI-enabled app roles in mission-driven teams.</p>
         </section>
 
         <!-- Featured -->
         <section class="section-tight mb-4">
             <h2 class="section-title mb-3">Featured</h2>
-            <div class="row g-3">
-                <div class="col-md-6 reveal">
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+                <div class="col reveal">
                     <div class="card tile-card h-100">
                         <div class="card-body">
                             <div class="tile-title mb-1">Interactive Visuals</div>
@@ -199,7 +185,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 reveal">
+                <div class="col reveal">
                     <div class="card tile-card h-100">
                         <div class="card-body">
                             <div class="tile-title mb-1">Resume</div>
@@ -208,10 +194,19 @@
                         </div>
                     </div>
                 </div>
+                <div class="col reveal">
+                    <div class="card tile-card h-100">
+                        <div class="card-body">
+                            <div class="tile-title mb-1">OpenAI Chatbot (Blazor)</div>
+                            <p class="tile-text mb-2">Building an internal assistant with Azure OpenAI + Blazor. Secure, auditable, and RAG-ready — currently in active development (pre-prod).</p>
+                            <a class="btn btn-outline-primary btn-sm" href="/about">What I used</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- Tech strip (kept) -->
+        <!-- Tech strip (kept, concise) -->
         <section class="section-tight">
             <h2 class="section-title mb-2">Tech I use</h2>
             <div class="d-flex flex-wrap gap-2">
@@ -227,7 +222,7 @@
             <div class="callout glass compact d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 reveal">
                 <div>
                     <h3 class="h6 mb-1">Let’s build something great.</h3>
-                    <p class="mb-0 text-muted">Open to .NET/Blazor and data engineering roles.</p>
+                    <p class="mb-0 text-muted">Open to .NET/Blazor, data engineering, and AI-enabled app roles.</p>
                 </div>
                 <div class="d-flex gap-2">
                     <a class="btn btn-primary btn-sm" href="/about">About Me</a>
@@ -244,48 +239,19 @@
     private bool _animated;
     private string _theme = "light";
 
-    // New skills groupings (explicitly calling out your expertise areas)
-    private static readonly string[] SkillsLanguages = new[]
-    {
-        "C# / .NET 9", "ASP.NET (Server & WASM)", "Razor / Blazor", "LINQ"
-    };
+    // Certification links (swap to your Credly proof links when ready)
+    private const string Az900Url = "https://learn.microsoft.com/credentials/certifications/azure-fundamentals/";
+    private const string Ai900Url = "https://learn.microsoft.com/credentials/certifications/azure-ai-fundamentals/";
+    private const string Dp900Url = "https://learn.microsoft.com/credentials/certifications/azure-data-fundamentals/";
 
-    private static readonly string[] SkillsDataBI = new[]
-    {
-        "SQL Server", "SQLite", "EF Core", "SSIS",
-        "Power BI Service", "Power BI Report Server",
-        "SSMS", "Azure Data Studio",
-        "Dimensional Modeling", "DAX"
-    };
-
-    private static readonly string[] SkillsCloudDevOps = new[]
-    {
-        "Azure", "Azure DevOps (Repos/Boards/Wikis/Pipelines)", "CI/CD",
-        "Azure Data Factory (ELT)", "Azure Functions (.NET)"
-    };
-
-    private static readonly string[] SkillsVizInterop = new[]
-    {
-        "D3.js Interop", "JavaScript", "Blazor JS interop"
-    };
-
-    private static readonly string[] SkillsSecOps = new[]
-    {
-        "Security Headers / CSP", "Rate Limiting", "Health Checks",
-        "RLS (Power BI)", "Python & Data Science Env Mgmt"
-    };
-
-    // Existing “Tech I use” strip
+    // “Tech I use” strip
     private static readonly string[] Tech = new[]
     {
-        "C# / .NET 9", "Blazor (Server + WASM)", "ASP.NET Razor", "EF Core", "SQL Server",
-        "SQLite", "REST / Minimal APIs", "LINQ", "D3.js interop", "Power BI (Service/RS)",
-        "SSIS", "JavaScript", "Azure", "Azure DevOps (Repos/Boards/Wikis/Pipelines)",
-        "CI/CD", "Options/Config", "Security (CSP/Headers/RateLimits)",
-        "Azure Data Factory (ELT)", "Azure Functions (.NET)", "SSMS", "Azure Data Studio",
-        "Python Env Management","PowerShell", "Power BI REST API", "Microsoft Graph", "Azure Functions",
-"Azure Data Factory (ELT)", "SSMS", "Azure Data Studio", "Row-Level Security (RLS)"
-
+        "C# / .NET 9", "ython", "Jupyter", "Blazor (Server + WASM)", "ASP.NET Razor", "EF Core", "SQL Server",
+        "SQLite", "REST / Minimal APIs", "LINQ", "D3.js interop", "Power BI (Service & Report Server)",
+        "Azure", "Azure DevOps (Repos/Boards/Wikis/Pipelines)", "CI/CD",
+        "Azure Data Factory", "Azure Functions (.NET)", "PowerShell",
+        "Power BI REST API", "Microsoft Graph", "Row-Level Security (RLS)", "OpenAI on Azure"
     };
 
     protected override async Task OnInitializedAsync()
