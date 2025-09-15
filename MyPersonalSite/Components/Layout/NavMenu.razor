@@ -1,27 +1,47 @@
-﻿@* No @rendermode here — inherits from the page, and layout is static *@
+@implements IDisposable
+@inject NavigationManager NavManager
 
-<aside class="app-sidebar" role="navigation" aria-label="Main">
-    <div class="sidebar-header d-flex justify-content-between align-items-center mb-2">
-        <a class="text-decoration-none text-white fw-bold" href="/">MyPersonalSite</a>
-        <label for="menuToggle"
-               class="btn btn-sm btn-outline-light d-lg-none mb-0"
-               aria-label="Close menu">✕</label>
-    </div>
+<nav class="menu-nav" aria-label="Site navigation">
+    @if (!_isOnHome)
+    {
+        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link menu-link" data-bs-dismiss="offcanvas">Home</NavLink>
+    }
+    <NavLink href="/resume" class="nav-link menu-link" data-bs-dismiss="offcanvas">Resume</NavLink>
+    <NavLink href="/visuals" class="nav-link menu-link" data-bs-dismiss="offcanvas">Visuals</NavLink>
+</nav>
 
-    <nav class="nav flex-column gap-1">
-        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link">Home</NavLink>
-        <NavLink href="/resume" class="nav-link">Resume</NavLink>
-        <NavLink href="/visuals" class="nav-link">Visuals</NavLink>
-        <NavLink href="/about" class="nav-link">About</NavLink>
-        @* Remove these if not needed *@
-        @* <NavLink href="/counter" class="nav-link d-none d-lg-block">Counter</NavLink>
-        <NavLink href="/weather" class="nav-link d-none d-lg-block">Weather</NavLink> *@
-    </nav>
-
-    <div class="mt-auto small opacity-75 d-none d-lg-block">
-        © @DateTime.UtcNow.Year • Justin
-    </div>
-</aside>
 @code {
-    public void Toggle() => StateHasChanged();
-}   
+    private bool _isOnHome;
+
+    protected override void OnInitialized()
+    {
+        _isOnHome = IsHome(NavManager.Uri);
+        NavManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs args)
+    {
+        var isHome = IsHome(args.Location);
+        if (isHome != _isOnHome)
+        {
+            _isOnHome = isHome;
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private bool IsHome(string uri)
+    {
+        var relative = NavManager.ToBaseRelativePath(uri);
+        if (string.IsNullOrEmpty(relative))
+        {
+            return true;
+        }
+
+        return string.IsNullOrEmpty(relative.Trim('/'));
+    }
+
+    public void Dispose()
+    {
+        NavManager.LocationChanged -= HandleLocationChanged;
+    }
+}
