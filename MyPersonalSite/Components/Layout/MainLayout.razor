@@ -1,17 +1,21 @@
 @inherits LayoutComponentBase
+@rendermode InteractiveServer
 
 <div class="app-shell">
     <header class="site-header" role="banner">
         <div class="site-header__inner">
-            <a class="site-brand" href="/">Justin Palmer</a>
-            <button type="button"
-                    class="menu-toggle btn btn-outline-primary btn-sm"
-                    aria-expanded="@(_menuOpen ? "true" : "false")"
-                    aria-controls="site-menu"
-                    @onclick="ToggleMenu">
-                <span class="menu-icon" aria-hidden="true">☰</span>
-                <span class="menu-label">Menu</span>
-            </button>
+            <div class="site-header__brandrow">
+                <button type="button"
+                        class="menu-toggle btn btn-outline-primary btn-sm"
+                        aria-expanded="@(_menuOpen ? "true" : "false")"
+                        aria-controls="site-menu"
+                        @onclick="ToggleMenu">
+                    <span class="menu-icon" aria-hidden="true">☰</span>
+                    <span class="menu-label">Menu</span>
+                </button>
+
+                <a class="site-brand" href="/">Justin Palmer</a>
+            </div>
         </div>
     </header>
 
