@@ -487,84 +487,163 @@ body {
 }
 
 /* =====================================================================
-   Shell (desktop sidebar + mobile drawer)
+   Shell (header + slide-out navigation)
 ===================================================================== */
-.app {
-    display: grid !important;
-    grid-template-columns: 260px minmax(0, 1fr);
-    align-items: start;
+.app-shell {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--body);
 }
 
-.nav-host {
-    width: 260px;
-}
-
-.page {
-    display: block !important;
-}
-
-main.flex-fill {
-    min-width: 0;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-    main.flex-fill > .page {
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 1rem;
-    }
-
-        main.flex-fill > .page > .container,
-        main.flex-fill > .page > .container-fluid,
-        main.flex-fill > .page > .container-sm,
-        main.flex-fill > .page > .container-md,
-        main.flex-fill > .page > .container-lg,
-        main.flex-fill > .page > .container-xl,
-        main.flex-fill > .page > .container-xxl {
-            max-width: none !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-.app-sidebar {
-    width: 260px;
-    padding: .75rem;
-    color: #fff;
-    background: linear-gradient(180deg,#1f2a44 0%,#2a3352 60%,#121826 100%);
+.site-header {
     position: sticky;
     top: 0;
-    height: 100vh;
-    overflow: auto;
-    border-right: 1px solid var(--border);
-}
-
-    .app-sidebar .nav-link {
-        color: rgba(255,255,255,.92);
-        border-radius: 10px;
-        padding: .55rem .75rem;
-    }
-
-        .app-sidebar .nav-link.active {
-            background: rgba(255,255,255,.14);
-            color: #fff;
-        }
-
-.topbar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    padding: .5rem .75rem;
+    z-index: 1010;
     background: var(--card);
     border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(14px);
 }
 
-@media (max-width: 992px) {
-    .app {
-        display: block !important;
+.site-header__inner {
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    padding: .75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+}
+
+@media (min-width: 992px) {
+    .site-header__inner {
+        padding: 1rem 1.5rem;
     }
+}
+
+.site-brand {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+    text-decoration: none;
+}
+
+    .site-brand:hover,
+    .site-brand:focus {
+        color: var(--bs-primary, #3d8bfd);
+        text-decoration: none;
+    }
+
+.menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+}
+
+.menu-icon {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.menu-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 13, 23, .55);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .25s ease;
+    z-index: 1050;
+}
+
+    .menu-backdrop.show {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+.menu-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: min(320px, 86vw);
+    background: var(--body);
+    border-left: 1px solid var(--border);
+    box-shadow: -14px 0 32px rgba(3, 10, 18, .18);
+    transform: translateX(100%);
+    transition: transform .3s ease, visibility .3s ease;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 1060;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1.25rem;
+}
+
+    .menu-drawer.open {
+        transform: translateX(0);
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+.menu-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: 1.5rem;
+}
+
+.menu-close {
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-size: 1.35rem;
+    line-height: 1;
+    padding: .25rem;
+}
+
+    .menu-close:hover,
+    .menu-close:focus {
+        color: var(--text);
+    }
+
+.menu-drawer__nav {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.menu-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text);
+    text-decoration: none;
+    padding: .35rem 0;
+    transition: color .2s ease;
+}
+
+    .menu-link:hover,
+    .menu-link:focus {
+        color: var(--bs-primary, #3d8bfd);
+        text-decoration: none;
+    }
+
+    .menu-link.active {
+        color: var(--bs-primary, #3d8bfd);
+    }
+
+.page {
+    flex: 1 1 auto;
+    width: 100%;
+    display: block;
 }
 
 /* Home page layout guards */
@@ -767,6 +846,35 @@ article.content {
     text-shadow: 0 2px 10px rgba(0,0,0,.5);
 }
 
+.hero-points {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    margin: 0;
+    padding: 0;
+    color: rgba(255,255,255,.94);
+    font-size: clamp(.96rem, .8vw + .7rem, 1.05rem);
+}
+
+.hero-points li {
+    position: relative;
+    padding-left: 1.4rem;
+    line-height: 1.4;
+    text-shadow: 0 2px 10px rgba(0,0,0,.5);
+}
+
+.hero-points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .45rem;
+    width: .45rem;
+    height: .45rem;
+    border-radius: 999px;
+    background: var(--bs-primary, #66aaff);
+    box-shadow: 0 0 8px rgba(61,139,253,.35);
+}
+
 :root[data-theme="dark"] .hero-photo .hero-scrim {
     background: linear-gradient(90deg, rgba(12,18,30,.66) 0%, rgba(12,18,30,.46) 40%, rgba(12,18,30,.18) 60%, rgba(12,18,30,0) 78% );
 }
@@ -820,7 +928,7 @@ article.content {
 }
 
 /* =====================================================================
-   VISUALS (D3) — cohesive theme with safe defaults
+   VISUALS (D3)  cohesive theme with safe defaults
 ===================================================================== */
 
 /* KPI tiles + equal-height cards */
@@ -857,7 +965,7 @@ article.content {
     shape-rendering: crispEdges;
 }
 
-/* Bars/marks — give a default fill so charts aren’t black
+/* Bars/marks  give a default fill so charts arent black
    (D3 can still override by setting fill attribute or style) */
 svg .d3-bar, svg .d3-hbar {
     fill: var(--viz-bar);
@@ -1060,7 +1168,7 @@ svg text {
     color: var(--muted) !important;
 }
 
-/* The long “Current Focus” text gets an even smaller headline */
+/* The long Current Focus text gets an even smaller headline */
 .quick-stats .focus-card .fs-1 {
     font-size: clamp(1rem, .9vw + .6rem, 1.45rem);
     letter-spacing: .1px;

@@ -1,27 +1,64 @@
-﻿@* No @rendermode here — inherits from the page, and layout is static *@
+@implements IDisposable
+@inject NavigationManager NavManager
 
-<aside class="app-sidebar" role="navigation" aria-label="Main">
-    <div class="sidebar-header d-flex justify-content-between align-items-center mb-2">
-        <a class="text-decoration-none text-white fw-bold" href="/">MyPersonalSite</a>
-        <label for="menuToggle"
-               class="btn btn-sm btn-outline-light d-lg-none mb-0"
-               aria-label="Close menu">✕</label>
+<div class="menu-backdrop @(IsOpen ? "show" : string.Empty)" @onclick="CloseMenu" aria-hidden="true"></div>
+
+<aside id="site-menu"
+       class="menu-drawer @(IsOpen ? "open" : string.Empty)"
+       role="navigation"
+       aria-label="Main"
+       aria-hidden="@(IsOpen ? "false" : "true")">
+    <div class="menu-drawer__header">
+        <a class="site-brand" href="/">Justin Palmer</a>
+        <button type="button"
+                class="menu-close"
+                @onclick="CloseMenu"
+                aria-label="Close menu">✕</button>
     </div>
 
-    <nav class="nav flex-column gap-1">
-        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link">Home</NavLink>
-        <NavLink href="/resume" class="nav-link">Resume</NavLink>
-        <NavLink href="/visuals" class="nav-link">Visuals</NavLink>
-        <NavLink href="/about" class="nav-link">About</NavLink>
-        @* Remove these if not needed *@
-        @* <NavLink href="/counter" class="nav-link d-none d-lg-block">Counter</NavLink>
-        <NavLink href="/weather" class="nav-link d-none d-lg-block">Weather</NavLink> *@
+    <nav class="menu-drawer__nav">
+        <NavLink href="/" Match="NavLinkMatch.All" class="menu-link" @onclick="HandleLinkClick">Home</NavLink>
+        <NavLink href="/resume" class="menu-link" @onclick="HandleLinkClick">Resume</NavLink>
+        <NavLink href="/visuals" class="menu-link" @onclick="HandleLinkClick">Visuals</NavLink>
     </nav>
-
-    <div class="mt-auto small opacity-75 d-none d-lg-block">
-        © @DateTime.UtcNow.Year • Justin
-    </div>
 </aside>
+
 @code {
-    public void Toggle() => StateHasChanged();
-}   
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsOpenChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        NavManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs args)
+    {
+        if (!IsOpen)
+        {
+            return;
+        }
+
+        _ = InvokeAsync(() => IsOpenChanged.InvokeAsync(false));
+    }
+
+    private Task HandleLinkClick(MouseEventArgs _) => CloseMenu();
+
+    private Task CloseMenu()
+    {
+        if (!IsOpen)
+        {
+            return Task.CompletedTask;
+        }
+
+        return IsOpenChanged.InvokeAsync(false);
+    }
+
+    public void Dispose()
+    {
+        NavManager.LocationChanged -= HandleLocationChanged;
+    }
+}
