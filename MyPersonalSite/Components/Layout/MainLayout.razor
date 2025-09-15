@@ -1,19 +1,7 @@
 @inherits LayoutComponentBase
 
 <div class="app-shell">
-    <header class="site-header" role="banner">
-        <div class="site-header__inner">
-            <a class="site-brand" href="/">Justin Palmer</a>
-            <button type="button"
-                    class="menu-toggle btn btn-outline-primary btn-sm"
-                    aria-expanded="@(_menuOpen ? "true" : "false")"
-                    aria-controls="site-menu"
-                    @onclick="ToggleMenu">
-                <span class="menu-icon" aria-hidden="true">☰</span>
-                <span class="menu-label">Menu</span>
-            </button>
-        </div>
-    </header>
+    <SiteHeader @bind-IsOpen="_menuOpen" />
 
     <NavMenu @bind-IsOpen="_menuOpen" />
 
@@ -32,8 +20,4 @@
 @code {
     private bool _menuOpen;
 
-    private void ToggleMenu()
-    {
-        _menuOpen = !_menuOpen;
-    }
 }

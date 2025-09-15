@@ -1,0 +1,28 @@
+@rendermode InteractiveServer
+
+<header class="site-header" role="banner">
+    <div class="site-header__inner">
+        <a class="site-brand" href="/">Justin Palmer</a>
+        <button type="button"
+                class="menu-toggle btn btn-outline-primary btn-sm"
+                aria-expanded="@(IsOpen ? "true" : "false")"
+                aria-controls="site-menu"
+                @onclick="ToggleMenu">
+            <span class="menu-icon" aria-hidden="true">☰</span>
+            <span class="menu-label">Menu</span>
+        </button>
+    </div>
+</header>
+
+@code {
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsOpenChanged { get; set; }
+
+    private Task ToggleMenu()
+    {
+        return IsOpenChanged.InvokeAsync(!IsOpen);
+    }
+}
