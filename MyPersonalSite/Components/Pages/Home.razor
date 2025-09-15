@@ -33,8 +33,8 @@
                 <div class="col-lg-7">
                     <h1 class="hero-title text-white">I build secure, data-driven applications and solutions.</h1>
                     <p class="lead-sm text-hero-muted mb-2">
-                        16 yrs in federal service • 8 yrs data analyst/dev • Focused on
-                        <strong>Blazor</strong>, <strong>C#</strong>, and <strong>data engineering</strong>.
+                        16 yrs in federal service • 8 yrs data developer and research analyst • Focused on
+                        <strong>Blazor</strong>, <strong>C#</strong>, <strong>SQL</strong>, <strong>Python</strong>  and <strong>data engineering</strong>.
                     </p>
 
                     <!-- Certs (linked) + chatbot status -->
@@ -169,7 +169,6 @@
                 <span class="badge bg-secondary-subtle text-body border">Power BI RLS ownership</span>
                 <span class="badge bg-warning-subtle text-warning border">Secure-by-default patterns</span>
             </div>
-            <p class="mb-0 text-muted small">Quietly open to .NET/Blazor, data engineering, and AI-enabled app roles in mission-driven teams.</p>
         </section>
 
         <!-- Featured -->
@@ -194,7 +193,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col reveal">
+             @*    <div class="col reveal">
                     <div class="card tile-card h-100">
                         <div class="card-body">
                             <div class="tile-title mb-1">OpenAI Chatbot (Blazor)</div>
@@ -202,13 +201,13 @@
                             <a class="btn btn-outline-primary btn-sm" href="/about">What I used</a>
                         </div>
                     </div>
-                </div>
+                </div> *@
             </div>
         </section>
 
         <!-- Tech strip (kept, concise) -->
         <section class="section-tight">
-            <h2 class="section-title mb-2">Tech I use</h2>
+            <h2 class="section-title mb-2">Tech Stack</h2>
             <div class="d-flex flex-wrap gap-2">
                 @foreach (var t in Tech)
                 {
@@ -240,18 +239,18 @@
     private string _theme = "light";
 
     // Certification links (swap to your Credly proof links when ready)
-    private const string Az900Url = "https://learn.microsoft.com/credentials/certifications/azure-fundamentals/";
-    private const string Ai900Url = "https://learn.microsoft.com/credentials/certifications/azure-ai-fundamentals/";
-    private const string Dp900Url = "https://learn.microsoft.com/credentials/certifications/azure-data-fundamentals/";
+    private const string Az900Url = "https://www.credly.com/badges/15b0a37b-949e-4524-8712-8c69ab4030d8/public_url";
+    private const string Ai900Url = "https://www.credly.com/badges/fd62d8eb-1d69-4b3b-9138-44c50c2e86ae/public_url";
+    private const string Dp900Url = "https://www.credly.com/badges/c430137f-c648-4e46-980e-c2670fa734d6/public_url";
 
     // “Tech I use” strip
     private static readonly string[] Tech = new[]
     {
-        "C# / .NET 9", "ython", "Jupyter", "Blazor (Server + WASM)", "ASP.NET Razor", "EF Core", "SQL Server",
-        "SQLite", "REST / Minimal APIs", "LINQ", "D3.js interop", "Power BI (Service & Report Server)",
+        "C# / .NET 9", "Python", "Jupyter", "Blazor (Server + WASM)", "ASP.NET Razor", "OpenAI on Azure", "EF Core", "SQL Server",
+        "SQLite", "Postgres","REST / Minimal APIs", "LINQ", "D3.js", "Power BI (Service & Report Server)",
         "Azure", "Azure DevOps (Repos/Boards/Wikis/Pipelines)", "CI/CD",
         "Azure Data Factory", "Azure Functions (.NET)", "PowerShell",
-        "Power BI REST API", "Microsoft Graph", "Row-Level Security (RLS)", "OpenAI on Azure"
+        "Power BI REST API", "Microsoft Graph", "Row-Level Security (RLS)"
     };
 
     protected override async Task OnInitializedAsync()
