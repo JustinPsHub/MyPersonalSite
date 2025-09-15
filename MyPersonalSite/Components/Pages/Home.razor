@@ -57,8 +57,8 @@
         <div class="hero-scrim" aria-hidden="true"></div>
 
         <div class="container py-3">
-            <div class="row justify-content-start g-3">
-                <div class="col-lg-8 col-xl-5">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-7">
                     <div class="hero-copy compact">
                         <h1 id="home-hero-title" class="hero-title mb-3">
                             Secure Azure and .NET/Blazor delivery with data and AI.
@@ -136,8 +136,8 @@
 
                 <div class="col reveal">
                     <div class="tile h-100">
-                        <div class="tile-title">Data &amp; BI architecture</div>
-                        <div class="tile-text">Model data, publish governed Power BI, and automate refresh, access, and quality checks.</div>
+                        <div class="tile-title">Data engineering</div>
+                        <div class="tile-text">Modeling, APIs, and making insight obvious with interactive visuals.</div>
                         <div class="chips">
                             <span class="chip">EF Core</span><span class="chip">SQL/SQLite</span><span class="chip">Power BI</span>
                         </div>
@@ -168,20 +168,67 @@
             </div>
         </section>
 
-        <section class="section-tight mb-4" role="region" aria-labelledby="about-heading">
-            <h2 id="about-heading" class="section-title mb-3">About me</h2>
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <p class="mb-3">
-                        I live on a 40-acre farmstead in <strong>Hillsboro, Ohio</strong> with my wife and dog, and plan to steward our land long-term. Remote work is ideal, with easy trips to Cincinnati, Dayton, or Columbus when we need to collaborate and meet in person.
-                    </p>
-                    <p class="mb-3">
-                        With 16 years in federal environments, I bring a product mindset: focus on measurable outcomes, cross-functional collaboration, and thoughtful automation that teams can own.
-                    </p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span class="badge rounded-pill bg-secondary-subtle text-body border">Outcome-driven</span>
-                        <span class="badge rounded-pill bg-secondary-subtle text-body border">Public impact</span>
-                        <span class="badge rounded-pill bg-secondary-subtle text-body border">High-trust delivery</span>
+        <!-- Snapshot / About -->
+        <section id="about" class="mb-4" role="region" aria-labelledby="snapshot-heading">
+            <h2 id="snapshot-heading" class="h4 mb-3">Snapshot</h2>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h3 class="h6 text-uppercase text-muted">Where I am</h3>
+                            <p class="mb-2">
+                                I live on a 40-acre farmstead in <strong>Hillsboro, Ohio</strong>,
+                                where my wife, dog, and I are committed to long-term stewardship of our land.
+                            </p>
+                            <p class="mb-2">
+                                Remote work is ideal, but I can commute occasionally to
+                                <strong>Cincinnati</strong>, <strong>Dayton</strong>, or <strong>Columbus</strong> and travel when needed to meet with teams and clients.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public sector → product mindset -->
+            <div class="row g-3 mt-0">
+                <div class="col-12">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h3 class="h6 text-uppercase text-muted">Public sector → Product mindset</h3>
+                            <p class="mb-2">
+                                16 years in federal environments; now focused on high-ownership teams, collaboration, and measurable outcomes.
+                            </p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill bg-secondary-subtle text-body border">Outcome-driven</span>
+                                <span class="badge rounded-pill bg-secondary-subtle text-body border">Public Impact</span>
+                                <span class="badge rounded-pill bg-secondary-subtle text-body border">Velocity</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured -->
+        <section class="section-tight mb-4" role="region" aria-labelledby="featured-heading">
+            <h2 id="featured-heading" class="section-title mb-3">Featured</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+                <div class="col reveal">
+                    <div class="card tile-card h-100">
+                        <div class="card-body">
+                            <div class="tile-title mb-1">Interactive Visuals</div>
+                            <p class="tile-text mb-2">D3 + Blazor interop with EF Core data. Sorting, tooltips, responsive charts.</p>
+                            <a class="btn btn-primary btn-sm" href="/visuals">Open Visuals</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col reveal">
+                    <div class="card tile-card h-100">
+                        <div class="card-body">
+                            <div class="tile-title mb-1">Resume</div>
+                            <p class="tile-text mb-2">Print-ready resume page (or PDF) backed by a clean data model.</p>
+                            <a class="btn btn-outline-primary btn-sm" href="/resume">View Resume</a>
+                        </div>
                     </div>
                 </div>
             </div>
