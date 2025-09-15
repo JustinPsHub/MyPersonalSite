@@ -324,7 +324,7 @@ body {
     }
 }
 
-/* About/Resume hero darker overlays */
+/* learning.mic/Resume hero darker overlays */
 .about-hero::before {
     content: "";
     position: absolute;
@@ -1094,4 +1094,124 @@ svg text {
     border-radius: 12px;
     box-shadow: 0 6px 18px rgba(2,12,27,.06);
 }
+
+/* === Super-compact hero (CSS-only) === */
+.home-hero {
+    padding-block: .15rem;
+}
+    /* less top/bottom padding */
+    .home-hero.hero-photo {
+        min-height: clamp(140px, 15vh, 200px); /* shorter overall */
+        margin-bottom: .5rem; /* smaller gap below hero */
+    }
+
+    .home-hero .container {
+        padding-block: .15rem;
+    }
+/* tighten inner container */
+.hero-copy.compact {
+    padding: .5rem .75rem;
+}
+/* denser glass panel */
+
+.home-hero .hero-title {
+    font-size: clamp(1rem, .9vw + .6rem, 1.4rem);
+    line-height: 1.04;
+    margin-bottom: .1rem;
+}
+
+.home-hero .lead-sm {
+    font-size: .9rem;
+    margin-bottom: .25rem;
+}
+
+/* Buttons a bit smaller to match the compact header */
+.home-hero .btn-md {
+    padding: .34rem .7rem;
+}
+
+/* Optional: hide the bullet list on md+ (keeps mobile value, saves desktop space) */
+@media (min-width: 768px) {
+    .home-hero .hero-points {
+        display: none;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .home-hero .hero-points {
+        margin-bottom: .25rem;
+    }
+
+        .home-hero .hero-points li {
+            font-size: .92rem;
+            line-height: 1.25;
+        }
+}
+
+/* Even tighter divider under the hero (or set to display:none) */
+.hero-break {
+    height: 4px;
+}
+
+/* Make hero copy a left-anchored bar that spans most of the hero */
+.home-hero .row {
+    justify-content: flex-start !important;
+}
+/* belt-and-suspenders */
+
+.home-hero .hero-copy.wide {
+    max-width: none; /* remove the 52–54rem cap */
+    width: 50%;
+    margin-left: 0;
+}
+
+@media (min-width: 992px) {
+    .home-hero .hero-copy.wide {
+        width: 50%;
+    }
+    /* span most of the hero on desktop */
+}
+
+/* Optional: pull it a hair closer to the left edge inside the container */
+@media (min-width: 992px) {
+    .home-hero .container {
+        padding-left: .5rem;
+    }
+    /* subtle left shift */
+}
+
+/* === Hero focal point: show the dog on the top-right === */
+.home-hero {
+    --hero-focal-x: 30%; /* more to the right */
+    --hero-focal-y: 50%; /* a bit higher */
+}
+
+    /* Force this to override earlier rules */
+    .home-hero .hero-bg img {
+        object-position: var(--hero-focal-x) var(--hero-focal-y) !important;
+    }
+
+/* Tweak per breakpoint (dog sits lower on narrow crops) */
+@media (max-width: 992px) {
+    .home-hero {
+        --hero-focal-x: 50%;
+        --hero-focal-y: 75%;
+    }
+}
+
+@media (max-width: 576px) {
+    .home-hero {
+        --hero-focal-x: 10%;
+        --hero-focal-y: 75%;
+    }
+}
+
+/* darken mostly the left side, leave right brighter */
+.hero-photo .hero-scrim {
+    background: linear-gradient(90deg, rgba(10,15,25,.82) 0%, rgba(10,15,25,.55) 40%, rgba(10,15,25,.18) 65%, rgba(10,15,25,0) 85%);
+}
+
+
+
+
 
