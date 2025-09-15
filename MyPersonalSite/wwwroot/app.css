@@ -211,7 +211,7 @@ body {
    Hero (image-backed)
 ===================================================================== */
 .home-hero {
-    padding-block: 1.75rem;
+    padding-block: 1.25rem;
 }
 
 .hero-gradient {
@@ -225,7 +225,7 @@ body {
     width: 100%;
     border-radius: 14px;
     overflow: hidden;
-    min-height: clamp(260px,36vh,420px);
+    min-height: clamp(220px,32vh,360px);
     margin-bottom: 1rem;
     isolation: isolate;
 }
@@ -262,14 +262,14 @@ body {
 .hero-photo .container {
     position: relative;
     z-index: 1;
-    padding-block: 1.1rem;
+    padding-block: .75rem;
 }
 
 .hero-title {
     font-weight: 800;
-    line-height: 1.15;
-    margin-bottom: .5rem;
-    font-size: clamp(1.6rem, 2.4vw + 1rem, 2.6rem);
+    line-height: 1.12;
+    margin-bottom: .4rem;
+    font-size: clamp(1.45rem, 2vw + .95rem, 2.35rem);
     color: #fff;
     text-shadow: 0 1px 2px rgba(0,0,0,.35);
 }
@@ -312,16 +312,26 @@ body {
     border-radius: 12px;
     padding: 1rem 1.25rem;
     box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    color: rgba(255,255,255,.94);
+}
+.hero-copy.wide {
+    max-width: min(100%, 52rem);
 }
 
-/* About/Resume hero darker overlays */
+@media (min-width: 992px) {
+    .hero-copy.wide {
+        max-width: min(100%, 54rem);
+    }
+}
+
+/* learning.mic/Resume hero darker overlays */
 .about-hero::before {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background: radial-gradient(90% 70% at 12% 16%, rgba(12,16,28,.70) 0%, rgba(12,16,28,0) 56%), linear-gradient(to bottom, rgba(12,16,28,.72), rgba(12,16,28,.54) 40%, rgba(12,16,28,.76));
+    background: radial-gradient(90% 70% at 12% 16%, rgba(12,16,28,.55) 0%, rgba(12,16,28,0) 56%), linear-gradient(to bottom, rgba(12,16,28,.45), rgba(12,16,28,.28) 40%, rgba(12,16,28,.55));
 }
 
 .about-hero .hero-scrim {
@@ -756,7 +766,7 @@ article.content {
 }
 
 .home-hero .hero-title {
-    max-width: 28ch;
+    max-width: clamp(34ch, 70%, 48ch);
     text-wrap: balance;
     text-shadow: 0 3px 14px rgba(0,0,0,.55), 0 1px 2px rgba(0,0,0,.5);
     color: #fff;
@@ -765,6 +775,19 @@ article.content {
 .home-hero .text-hero-muted, .home-hero .lead-sm {
     color: rgba(255,255,255,.96) !important;
     text-shadow: 0 2px 10px rgba(0,0,0,.5);
+    max-width: clamp(36ch, 75%, 60ch);
+}
+
+.home-hero .hero-points {
+    display: grid;
+    gap: .25rem .75rem;
+}
+
+@media (min-width: 768px) {
+    .home-hero .hero-points {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: clamp(36ch, 80%, 60ch);
+    }
 }
 
 :root[data-theme="dark"] .hero-photo .hero-scrim {
@@ -777,7 +800,7 @@ article.content {
     }
 
     .home-hero .hero-title {
-        max-width: 30ch;
+        max-width: 36ch;
     }
 }
 
@@ -786,41 +809,41 @@ article.content {
 ===================================================================== */
 @media (min-width: 992px) {
     .home-hero {
-        padding-block: .5rem;
+        padding-block: .35rem;
     }
 
         .home-hero.hero-photo {
-            min-height: clamp(200px, 24vh, 300px);
+            min-height: clamp(180px, 22vh, 240px);
         }
 
         .home-hero .container {
-            padding-block: .35rem;
+            padding-block: .3rem;
         }
 
         .home-hero .hero-title {
-            font-size: clamp(1.2rem, 1.4vw + .7rem, 1.9rem);
-            line-height: 1.08;
+            font-size: clamp(1.1rem, 1vw + .75rem, 1.65rem);
+            line-height: 1.06;
             margin-bottom: .2rem;
         }
 
         .home-hero .lead-sm, .home-hero .text-hero-muted {
-            font-size: .98rem;
-            margin-bottom: .4rem;
+            font-size: .94rem;
+            margin-bottom: .3rem;
         }
 
         .home-hero .btn-md {
-            padding: .42rem .85rem;
+            padding: .38rem .8rem;
         }
 }
 
 @media (min-width: 1400px) {
     .home-hero.hero-photo {
-        min-height: clamp(200px, 22vh, 280px);
+        min-height: clamp(170px, 18vh, 220px);
     }
 }
 
 /* =====================================================================
-   VISUALS (D3) — cohesive theme with safe defaults
+   VISUALS (D3)  cohesive theme with safe defaults
 ===================================================================== */
 
 /* KPI tiles + equal-height cards */
@@ -857,7 +880,7 @@ article.content {
     shape-rendering: crispEdges;
 }
 
-/* Bars/marks — give a default fill so charts aren’t black
+/* Bars/marks  give a default fill so charts arent black
    (D3 can still override by setting fill attribute or style) */
 svg .d3-bar, svg .d3-hbar {
     fill: var(--viz-bar);
@@ -929,3 +952,266 @@ svg text {
         padding: .55rem .7rem;
     }
 }
+
+/* === Consolidated Home glue (new utilities used by Index.razor) === */
+
+/* Visually hidden heading for a11y (Quick stats) */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Subtle break below the hero to separate image-backed section */
+.hero-break {
+    height: 8px;
+}
+
+/* Body container spacing in the merged page */
+.z-body {
+    scroll-margin-top: 80px;
+}
+
+/* Hero body text utility (the About page used this class; keep parity on Home) */
+.text-hero-body {
+    color: rgba(255,255,255,.96) !important;
+    text-shadow: 0 2px 10px rgba(0,0,0,.5);
+}
+
+/* Live stats mini-cards (used in the hero right column) */
+.mini-stat {
+    min-width: 120px;
+}
+
+.mini-value {
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.mini-label {
+    color: var(--muted);
+    font-size: .85rem;
+}
+
+/* Ensure list-group items (Skills) blend with your card theme even if Bootstrap changes */
+.list-group-flush .list-group-item {
+    background: var(--card);
+    border-color: var(--border);
+}
+/* Compact hero variant */
+.hero-copy.compact {
+    padding: .75rem 1rem;
+    border-radius: 12px;
+}
+
+@media (min-width: 992px) {
+    .home-hero.hero-photo {
+        min-height: clamp(180px, 22vh, 260px);
+    }
+
+    .home-hero .container {
+        padding-block: .35rem;
+    }
+
+    .home-hero .hero-title {
+        font-size: clamp(1.2rem, 1.25vw + .75rem, 1.8rem);
+        line-height: 1.08;
+        margin-bottom: .25rem;
+    }
+
+    .home-hero .lead-sm {
+        font-size: .98rem;
+        margin-bottom: .55rem !important;
+    }
+}
+
+/* Tighten the right-side hero card */
+.hero-card--tight {
+    padding: .6rem .8rem !important;
+    border-radius: 12px;
+}
+
+    .hero-card--tight .mini-value {
+        font-size: 1.15rem;
+    }
+
+    .hero-card--tight .mini-label {
+        font-size: .82rem;
+    }
+
+/* Option: hide hero card on md as well (uncomment if you want even cleaner fold) */
+/* .d-none.d-lg-block { display: none !important; }  @media (min-width: 1200px) { .d-none.d-lg-block { display:block !important; } } */
+
+/* Compact quick stats cards */
+.quick-stats {
+    --qs-pad-y: .65rem;
+    --qs-pad-x: .85rem;
+}
+
+    .quick-stats .card-body {
+        padding: var(--qs-pad-y) var(--qs-pad-x);
+    }
+
+@media (min-width: 992px) {
+    .quick-stats {
+        --qs-pad-y: .55rem;
+        --qs-pad-x: .8rem;
+    }
+}
+
+/* Shrink the big number/headline and tighten type */
+.quick-stats .fs-1 {
+    font-size: clamp(1.1rem, 1vw + .7rem, 1.6rem);
+    line-height: 1.05;
+    margin-bottom: .1rem;
+    font-variant-numeric: tabular-nums;
+    text-wrap: balance;
+}
+
+/* Secondary line a hair smaller and dimmer */
+.quick-stats .text-muted {
+    font-size: .92rem;
+    color: var(--muted) !important;
+}
+
+/* The long Current Focus text gets an even smaller headline */
+.quick-stats .focus-card .fs-1 {
+    font-size: clamp(1rem, .9vw + .6rem, 1.45rem);
+    letter-spacing: .1px;
+}
+
+/* Optional: slightly denser shadows & radius for a crisper feel */
+.quick-stats .card {
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(2,12,27,.06);
+}
+
+/* === Super-compact hero (CSS-only) === */
+.home-hero {
+    padding-block: .15rem;
+}
+    /* less top/bottom padding */
+    .home-hero.hero-photo {
+        min-height: clamp(140px, 15vh, 200px); /* shorter overall */
+        margin-bottom: .5rem; /* smaller gap below hero */
+    }
+
+    .home-hero .container {
+        padding-block: .15rem;
+    }
+/* tighten inner container */
+.hero-copy.compact {
+    padding: .5rem .75rem;
+}
+/* denser glass panel */
+
+.home-hero .hero-title {
+    font-size: clamp(1rem, .9vw + .6rem, 1.4rem);
+    line-height: 1.04;
+    margin-bottom: .1rem;
+}
+
+.home-hero .lead-sm {
+    font-size: .9rem;
+    margin-bottom: .25rem;
+}
+
+/* Buttons a bit smaller to match the compact header */
+.home-hero .btn-md {
+    padding: .34rem .7rem;
+}
+
+/* Optional: hide the bullet list on md+ (keeps mobile value, saves desktop space) */
+@media (min-width: 768px) {
+    .home-hero .hero-points {
+        display: none;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .home-hero .hero-points {
+        margin-bottom: .25rem;
+    }
+
+        .home-hero .hero-points li {
+            font-size: .92rem;
+            line-height: 1.25;
+        }
+}
+
+/* Even tighter divider under the hero (or set to display:none) */
+.hero-break {
+    height: 4px;
+}
+
+/* Make hero copy a left-anchored bar that spans most of the hero */
+.home-hero .row {
+    justify-content: flex-start !important;
+}
+/* belt-and-suspenders */
+
+.home-hero .hero-copy.wide {
+    max-width: none; /* remove the 52–54rem cap */
+    width: 50%;
+    margin-left: 0;
+}
+
+@media (min-width: 992px) {
+    .home-hero .hero-copy.wide {
+        width: 50%;
+    }
+    /* span most of the hero on desktop */
+}
+
+/* Optional: pull it a hair closer to the left edge inside the container */
+@media (min-width: 992px) {
+    .home-hero .container {
+        padding-left: .5rem;
+    }
+    /* subtle left shift */
+}
+
+/* === Hero focal point: show the dog on the top-right === */
+.home-hero {
+    --hero-focal-x: 30%; /* more to the right */
+    --hero-focal-y: 50%; /* a bit higher */
+}
+
+    /* Force this to override earlier rules */
+    .home-hero .hero-bg img {
+        object-position: var(--hero-focal-x) var(--hero-focal-y) !important;
+    }
+
+/* Tweak per breakpoint (dog sits lower on narrow crops) */
+@media (max-width: 992px) {
+    .home-hero {
+        --hero-focal-x: 50%;
+        --hero-focal-y: 75%;
+    }
+}
+
+@media (max-width: 576px) {
+    .home-hero {
+        --hero-focal-x: 10%;
+        --hero-focal-y: 75%;
+    }
+}
+
+/* darken mostly the left side, leave right brighter */
+.hero-photo .hero-scrim {
+    background: linear-gradient(90deg, rgba(10,15,25,.82) 0%, rgba(10,15,25,.55) 40%, rgba(10,15,25,.18) 65%, rgba(10,15,25,0) 85%);
+}
+
+
+
+
+
