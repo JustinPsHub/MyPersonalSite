@@ -211,7 +211,7 @@ body {
    Hero (image-backed)
 ===================================================================== */
 .home-hero {
-    padding-block: 1.75rem;
+    padding-block: 1.25rem;
 }
 
 .hero-gradient {
@@ -225,7 +225,7 @@ body {
     width: 100%;
     border-radius: 14px;
     overflow: hidden;
-    min-height: clamp(260px,36vh,420px);
+    min-height: clamp(220px,32vh,360px);
     margin-bottom: 1rem;
     isolation: isolate;
 }
@@ -262,14 +262,14 @@ body {
 .hero-photo .container {
     position: relative;
     z-index: 1;
-    padding-block: 1.1rem;
+    padding-block: .75rem;
 }
 
 .hero-title {
     font-weight: 800;
-    line-height: 1.15;
-    margin-bottom: .5rem;
-    font-size: clamp(1.6rem, 2.4vw + 1rem, 2.6rem);
+    line-height: 1.12;
+    margin-bottom: .4rem;
+    font-size: clamp(1.45rem, 2vw + .95rem, 2.35rem);
     color: #fff;
     text-shadow: 0 1px 2px rgba(0,0,0,.35);
 }
@@ -313,6 +313,15 @@ body {
     padding: 1rem 1.25rem;
     box-shadow: 0 10px 30px rgba(0,0,0,.25);
     color: rgba(255,255,255,.94);
+}
+.hero-copy.wide {
+    max-width: min(100%, 52rem);
+}
+
+@media (min-width: 992px) {
+    .hero-copy.wide {
+        max-width: min(100%, 54rem);
+    }
 }
 
 /* About/Resume hero darker overlays */
@@ -757,7 +766,7 @@ article.content {
 }
 
 .home-hero .hero-title {
-    max-width: 28ch;
+    max-width: clamp(34ch, 70%, 48ch);
     text-wrap: balance;
     text-shadow: 0 3px 14px rgba(0,0,0,.55), 0 1px 2px rgba(0,0,0,.5);
     color: #fff;
@@ -766,6 +775,19 @@ article.content {
 .home-hero .text-hero-muted, .home-hero .lead-sm {
     color: rgba(255,255,255,.96) !important;
     text-shadow: 0 2px 10px rgba(0,0,0,.5);
+    max-width: clamp(36ch, 75%, 60ch);
+}
+
+.home-hero .hero-points {
+    display: grid;
+    gap: .25rem .75rem;
+}
+
+@media (min-width: 768px) {
+    .home-hero .hero-points {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: clamp(36ch, 80%, 60ch);
+    }
 }
 
 :root[data-theme="dark"] .hero-photo .hero-scrim {
@@ -778,7 +800,7 @@ article.content {
     }
 
     .home-hero .hero-title {
-        max-width: 30ch;
+        max-width: 36ch;
     }
 }
 
@@ -787,41 +809,41 @@ article.content {
 ===================================================================== */
 @media (min-width: 992px) {
     .home-hero {
-        padding-block: .5rem;
+        padding-block: .35rem;
     }
 
         .home-hero.hero-photo {
-            min-height: clamp(200px, 24vh, 300px);
+            min-height: clamp(180px, 22vh, 240px);
         }
 
         .home-hero .container {
-            padding-block: .35rem;
+            padding-block: .3rem;
         }
 
         .home-hero .hero-title {
-            font-size: clamp(1.2rem, 1.4vw + .7rem, 1.9rem);
-            line-height: 1.08;
+            font-size: clamp(1.1rem, 1vw + .75rem, 1.65rem);
+            line-height: 1.06;
             margin-bottom: .2rem;
         }
 
         .home-hero .lead-sm, .home-hero .text-hero-muted {
-            font-size: .98rem;
-            margin-bottom: .4rem;
+            font-size: .94rem;
+            margin-bottom: .3rem;
         }
 
         .home-hero .btn-md {
-            padding: .42rem .85rem;
+            padding: .38rem .8rem;
         }
 }
 
 @media (min-width: 1400px) {
     .home-hero.hero-photo {
-        min-height: clamp(200px, 22vh, 280px);
+        min-height: clamp(170px, 18vh, 220px);
     }
 }
 
 /* =====================================================================
-   VISUALS (D3) — cohesive theme with safe defaults
+   VISUALS (D3)  cohesive theme with safe defaults
 ===================================================================== */
 
 /* KPI tiles + equal-height cards */
@@ -858,7 +880,7 @@ article.content {
     shape-rendering: crispEdges;
 }
 
-/* Bars/marks — give a default fill so charts aren’t black
+/* Bars/marks  give a default fill so charts arent black
    (D3 can still override by setting fill attribute or style) */
 svg .d3-bar, svg .d3-hbar {
     fill: var(--viz-bar);
@@ -1061,7 +1083,7 @@ svg text {
     color: var(--muted) !important;
 }
 
-/* The long “Current Focus” text gets an even smaller headline */
+/* The long Current Focus text gets an even smaller headline */
 .quick-stats .focus-card .fs-1 {
     font-size: clamp(1rem, .9vw + .6rem, 1.45rem);
     letter-spacing: .1px;
