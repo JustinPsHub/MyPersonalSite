@@ -79,6 +79,10 @@ h1:focus {
     --card: #ffffff;
     --glass: rgba(255,255,255,.85);
     --border: #e9eef8;
+    /* visuals defaults */
+    --viz-bar: #5b8def; /* default bar color if D3 doesn't set one */
+    --viz-grid: var(--border);
+    --viz-text: var(--muted);
 }
 
     :root[data-theme="dark"] {
@@ -92,6 +96,9 @@ h1:focus {
         --card: #131a2b;
         --glass: rgba(16,23,40,.78);
         --border: #253356;
+        --viz-bar: #7aa4ff;
+        --viz-grid: #2b3556;
+        --viz-text: #aab4d6;
     }
 
 body {
@@ -347,26 +354,8 @@ body {
 }
 
 /* =====================================================================
-   D3 charts
+   Cards / callout
 ===================================================================== */
-.bar, .hbar {
-    cursor: default;
-}
-
-.bar {
-    fill: #6c8cff;
-}
-
-    .bar:hover {
-        opacity: .85;
-    }
-
-svg .d3-bar, svg .d3-hbar {
-    fill: #5b8def !important;
-    opacity: .9;
-}
-
-/* Cards / callout */
 .card {
     border: 0;
     border-radius: 14px;
@@ -393,7 +382,6 @@ svg .d3-bar, svg .d3-hbar {
 .resume-container {
     width: 100%;
 }
-/* outer fills, .resume-inner controls width/position */
 
 .resume-header .chip {
     background: #eef3ff;
@@ -450,7 +438,6 @@ svg .d3-bar, svg .d3-hbar {
     margin-top: .35rem;
 }
 
-/* Print tweaks */
 @media print {
     .d-print-none {
         display: none !important;
@@ -495,15 +482,13 @@ svg .d3-bar, svg .d3-hbar {
     visibility: hidden !important;
 }
 
-.print-solo-active #print-root,
-.print-solo-active #print-root * {
+.print-solo-active #print-root, .print-solo-active #print-root * {
     visibility: visible !important;
 }
 
 /* =====================================================================
    Shell (desktop sidebar + mobile drawer)
 ===================================================================== */
-/* Grid shell: fixed 260px sidebar + fluid content */
 .app {
     display: grid !important;
     grid-template-columns: 260px minmax(0, 1fr);
@@ -515,12 +500,10 @@ svg .d3-bar, svg .d3-hbar {
     width: 260px;
 }
 
-/* HARD RESET: legacy template sets .page to flex; we want block */
 .page {
     display: block !important;
 }
 
-/* Main area — remove accidental width limits/centering */
 main.flex-fill {
     min-width: 0;
     padding-left: 0 !important;
@@ -578,7 +561,6 @@ main.flex-fill {
     border-bottom: 1px solid var(--border);
 }
 
-/* Mobile: stack (drawer handles its own positioning) */
 @media (max-width: 992px) {
     .app {
         display: block !important;
@@ -716,7 +698,6 @@ article.content {
     }
 }
 
-/* One-pager summary print size */
 @media print {
     #resume-summary {
         font-size: .95rem;
@@ -747,8 +728,7 @@ article.content {
     text-shadow: 0 1px 4px rgba(0,0,0,.45);
 }
 
-/* === HERO READABILITY OVERRIDES (text pops, photo still visible) === */
-/* Put the scrim *between* the image and the text */
+/* === HERO READABILITY OVERRIDES === */
 .hero-photo .hero-bg {
     z-index: 0;
 }
@@ -758,7 +738,6 @@ article.content {
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    /* Left-to-right fade: strong near text, disappears over the image */
     background: linear-gradient(90deg, rgba(10,15,25,.78) 0%, rgba(10,15,25,.56) 38%, rgba(10,15,25,.22) 60%, rgba(10,15,25,0) 78% );
 }
 
@@ -766,16 +745,16 @@ article.content {
     position: relative;
     z-index: 2;
 }
-/* Remove the old global dark overlay on the home hero so we don't double-dim */
+
 .home-hero.hero-photo::before {
     background: none !important;
 }
-/* Make the image just a hair darker/cleaner so white text reads well */
+
 .home-hero .hero-bg img {
     filter: brightness(.92) contrast(1.05) saturate(.95);
     object-position: 38% 78%;
 }
-/* Text polish: tighter measure and stronger shadow */
+
 .home-hero .hero-title {
     max-width: 28ch;
     text-wrap: balance;
@@ -787,11 +766,11 @@ article.content {
     color: rgba(255,255,255,.96) !important;
     text-shadow: 0 2px 10px rgba(0,0,0,.5);
 }
-/* Dark theme: slightly lighter scrim so the photo still shows through */
+
 :root[data-theme="dark"] .hero-photo .hero-scrim {
     background: linear-gradient(90deg, rgba(12,18,30,.66) 0%, rgba(12,18,30,.46) 40%, rgba(12,18,30,.18) 60%, rgba(12,18,30,0) 78% );
 }
-/* Mobile: extend the scrim a bit further so lines don't land on busy pixels */
+
 @media (max-width: 992px) {
     .hero-photo .hero-scrim {
         background: linear-gradient(90deg, rgba(10,15,25,.84) 0%, rgba(10,15,25,.6) 55%, rgba(10,15,25,0) 100% );
@@ -802,290 +781,151 @@ article.content {
     }
 }
 
-/* ====== ONE-PAGE SUMMARY (Karl-style) ====== */
-/* keep it off-screen visually but present in DOM */
-.sr-only-screen {
-    position: absolute !important;
-    left: -100vw !important;
-    top: -100vh !important;
-    width: 1px !important;
-    height: 1px !important;
-    overflow: hidden !important;
-}
-/* When we clone into #print-root for print/export, make it normal */
-.print-solo-active #print-root {
-    position: static !important;
-    left: auto !important;
-    top: auto !important;
-    width: auto !important;
-    height: auto !important;
-    overflow: visible !important;
-}
-/* Container */
-.rs {
-    background: #fff;
-    color: #111;
-    font-size: .95rem;
-    line-height: 1.35;
-}
-/* Header */
-.rs-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    gap: .5rem;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: .2rem;
-    margin-bottom: .35rem;
-}
-
-.rs-name {
-    font-weight: 800;
-    font-size: 1.25rem;
-    margin: 0;
-}
-
-.rs-role {
-    font-variant-caps: all-small-caps;
-    letter-spacing: .04em;
-    font-weight: 700;
-}
-
-.rs-tag {
-    margin: .2rem 0 0;
-    color: #444;
-}
-
-.rs-contact {
-    text-align: right;
-    white-space: nowrap;
-    color: #333;
-    font-size: .9rem;
-}
-/* Grid: narrow left column, roomy right column */
-.rs-grid {
-    display: grid;
-    grid-template-columns: 34% 1fr;
-    gap: .6rem .8rem;
-}
-/* Section labels */
-.rs-label {
-    font-variant-caps: all-small-caps;
-    letter-spacing: .06em;
-    font-weight: 700;
-    color: #222;
-    margin: 0 0 .25rem 0;
-}
-/* Left rail */
-.rs-left .rs-block + .rs-block {
-    margin-top: .5rem;
-}
-
-.rs-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-    .rs-list li {
-        margin: .15rem 0;
-    }
-
-.rs-edu-title {
-    font-weight: 700;
-}
-
-.rs-edu-org {
-    color: #555;
-}
-
-.rs-edu-dates {
-    color: #666;
-    font-size: .9rem;
-}
-/* Right column */
-.rs-right .rs-block + .rs-block {
-    margin-top: .6rem;
-}
-
-.rs-job + .rs-job {
-    margin-top: .5rem;
-}
-
-.rs-job-head {
-    display: flex;
-    justify-content: space-between;
-    gap: .5rem;
-    border-bottom: 1px solid #eee;
-    padding-bottom: .15rem;
-    margin-bottom: .2rem;
-}
-
-.rs-job-title {
-    font-weight: 700;
-}
-
-.rs-job-org {
-    color: #555;
-    font-size: .95rem;
-}
-
-.rs-job-dates {
-    color: #666;
-    font-size: .9rem;
-    white-space: nowrap;
-}
-
-.rs-job-desc {
-    color: #444;
-    margin-bottom: .2rem;
-}
-
-.rs-bullets {
-    margin: .2rem 0 0 .95rem;
-}
-
-    .rs-bullets li {
-        margin: .15rem 0;
-    }
-/* Print page box */
-@media print {
-    @page {
-        size: Letter;
-        margin: 0.6in;
-    }
-
-    .rs {
-        font-size: .92rem;
-    }
-}
-
 /* =====================================================================
    EVEN SHORTER HOME HERO ON DESKTOP
-   (Trim overall height on larger screens)
 ===================================================================== */
 @media (min-width: 992px) {
-    .home-hero { /* less vertical padding */
+    .home-hero {
         padding-block: .5rem;
     }
 
-        .home-hero.hero-photo { /* lower the minimum height more */
+        .home-hero.hero-photo {
             min-height: clamp(200px, 24vh, 300px);
         }
 
-        .home-hero .container { /* tighter inner spacing */
+        .home-hero .container {
             padding-block: .35rem;
         }
 
-        .home-hero .hero-title { /* slightly smaller + tighter line-height */
+        .home-hero .hero-title {
             font-size: clamp(1.2rem, 1.4vw + .7rem, 1.9rem);
             line-height: 1.08;
             margin-bottom: .2rem;
         }
 
-        .home-hero .lead-sm,
-        .home-hero .text-hero-muted {
+        .home-hero .lead-sm, .home-hero .text-hero-muted {
             font-size: .98rem;
             margin-bottom: .4rem;
         }
 
-        .home-hero .btn-md { /* optional: smaller buttons */
+        .home-hero .btn-md {
             padding: .42rem .85rem;
         }
 }
-/* Optional: on very wide screens, trim a bit more */
+
 @media (min-width: 1400px) {
     .home-hero.hero-photo {
         min-height: clamp(200px, 22vh, 280px);
     }
 }
 
-/* Tooltip used by visuals-extra.js */
-.viz-tooltip {
+/* =====================================================================
+   VISUALS (D3) — cohesive theme with safe defaults
+===================================================================== */
+
+/* KPI tiles + equal-height cards */
+.card.viz-card .card-body {
+    padding: 1rem 1.1rem;
+}
+
+.viz-kpi .tile {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .6rem .8rem;
+}
+
+.viz-kpi .fs-4 {
+    font-variant-numeric: tabular-nums;
+}
+
+.row.gy-4 > [class*="col-"] > .card.viz-card {
+    height: 100%;
+}
+
+/* Axes & grid */
+.d3-axis-x text, .d3-axis-y text {
+    fill: var(--viz-text);
+    font-size: 12px;
+}
+
+.d3-axis-x .domain, .d3-axis-y .domain {
+    stroke: transparent;
+}
+
+.d3-grid line {
+    stroke: var(--viz-grid);
+    shape-rendering: crispEdges;
+}
+
+/* Bars/marks — give a default fill so charts aren’t black
+   (D3 can still override by setting fill attribute or style) */
+svg .d3-bar, svg .d3-hbar {
+    fill: var(--viz-bar);
+    opacity: .95;
+    transition: opacity .12s ease, filter .12s ease;
+}
+
+    svg .d3-bar:hover, svg .d3-hbar:hover {
+        opacity: 1;
+        filter: brightness(1.05);
+    }
+
+/* Optional primitives if used */
+svg .d3-line {
+    fill: none;
+    stroke-width: 2;
+}
+
+svg .d3-dot {
+    r: 3;
+}
+
+/* Tooltip */
+.viz-tip, #d3-tooltip {
     position: fixed;
     z-index: 2000;
     pointer-events: none;
-    background: rgba(10,12,22,.95);
-    color: #fff;
-    padding: .35rem .55rem;
-    font-size: .85rem;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(2,12,27,.18);
+    padding: .45rem .6rem;
+    font-size: .9rem;
+    line-height: 1.2;
     opacity: 0;
     transform: translate(-50%, -140%);
     transition: opacity .12s ease;
 }
 
-    .viz-tooltip.show {
+    .viz-tip.show, #d3-tooltip.show {
         opacity: 1;
     }
 
-/* Subtle grid lines */
-.viz-grid line {
-    shape-rendering: crispEdges;
-}
-/* D3 tooltip + grid polish */
-.viz-tip {
-    position: fixed;
-    z-index: 2000;
-    pointer-events: none;
-    background: rgba(10,12,22,.95);
-    color: #fff;
-    padding: .4rem .55rem;
-    font-size: .85rem;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    opacity: 0;
-    transform: translate(-50%,-140%);
-    transition: opacity .12s ease;
+/* Cross-visual highlighting */
+.viz-dim {
+    opacity: .28;
+    filter: grayscale(.25);
+    transition: opacity .12s ease, filter .12s ease;
 }
 
-    .viz-tip.show {
-        opacity: 1;
+.viz-selected {
+    outline: 2px solid rgba(91,141,239,.35);
+    outline-offset: 1px;
+}
+
+/* SVG typography baseline */
+svg text {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Tighten very small screens */
+@media (max-width: 576px) {
+    .card.viz-card .card-body {
+        padding: .9rem;
     }
 
-.d3-grid line {
-    shape-rendering: crispEdges;
-}
-
-svg .d3-bar, svg .d3-hbar {
-    opacity: .9;
-    transition: opacity .12s ease;
-}
-
-    svg .d3-bar:hover, svg .d3-hbar:hover {
-        opacity: 1;
+    .viz-kpi .tile {
+        padding: .55rem .7rem;
     }
-
-/* === D3 visual polish === */
-.d3-axis-x text, .d3-axis-y text {
-    fill: var(--muted);
 }
-
-.d3-axis-x path, .d3-axis-x line,
-.d3-axis-y path, .d3-axis-y line {
-    stroke: var(--border);
-}
-
-.d3-grid-x line, .d3-grid-y line {
-    stroke: var(--border);
-}
-
-#d3-tooltip {
-    /* colors set inline by JS from CSS vars; this is a safety fallback */
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(2,12,27,.15);
-}
-
-/* A tiny lift on hover for bars (in addition to the shadow) */
-svg .d3-bar:hover, svg .d3-hbar:hover {
-    opacity: .98;
-}
-
-
-
-
-

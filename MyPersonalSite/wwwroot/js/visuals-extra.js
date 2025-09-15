@@ -1,414 +1,330 @@
-﻿// visuals-extra.js  —  upgrades for d3Interop charts (theme, animation, tooltips, polish)
+﻿// wwwroot/js/visuals-extra.js
 (function () {
-    // If the base interop isn't ready yet, try again shortly
-    function deferPatch() {
-        if (window.d3Interop) { patch(); return; }
-        setTimeout(deferPatch, 50);
+    // ----------- Theme -----------
+    const COLORS = {
+        brand: "#5b8def",
+        brandDark: "#3558e6",
+        accent1: "#22c55e",
+        accent2: "#f59e0b",
+        accent3: "#a78bfa",
+        text: "#0f172a",
+        axis: "#cfd8ea",
+        grid: "#e9eef8",
+        muted: "#67758f",
+        chip: "#eef3ff"
+    };
+    const PALETTE = [COLORS.brand, COLORS.accent1, COLORS.accent2, COLORS.accent3, "#60a5fa", "#f97316"];
+
+    const fmt = (v) => {
+        const n = +v;
+        if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+        if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, "") + "k";
+        return String(n);
+    };
+
+    // ----------- Tooltip -----------
+    const tip = (() => {
+        const el = document.createElement("div");
+        el.className = "viz-tip";
+        el.style.position = "fixed";
+        el.style.zIndex = "2000";
+        el.style.pointerEvents = "none";
+        el.style.display = "none";
+        document.body.appendChild(el);
+        function show(html, x, y) {
+            el.innerHTML = html;
+            el.style.display = "block";
+            move(x, y);
+        }
+        function move(x, y) {
+            const pad = 12, w = el.offsetWidth, h = el.offsetHeight;
+            el.style.left = Math.min(window.innerWidth - w - pad, x + pad) + "px";
+            el.style.top = Math.min(window.innerHeight - h - pad, y + pad) + "px";
+        }
+        function hide() { el.style.display = "none"; }
+        return { show, move, hide };
+    })();
+
+    // ----------- Helpers -----------
+    function clear(el) {
+        const node = typeof el === "string" ? document.querySelector(el) : el;
+        if (!node) return null;
+        node.innerHTML = "";
+        return node;
+    }
+    function makeSvg(el, opts) {
+        const node = clear(el); if (!node) return {};
+        const width = Math.max(340, node.clientWidth || 700);
+        const height = Math.max(160, opts?.height ?? 280);
+        const margin = { top: 10, right: 16, bottom: 34, left: 44 };
+        const innerW = width - margin.left - margin.right;
+        const innerH = height - margin.top - margin.bottom;
+
+        const svg = d3.select(node).append("svg").attr("width", width).attr("height", height);
+        const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+        return { svg, g, width, height, innerW, innerH };
+    }
+    function styleAxis(ax) {
+        ax.selectAll("path, line").attr("stroke", COLORS.axis);
+        ax.selectAll("text").attr("fill", COLORS.muted).style("font-size", "12px");
+    }
+    function gridY(g, y, w) {
+        g.append("g").attr("class", "viz-grid")
+            .call(d3.axisLeft(y).tickSize(-w).tickFormat(""))
+            .selectAll("line").attr("stroke", COLORS.grid);
+        g.selectAll(".viz-grid path").remove();
+    }
+    function gridX(g, x, h) {
+        g.append("g").attr("class", "viz-grid").attr("transform", `translate(0,${h})`)
+            .call(d3.axisBottom(x).tickSize(-h).tickFormat(""))
+            .selectAll("line").attr("stroke", COLORS.grid);
+        g.selectAll(".viz-grid path").remove();
+    }
+    // --- replace the whole gradient() function in wwwroot/js/visuals-extra.js ---
+    function gradient(svg, color) {
+        // cache gradients per SVG to avoid cross-SVG id collisions
+        const node = svg.node();
+        node.__gradMap = node.__gradMap || new Map();
+
+        let id = node.__gradMap.get(color);
+        if (id) return `url(#${id})`;
+
+        // create a new gradient inside *this* svg
+        let defs = svg.select("defs");
+        if (defs.empty()) defs = svg.append("defs");
+
+        // unique id within this svg
+        id = `g_${color.replace(/[^a-z0-9]/gi, "")}_${Math.random().toString(36).slice(2, 7)}`;
+        const lg = defs.append("linearGradient")
+            .attr("id", id)
+            .attr("x1", "0").attr("y1", "0").attr("x2", "0").attr("y2", "1");
+
+        lg.append("stop").attr("offset", "0%").attr("stop-color", d3.color(color).brighter(0.45));
+        lg.append("stop").attr("offset", "100%").attr("stop-color", d3.color(color).darker(0.2));
+
+        node.__gradMap.set(color, id);
+        return `url(#${id})`;
     }
 
-    function patch() {
-        const base = window.d3Interop || {};
-        const api = {};
 
-        // --- CSS variables (fallbacks for non-CSS-var contexts) ---
-        const css = (name, fallback) => getComputedStyle(document.documentElement)
-            .getPropertyValue(name).trim() || fallback;
+    // ----------- Cross-highlight bus -----------
+    const BUS = (() => {
+        const listeners = {};
+        function on(ev, cb) { (listeners[ev] ??= []).push(cb); }
+        function emit(ev, payload) { (listeners[ev] || []).forEach(cb => cb(payload)); }
+        return { on, emit, sel: null };
+    })();
 
-        const COLORS = {
-            text: css("--text", "#0f172a"),
-            muted: css("--muted", "#5c6a86"),
-            grid: css("--border", "#e9eef8"),
-            card: css("--card", "#ffffff"),
-            brand: css("--brand", "#5b8def"),
-            brand2: "#87a6ff",
-            brand3: "#3558e6"
-        };
+    // hover highlight
+    BUS.on("viz:hover", ({ type, value }) => {
+        d3.selectAll("[data-viz-type]").classed("muted", true).classed("em", false);
+        d3.selectAll(`[data-viz-type="${type}"][data-viz-key="${value}"]`).classed("muted", false).classed("em", true);
+    });
+    BUS.on("viz:leave", () => {
+        d3.selectAll("[data-viz-type]").classed("muted", false).classed("em", false);
+    });
+    // persistent selection
+    BUS.on("viz:select", sel => {
+        BUS.sel = sel;
+        d3.selectAll("[data-viz-type]").classed("selected", false).classed("muted", true);
+        d3.selectAll(`[data-viz-type="${sel.type}"][data-viz-key="${sel.value}"]`)
+            .classed("selected", true).classed("muted", false);
+    });
+    BUS.on("viz:clear", () => {
+        BUS.sel = null;
+        d3.selectAll("[data-viz-type]").classed("selected", false).classed("muted", false);
+    });
 
-        // --- Tooltip (singleton) ---
-        const tip = (function () {
-            let el;
-            function ensure() {
-                if (el) return el;
-                el = document.createElement("div");
-                el.id = "d3-tooltip";
-                el.style.position = "fixed";
-                el.style.pointerEvents = "none";
-                el.style.zIndex = "2000";
-                el.style.minWidth = "10px";
-                el.style.maxWidth = "280px";
-                el.style.padding = "6px 8px";
-                el.style.borderRadius = "8px";
-                el.style.boxShadow = "0 8px 24px rgba(2,12,27,.15)";
-                el.style.fontSize = "12px";
-                el.style.lineHeight = "1.25";
-                el.style.border = `1px solid ${COLORS.grid}`;
-                el.style.background = COLORS.card;
-                el.style.color = COLORS.text;
-                el.style.opacity = "0";
-                el.style.transition = "opacity .12s ease, transform .12s ease";
-                el.style.transform = "translateY(-2px)";
-                document.body.appendChild(el);
-                return el;
-            }
-            function show(html, x, y) {
-                const n = ensure();
-                n.innerHTML = html;
-                move(x, y);
-                requestAnimationFrame(() => { n.style.opacity = "1"; n.style.transform = "translateY(0)"; });
-            }
-            function move(x, y) {
-                const n = ensure();
-                const padding = 12;
-                const vw = window.innerWidth, vh = window.innerHeight;
-                const rect = n.getBoundingClientRect();
-                let left = x + 12, top = y + 12;
-                if (left + rect.width + padding > vw) left = x - rect.width - 12;
-                if (top + rect.height + padding > vh) top = y - rect.height - 12;
-                n.style.left = `${left}px`;
-                n.style.top = `${top}px`;
-            }
-            function hide() {
-                if (!el) return;
-                el.style.opacity = "0";
-                el.style.transform = "translateY(-2px)";
-            }
-            return { show, move, hide };
-        })();
+    // ----------- Public API -----------
+    const api = {};
 
-        // --- Helpers ---
-        const fmtInt = (n) => (window.d3 ? window.d3.format(",")(n) : String(n));
-        let uidSeq = 0;
-        const uid = (p) => `${p}-${++uidSeq}`;
+    // KPI sparkline
+    api.renderSparkline = function (selector, data, opts) {
+        if (!window.d3) return;
+        const w = Math.max(120, opts?.width ?? 140);
+        const h = Math.max(24, opts?.height ?? 28);
+        const el = clear(selector); if (!el) return;
 
-        function selectEl(sel) {
-            return (typeof sel === "string") ? document.querySelector(sel) : sel;
+        const svg = d3.select(el).append("svg").attr("width", w).attr("height", h);
+        const x = d3.scaleLinear().domain([0, data.length - 1]).range([4, w - 4]);
+        const y = d3.scaleLinear().domain([d3.min(data) || 0, d3.max(data) || 1]).nice().range([h - 4, 4]);
+
+        const area = d3.area().x((d, i) => x(i)).y0(h - 4).y1(d => y(d)).curve(d3.curveMonotoneX);
+        const line = d3.line().x((d, i) => x(i)).y(d => y(d)).curve(d3.curveMonotoneX);
+
+        svg.append("path").datum(data).attr("d", area).attr("fill", COLORS.chip);
+        svg.append("path").datum(data).attr("d", line).attr("fill", "none").attr("stroke", COLORS.brand).attr("stroke-width", 2);
+    };
+
+    // Monthly bars (velocity) with brush
+    api.renderMonthlyBars = function (selector, data, opts) {
+        if (!window.d3) return;
+        const el = clear(selector); if (!el) return;
+        const parse = d3.timeParse("%Y-%m");
+        const series = data.map(d => ({ date: parse(d.month), value: +d.count })).filter(d => d.date);
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 240 });
+
+        const x = d3.scaleBand().domain(series.map(d => d.date)).range([0, innerW]).padding(0.08);
+        const y = d3.scaleLinear().domain([0, d3.max(series, d => d.value) || 1]).nice().range([innerH, 0]);
+
+        gridY(g, y, innerW);
+        const axX = g.append("g").attr("transform", `translate(0,${innerH})`)
+            .call(d3.axisBottom(x).tickValues(series.filter((_, i) => i % 6 === 0).map(d => d.date)).tickFormat(d3.timeFormat("%b %y")).tickSizeOuter(0));
+        const axY = g.append("g").call(d3.axisLeft(y).ticks(5));
+        styleAxis(axX); styleAxis(axY);
+
+        const bars = g.selectAll("rect").data(series).enter().append("rect")
+            .attr("x", d => x(d.date)).attr("y", innerH).attr("width", x.bandwidth()).attr("height", 0)
+            .attr("rx", 4).attr("ry", 4).style("cursor", "crosshair")
+            .attr("fill", gradient(svg, COLORS.brand))
+            .attr("data-viz-type", "month").attr("data-viz-key", d3.timeFormat("%Y-%m"))
+            .on("mouseenter", (ev, d) => {
+                tip.show(`<div style="font-weight:700">${d3.timeFormat("%b %Y")(d.date)}</div>
+                  <div style="color:${COLORS.muted}">Items</div>
+                  <div style="font-weight:700">${fmt(d.value)}</div>`, ev.clientX, ev.clientY);
+                BUS.emit("viz:hover", { type: "month", value: d3.timeFormat("%Y-%m")(d.date) });
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => { tip.hide(); BUS.emit("viz:leave"); });
+
+        bars.transition().duration(700).ease(d3.easeCubicOut)
+            .attr("y", d => y(d.value)).attr("height", d => innerH - y(d.value));
+
+        const brush = d3.brushX().extent([[0, 0], [innerW, innerH]]).on("brush end", ({ selection }) => {
+            if (!selection) { bars.classed("muted", false); return; }
+            const [x0, x1] = selection;
+            bars.classed("muted", d => {
+                const cx = x(d.date) + x.bandwidth() / 2;
+                return !(cx >= x0 && cx <= x1);
+            });
+        });
+        g.append("g").attr("class", "brush").call(brush);
+    };
+
+    // Vertical bars (Entries per Year)
+    api.renderBarChart = function (selector, data, opts) {
+        if (!window.d3) return;
+        const el = clear(selector); if (!el) return;
+
+        const has = (k) => Object.prototype.hasOwnProperty.call(data[0], k);
+        const xKey = has("year") ? "year" : (has("x") ? "x" : Object.keys(data[0])[0]);
+        const yKey = has("count") ? "count" : (has("y") ? "y" : Object.keys(data[0]).find(k => typeof data[0][k] === "number" && k !== xKey) || Object.keys(data[0])[1]);
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 360 });
+
+        const cats = data.map(d => String(d[xKey]));
+        const color = d3.scaleOrdinal(PALETTE).domain(cats);
+
+        const x = d3.scaleBand().domain(cats).range([0, innerW]).padding(0.18);
+        const y = d3.scaleLinear().domain([0, d3.max(data, d => +d[yKey]) || 1]).nice().range([innerH, 0]);
+
+        gridY(g, y, innerW);
+        const axX = g.append("g").attr("transform", `translate(0,${innerH})`).call(d3.axisBottom(x).tickSizeOuter(0));
+        const axY = g.append("g").call(d3.axisLeft(y).ticks(5));
+        styleAxis(axX); styleAxis(axY);
+
+        const bars = g.selectAll("rect").data(data).enter().append("rect")
+            .attr("x", d => x(String(d[xKey]))).attr("y", innerH)
+            .attr("width", x.bandwidth()).attr("height", 0)
+            .attr("rx", 6).attr("ry", 6).style("cursor", "pointer")
+            .attr("fill", d => gradient(svg, color(String(d[xKey]))))
+            .attr("data-viz-type", has("year") ? "year" : "x")
+            .attr("data-viz-key", d => String(d[xKey]))
+            .on("mouseenter", (ev, d) => {
+                tip.show(`<div style="font-weight:700">${d[xKey]}</div>
+                  <div style="color:${COLORS.muted}">Count</div>
+                  <div style="font-weight:700">${fmt(d[yKey])}</div>`, ev.clientX, ev.clientY);
+                BUS.emit("viz:hover", { type: has("year") ? "year" : "x", value: String(d[xKey]) });
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => { tip.hide(); BUS.emit("viz:leave"); })
+            .on("click", (_ev, d) => {
+                const t = has("year") ? "year" : "x", v = String(d[xKey]);
+                if (BUS.sel && BUS.sel.type === t && BUS.sel.value === v) BUS.emit("viz:clear");
+                else BUS.emit("viz:select", { type: t, value: v });
+            });
+
+        bars.transition().duration(700).ease(d3.easeCubicOut)
+            .attr("y", d => y(d[yKey])).attr("height", d => innerH - y(d[yKey]));
+
+        g.selectAll("text.vlab").data(data).enter().append("text")
+            .attr("class", "vlab").attr("text-anchor", "middle")
+            .attr("x", d => x(String(d[xKey])) + x.bandwidth() / 2)
+            .attr("y", d => y(d[yKey]) - 6).attr("fill", COLORS.muted)
+            .style("font-size", "11px").style("opacity", 0).text(d => fmt(d[yKey]))
+            .transition().delay(450).style("opacity", 1);
+    };
+
+    // Horizontal bars (Entries by Org) with click selection
+    api.renderHorizontalBarChart = function (selector, data, opts) {
+        if (!window.d3) return;
+        const el = clear(selector); if (!el) return;
+
+        const labelKey = data[0]?.label ? "label" : (data[0]?.org ? "org" : "label");
+        const valKey = "count";
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? Math.max(160, 28 * data.length + 50) });
+
+        const y = d3.scaleBand().domain(data.map(d => d[labelKey])).range([0, innerH]).padding(0.22);
+        const x = d3.scaleLinear().domain([0, d3.max(data, d => +d[valKey]) || 1]).nice().range([0, innerW]);
+
+        gridX(g, x, innerH);
+        const axY = g.append("g").call(d3.axisLeft(y).tickSizeOuter(0));
+        const axX = g.append("g").attr("transform", `translate(0,${innerH})`).call(d3.axisBottom(x).ticks(5));
+        styleAxis(axX); styleAxis(axY);
+
+        const bars = g.selectAll("rect").data(data).enter().append("rect")
+            .attr("y", d => y(d[labelKey])).attr("x", 0)
+            .attr("width", 0).attr("height", y.bandwidth())
+            .attr("rx", 6).attr("ry", 6).style("cursor", "pointer")
+            .attr("fill", gradient(svg, COLORS.brand))
+            .attr("data-viz-type", "org").attr("data-viz-key", d => d[labelKey])
+            .on("mouseenter", (ev, d) => {
+                tip.show(`<div style="font-weight:700">${d[labelKey]}</div>
+                  <div style="color:${COLORS.muted}">Entries</div>
+                  <div style="font-weight:700">${fmt(d[valKey])}</div>`, ev.clientX, ev.clientY);
+                BUS.emit("viz:hover", { type: "org", value: d[labelKey] });
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => { tip.hide(); BUS.emit("viz:leave"); })
+            .on("click", (_ev, d) => {
+                const t = "org", v = d[labelKey];
+                if (BUS.sel && BUS.sel.type === t && BUS.sel.value === v) BUS.emit("viz:clear");
+                else BUS.emit("viz:select", { type: t, value: v });
+            });
+
+        bars.transition().duration(700).ease(d3.easeCubicOut).attr("width", d => x(d[valKey]));
+
+        g.selectAll("text.hlab").data(data).enter().append("text")
+            .attr("class", "hlab").attr("x", d => x(d[valKey]) + 6)
+            .attr("y", d => y(d[labelKey]) + y.bandwidth() / 2 + 4)
+            .attr("fill", COLORS.muted).style("font-size", "11px").text(d => fmt(d[valKey]));
+    };
+
+    // Bullet (goal vs actual)
+    api.renderBulletChart = function (selector, model, opts) {
+        if (!window.d3) return;
+        const el = clear(selector); if (!el) return;
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 56 });
+
+        const max = Math.max(model.max ?? 0, model.value ?? 0, model.target ?? 0, 1);
+        const x = d3.scaleLinear().domain([0, max]).range([0, innerW]);
+
+        if (model.target != null) {
+            g.append("rect").attr("x", 0).attr("y", innerH / 3)
+                .attr("width", x(model.target)).attr("height", innerH / 3).attr("fill", COLORS.chip);
         }
+        g.append("rect").attr("x", 0).attr("y", innerH / 2 - 6)
+            .attr("width", x(model.value)).attr("height", 12).attr("rx", 6).attr("ry", 6)
+            .attr("fill", gradient(svg, COLORS.brandDark));
 
-        function makeSvg(el, { width, height, margin }) {
-            const d3 = window.d3;
-            const w = Math.max(320, width || el.clientWidth || 600);
-            const h = Math.max(140, height || 260);
-            const m = Object.assign({ top: 8, right: 12, bottom: 32, left: 44 }, margin || {});
-            const innerW = w - m.left - m.right;
-            const innerH = h - m.top - m.bottom;
+        const ax = g.append("g").attr("transform", `translate(0,${innerH})`).call(d3.axisBottom(x).ticks(4).tickSizeOuter(0));
+        styleAxis(ax);
 
-            const svg = d3.select(el).append("svg")
-                .attr("width", "100%")
-                .attr("height", h)
-                .attr("viewBox", `0 0 ${w} ${h}`)
-                .attr("preserveAspectRatio", "xMidYMid meet");
+        const label = (model.target != null) ? `${fmt(model.value)} / ${fmt(model.target)}` : fmt(model.value);
+        g.append("text").attr("x", x(model.value) + 8).attr("y", innerH / 2 + 4)
+            .attr("fill", COLORS.muted).style("font-size", "12px").text(label);
+    };
 
-            const g = svg.append("g").attr("transform", `translate(${m.left},${m.top})`);
-
-            return { svg, g, innerW, innerH, m, w, h };
-        }
-
-        function drawGridY(g, y, innerW) {
-            const d3 = window.d3;
-            g.append("g")
-                .attr("class", "d3-grid-y")
-                .call(d3.axisLeft(y).tickSize(-innerW).tickFormat(""))
-                .selectAll("line")
-                .attr("stroke", COLORS.grid);
-        }
-
-        function drawGridX(g, x, innerH) {
-            const d3 = window.d3;
-            g.append("g")
-                .attr("class", "d3-grid-x")
-                .attr("transform", `translate(0,${innerH})`)
-                .call(d3.axisBottom(x).tickSize(-innerH).tickFormat(""))
-                .selectAll("line")
-                .attr("stroke", COLORS.grid);
-        }
-
-        function styleAxis(axisG) {
-            axisG.selectAll("path, line").attr("stroke", COLORS.grid);
-            axisG.selectAll("text").attr("fill", COLORS.muted);
-        }
-
-        // === Upgraded charts (override originals) ==========================
-
-        // Vertical bars with hover, grid, gradient, labels, animation
-        api.renderBarChart = function (selector, data, opts) {
-            if (!window.d3 || !data?.length) return;
-            const d3 = window.d3;
-            const el = selectEl(selector); if (!el) return;
-
-            const xKey = data[0]?.x !== undefined ? "x" : (data[0]?.year !== undefined ? "year" : Object.keys(data[0])[0]);
-            const yKey = data[0]?.y !== undefined ? "y" : (data[0]?.count !== undefined ? "count" : Object.keys(data[0])[1]);
-
-            const { g, svg, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 360 });
-
-            // Gradient
-            const gradId = uid("grad-vbar");
-            const defs = svg.append("defs");
-            const grad = defs.append("linearGradient").attr("id", gradId).attr("x1", "0").attr("y1", "0").attr("x2", "0").attr("y2", "1");
-            grad.append("stop").attr("offset", "0%").attr("stop-color", COLORS.brand2);
-            grad.append("stop").attr("offset", "100%").attr("stop-color", COLORS.brand);
-
-            const x = d3.scaleBand().domain(data.map(d => d[xKey])).range([0, innerW]).padding(0.18);
-            const y = d3.scaleLinear().domain([0, d3.max(data, d => +d[yKey]) || 1]).nice().range([innerH, 0]);
-
-            drawGridY(g, y, innerW);
-            const axX = g.append("g").attr("class", "d3-axis-x").attr("transform", `translate(0,${innerH})`).call(d3.axisBottom(x).tickSizeOuter(0));
-            const axY = g.append("g").attr("class", "d3-axis-y").call(d3.axisLeft(y).ticks(5));
-            styleAxis(axX); styleAxis(axY);
-
-            const bars = g.selectAll("rect.d3-bar")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("class", "d3-bar")
-                .attr("x", d => x(d[xKey]))
-                .attr("y", innerH)
-                .attr("width", x.bandwidth())
-                .attr("height", 0)
-                .attr("rx", 6).attr("ry", 6)
-                .attr("fill", `url(#${gradId})`)
-                .on("mouseenter", (ev, d) => {
-                    const html = `<div style="font-weight:700;color:${COLORS.text}">${d[xKey]}</div>
-                        <div style="color:${COLORS.muted}">Value</div>
-                        <div style="font-weight:700;color:${COLORS.text}">${fmtInt(d[yKey])}</div>`;
-                    tip.show(html, ev.clientX, ev.clientY);
-                    d3.select(ev.currentTarget).attr("filter", "drop-shadow(0 6px 14px rgba(2,12,27,.18))");
-                })
-                .on("mousemove", (ev) => tip.move(ev.clientX, ev.clientY))
-                .on("mouseleave", (ev) => {
-                    tip.hide();
-                    d3.select(ev.currentTarget).attr("filter", null);
-                });
-
-            bars.transition().duration(700).ease(d3.easeCubicOut)
-                .attr("y", d => y(d[yKey]))
-                .attr("height", d => innerH - y(d[yKey]));
-
-            // Value labels (only if bar is tall enough)
-            g.selectAll("text.v-label")
-                .data(data)
-                .enter()
-                .append("text")
-                .attr("class", "v-label")
-                .attr("x", d => (x(d[xKey]) + x.bandwidth() / 2))
-                .attr("y", d => y(d[yKey]) - 6)
-                .attr("text-anchor", "middle")
-                .attr("fill", COLORS.muted)
-                .style("font-size", "11px")
-                .text(d => fmtInt(d[yKey]))
-                .style("opacity", 0)
-                .transition().delay(500).style("opacity", 1);
-        };
-
-        // Horizontal bars (ranked) with hover and grid
-        api.renderHorizontalBarChart = function (selector, data, opts) {
-            if (!window.d3 || !data?.length) return;
-            const d3 = window.d3;
-            const el = selectEl(selector); if (!el) return;
-
-            const labelKey = data[0]?.label ? "label" : (data[0]?.org ? "org" : Object.keys(data[0])[0]);
-            const valKey = data[0]?.count !== undefined ? "count" : (data[0]?.value !== undefined ? "value" : Object.keys(data[0])[1]);
-
-            const height = Math.max(140, opts?.height ?? (28 * data.length + 40));
-            const { g, svg, innerW, innerH } = makeSvg(el, { height });
-
-            // Gradient horizontal
-            const gradId = uid("grad-hbar");
-            const defs = svg.append("defs");
-            const grad = defs.append("linearGradient").attr("id", gradId).attr("x1", "0").attr("y1", "0").attr("x2", "1").attr("y2", "0");
-            grad.append("stop").attr("offset", "0%").attr("stop-color", COLORS.brand);
-            grad.append("stop").attr("offset", "100%").attr("stop-color", COLORS.brand3);
-
-            const y = window.d3.scaleBand().domain(data.map(d => d[labelKey])).range([0, innerH]).padding(0.18);
-            const x = window.d3.scaleLinear().domain([0, window.d3.max(data, d => +d[valKey]) || 1]).nice().range([0, innerW]);
-
-            drawGridX(g, x, innerH);
-            const axY = g.append("g").attr("class", "d3-axis-y").call(d3.axisLeft(y).tickSizeOuter(0));
-            const axX = g.append("g").attr("class", "d3-axis-x").attr("transform", `translate(0,${innerH})`).call(d3.axisBottom(x).ticks(5));
-            styleAxis(axY); styleAxis(axX);
-
-            const bars = g.selectAll("rect.d3-hbar")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("class", "d3-hbar")
-                .attr("x", 0)
-                .attr("y", d => y(d[labelKey]))
-                .attr("height", y.bandwidth())
-                .attr("width", 0)
-                .attr("rx", 6).attr("ry", 6)
-                .attr("fill", `url(#${gradId})`)
-                .on("mouseenter", (ev, d) => {
-                    const html = `<div style="font-weight:700;color:${COLORS.text}">${d[labelKey]}</div>
-                        <div style="color:${COLORS.muted}">Count</div>
-                        <div style="font-weight:700;color:${COLORS.text}">${fmtInt(d[valKey])}</div>`;
-                    tip.show(html, ev.clientX, ev.clientY);
-                    d3.select(ev.currentTarget).attr("filter", "drop-shadow(0 6px 14px rgba(2,12,27,.18))");
-                })
-                .on("mousemove", (ev) => tip.move(ev.clientX, ev.clientY))
-                .on("mouseleave", (ev) => { tip.hide(); d3.select(ev.currentTarget).attr("filter", null); });
-
-            bars.transition().duration(750).ease(d3.easeCubicOut)
-                .attr("width", d => x(d[valKey]));
-
-            // Value labels
-            g.selectAll("text.h-label")
-                .data(data)
-                .enter()
-                .append("text")
-                .attr("class", "h-label")
-                .attr("x", d => Math.max(12, x(d[valKey]) + 6))
-                .attr("y", d => y(d[labelKey]) + y.bandwidth() / 2 + 4)
-                .attr("fill", COLORS.muted)
-                .style("font-size", "11px")
-                .text(d => fmtInt(d[valKey]));
-        };
-
-        // Monthly bars (last 48 months) with hover
-        api.renderMonthlyBars = function (selector, data, opts) {
-            if (!window.d3 || !data?.length) return;
-            const d3 = window.d3;
-            const el = selectEl(selector); if (!el) return;
-
-            const { g, svg, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 240 });
-            const parse = d3.timeParse("%Y-%m");
-            const series = data.map(d => ({ date: parse(d.month), value: +d.count }))
-                .filter(d => d.date);
-
-            const x = d3.scaleBand().domain(series.map(d => d.date)).range([0, innerW]).padding(0.08);
-            const y = d3.scaleLinear().domain([0, d3.max(series, d => d.value) || 1]).nice().range([innerH, 0]);
-
-            drawGridY(g, y, innerW);
-            const axX = g.append("g").attr("class", "d3-axis-x").attr("transform", `translate(0,${innerH})`)
-                .call(d3.axisBottom(x)
-                    .tickValues(series.filter((_, i) => (i % 6) === 0).map(d => d.date))
-                    .tickFormat(d3.timeFormat("%b %y"))
-                    .tickSizeOuter(0));
-            const axY = g.append("g").attr("class", "d3-axis-y").call(d3.axisLeft(y).ticks(5));
-            styleAxis(axX); styleAxis(axY);
-
-            // gradient
-            const gradId = uid("grad-month");
-            const defs = svg.append("defs");
-            const grad = defs.append("linearGradient").attr("id", gradId).attr("x1", "0").attr("y1", "0").attr("x2", "0").attr("y2", "1");
-            grad.append("stop").attr("offset", "0%").attr("stop-color", COLORS.brand2);
-            grad.append("stop").attr("offset", "100%").attr("stop-color", COLORS.brand);
-
-            g.selectAll("rect.month")
-                .data(series)
-                .enter().append("rect")
-                .attr("class", "d3-bar")
-                .attr("x", d => x(d.date))
-                .attr("y", innerH)
-                .attr("width", x.bandwidth())
-                .attr("height", 0)
-                .attr("rx", 5).attr("ry", 5)
-                .attr("fill", `url(#${gradId})`)
-                .on("mouseenter", (ev, d) => {
-                    tip.show(`<div style="font-weight:700">${d3.timeFormat("%b %Y")(d.date)}</div>
-                    <div style="color:${COLORS.muted}">Count</div>
-                    <div style="font-weight:700;color:${COLORS.text}">${fmtInt(d.value)}</div>`,
-                        ev.clientX, ev.clientY);
-                })
-                .on("mousemove", (ev) => tip.move(ev.clientX, ev.clientY))
-                .on("mouseleave", () => tip.hide())
-                .transition().duration(700).ease(d3.easeCubicOut)
-                .attr("y", d => y(d.value))
-                .attr("height", d => innerH - y(d.value));
-        };
-
-        // Bullet chart (value vs target) with animation + tooltip
-        api.renderBulletChart = function (selector, model, opts) {
-            if (!window.d3 || !model) return;
-            const d3 = window.d3;
-            const el = selectEl(selector); if (!el) return;
-
-            const { g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 56, margin: { top: 8, right: 16, bottom: 20, left: 36 } });
-
-            const max = Math.max(model.max ?? 0, model.value ?? 0, model.target ?? 0, 1);
-            const x = d3.scaleLinear().domain([0, max]).range([0, innerW]);
-
-            // target band
-            if (model.target != null) {
-                g.append("rect")
-                    .attr("x", 0).attr("y", innerH / 3)
-                    .attr("width", x(model.target)).attr("height", innerH / 3)
-                    .attr("fill", "#eef3ff");
-            }
-
-            // actual bar
-            const bar = g.append("rect")
-                .attr("x", 0).attr("y", innerH / 2 - 6)
-                .attr("height", 12).attr("width", 0)
-                .attr("rx", 6).attr("ry", 6)
-                .attr("fill", COLORS.brand)
-                .on("mouseenter", (ev) => {
-                    const label = (model.target != null)
-                        ? `${fmtInt(model.value)} / ${fmtInt(model.target)}`
-                        : fmtInt(model.value);
-                    tip.show(`<div style="font-weight:700">Progress</div><div>${label}</div>`, ev.clientX, ev.clientY);
-                })
-                .on("mousemove", (ev) => tip.move(ev.clientX, ev.clientY))
-                .on("mouseleave", () => tip.hide());
-
-            bar.transition().duration(800).ease(d3.easeCubicOut)
-                .attr("width", x(model.value));
-
-            // x ticks
-            g.append("g").attr("transform", `translate(0,${innerH})`)
-                .call(d3.axisBottom(x).ticks(4).tickSizeOuter(0))
-                .selectAll("path,line").attr("stroke", COLORS.grid);
-
-            // label (to the right of the bar)
-            g.append("text")
-                .attr("x", x(model.value) + 8)
-                .attr("y", innerH / 2 + 4)
-                .attr("dominant-baseline", "middle")
-                .attr("fill", COLORS.muted)
-                .style("font-size", "12px")
-                .text(model.target != null ? `${fmtInt(model.value)} / ${fmtInt(model.target)}` : fmtInt(model.value));
-        };
-
-        // Sparkline: now adds last-point dot
-        api.renderSparkline = function (selector, data, opts) {
-            if (!window.d3 || !data?.length) return;
-            const d3 = window.d3;
-            const el = selectEl(selector); if (!el) return;
-
-            const width = Math.max(80, opts?.width ?? el.clientWidth ?? 120);
-            const height = Math.max(24, opts?.height ?? 28);
-            const m = { top: 2, right: 2, bottom: 2, left: 2 };
-
-            const svg = d3.select(el).append("svg")
-                .attr("width", width).attr("height", height);
-
-            const innerW = width - m.left - m.right;
-            const innerH = height - m.top - m.bottom;
-
-            const x = d3.scaleLinear().domain([0, data.length - 1]).range([m.left, innerW + m.left]);
-            const y = d3.scaleLinear().domain([d3.min(data) || 0, d3.max(data) || 1]).nice()
-                .range([innerH + m.top, m.top]);
-
-            const line = d3.line().x((d, i) => x(i)).y(d => y(d)).curve(d3.curveMonotoneX);
-
-            svg.append("path")
-                .datum(data)
-                .attr("d", line)
-                .attr("fill", "none")
-                .attr("stroke", COLORS.brand)
-                .attr("stroke-width", 1.8);
-
-            // last-point dot
-            const last = data[data.length - 1];
-            svg.append("circle")
-                .attr("cx", x(data.length - 1))
-                .attr("cy", y(last))
-                .attr("r", 2.8)
-                .attr("fill", COLORS.brand3);
-        };
-
-        // Merge our upgrades into d3Interop
-        window.d3Interop = Object.assign({}, base, api);
-    }
-
-    deferPatch();
+    // expose onto existing d3Interop (keeping waitForD3 from your loader)
+    window.d3Interop = window.d3Interop || {};
+    Object.assign(window.d3Interop, api);
 })();
