@@ -3,8 +3,34 @@
 @inject IHttpClientFactory HttpFactory
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@using System.Text.Json
 
 <PageTitle>Justin • .NET / Blazor / Data Engineering </PageTitle>
+
+<HeadContent>
+    <meta name="description"
+          content="Justin builds secure .NET/Blazor apps, enterprise data solutions, Power BI RLS automation, and Azure OpenAI features." />
+    <link rel="canonical" href="@CanonicalUrl" />
+    <link rel="prefetch" href="/resume" as="document" />
+    <link rel="prefetch" href="/visuals" as="document" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Justin • .NET / Blazor / Data Engineering" />
+    <meta property="og:description"
+          content="Secure .NET/Blazor apps, Azure data engineering, Power BI RLS leadership, and OpenAI features in Blazor." />
+    <meta property="og:url" content="@CanonicalUrl" />
+    <meta property="og:image" content="@OgImageUrl" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Justin • .NET / Blazor / Data Engineering" />
+    <meta name="twitter:description"
+          content="Secure .NET/Blazor apps, Azure data engineering, Power BI RLS leadership, and OpenAI features in Blazor." />
+    <meta name="twitter:image" content="@OgImageUrl" />
+
+    <script type="application/ld+json">
+        @((Microsoft.AspNetCore.Components.MarkupString)JsonLdPerson)
+    </script>
+</HeadContent>
 
 <div class="home-page">
     <!-- HERO -->
@@ -31,7 +57,7 @@
         <div class="container py-4">
             <div class="row align-items-center g-3">
                 <div class="col-lg-7">
-                    <h1 class="hero-title text-white">I build secure, data-driven applications and solutions.</h1>
+                    <h1 class="hero-title text-white">I’m Justin Palmer — I build secure, data-driven applications and solutions.</h1>
                     <p class="lead-sm text-hero-muted mb-2">
                         16 yrs in federal service • 8 yrs data developer and research analyst • Focused on
                         <strong>Blazor</strong>, <strong>C#</strong>, <strong>SQL</strong>, <strong>Python</strong>  and <strong>data engineering</strong>.
@@ -48,7 +74,7 @@
                     <div class="d-flex flex-wrap gap-2 align-items-center">
                         <a class="btn btn-primary btn-md" href="/resume">View Resume</a>
                         <a class="btn btn-outline-light btn-md" href="/visuals">See D3 Visuals</a>
-                        <a class="btn btn-outline-light btn-md" href="/about">About Me</a>
+                        <a class="btn btn-outline-light btn-md" href="#about">About Me</a>
 
                         <span class="badge bg-light text-dark">Federal technologist (16 yrs)</span>
                         <a class="badge bg-secondary" href="@Az900Url" target="_blank" rel="noopener">AZ-900</a>
@@ -93,11 +119,111 @@
     <div class="clearfix d-block w-100"></div>
 
     <!-- BODY -->
-    <div class="container py-4">
+    <main id="main" class="container py-4" role="main">
 
-        <!-- At a glance (now 6 tiles; balanced grid) -->
-        <section class="section-tight mb-4">
-            <h2 class="section-title mb-3">At a glance</h2>
+        <section id="about" class="section-tight mb-4" aria-labelledby="about-heading">
+            <h2 id="about-heading" class="section-title mb-3">About Justin</h2>
+            <div class="row g-3 align-items-stretch mb-3">
+                <div class="col-lg-8">
+                    <article class="card tile-card h-100">
+                        <div class="card-body">
+                            <p class="tile-text mb-2">
+                                Senior data engineer leading secure app development in <strong>.NET/Blazor</strong>,
+                                <strong>enterprise data engineering</strong>, <strong>large scale modeling</strong>,
+                                <strong>Python environments</strong>, and <strong>row-level security</strong> in <strong>Power BI</strong>.
+                            </p>
+                            <p class="tile-text mb-0">
+                                I’m the go-to developer on my team for Azure solutions, automation, and building production-ready apps that balance enterprise governance with measurable outcomes.
+                            </p>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-lg-4">
+                    <aside class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h3 class="h6 text-uppercase text-muted mb-2">Where I am</h3>
+                            <p class="mb-2">
+                                I live on a 40-acre farmstead in <strong>Hillsboro, Ohio</strong>, where my wife, dog, and I are committed to long-term stewardship of our land.
+                            </p>
+                            <p class="mb-0">
+                                Remote work is ideal, but I can commute occasionally to <strong>Cincinnati</strong>, <strong>Dayton</strong>, or <strong>Columbus</strong> and travel when needed to collaborate with teams and clients.
+                            </p>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-3 mb-3" aria-labelledby="quick-stats-heading">
+                <h3 id="quick-stats-heading" class="visually-hidden">Quick stats</h3>
+                <div class="col">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-1 fw-bold">@TotalYears yrs</div>
+                            <div class="text-muted">Federal experience</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-1 fw-bold">@DevYears yrs</div>
+                            <div class="text-muted">Developer and Research Analyst</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-1 fw-bold">Azure • .NET • OpenAI • Power BI</div>
+                            <div class="text-muted">Current focus</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <article class="card shadow-sm mb-0">
+                <div class="card-body">
+                    <h3 class="h6 text-uppercase text-muted mb-2">Public sector → Product mindset</h3>
+                    <p class="mb-2">
+                        16 years in federal environments; now focused on high-ownership teams and measurable outcomes.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge rounded-pill bg-secondary-subtle text-body border">Outcome-driven</span>
+                        <span class="badge rounded-pill bg-secondary-subtle text-body border">Ownership</span>
+                        <span class="badge rounded-pill bg-secondary-subtle text-body border">Velocity</span>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="section-tight mb-4" aria-labelledby="skills-heading">
+            <h2 id="skills-heading" class="section-title mb-3">Skills</h2>
+            <ul class="list-group list-group-flush shadow-sm">
+                <li class="list-group-item">
+                    Building <strong>secure .NET/Blazor apps</strong> with EF Core and clean architecture,
+                    hardened with CSP, rate-limiting, and antiforgery.
+                </li>
+                <li class="list-group-item">
+                    Leading <strong>enterprise Power BI</strong>: model design,
+                    <strong>row-level security</strong> patterns, security tables, and automation of refreshes and access via
+                    .NET, PowerShell, and REST APIs.
+                </li>
+                <li class="list-group-item">
+                    Delivering <strong>Azure solutions</strong>—Data Factory pipelines, Function Apps, and DevOps
+                    lifecycles for automation and scalable data workflows.
+                </li>
+                <li class="list-group-item">
+                    Building <strong>OpenAI-powered features</strong> in Blazor (Azure OpenAI, secure integration, RAG-ready patterns)
+                    that are in active development now.
+                </li>
+                <li class="list-group-item">
+                    Turning data into insight with interactive visuals (like the <strong>D3.js</strong> pages on this site).
+                </li>
+            </ul>
+        </section>
+
+        <section class="section-tight mb-4" aria-labelledby="glance-heading">
+            <h2 id="glance-heading" class="section-title mb-3">At a glance</h2>
             <div class="row row-cols-1 row-cols-md-3 g-3">
                 <div class="col reveal">
                     <div class="tile h-100">
@@ -128,7 +254,7 @@
                 </div>
                 <div class="col reveal">
                     <div class="tile h-100">
-                        <div class="tile-title">Automation & Security</div>
+                        <div class="tile-title">Automation &amp; Security</div>
                         <div class="tile-text">
                             Own <strong>Power BI RLS</strong>, refresh automation, and access flows.
                         </div>
@@ -139,7 +265,7 @@
                 </div>
                 <div class="col reveal">
                     <div class="tile h-100">
-                        <div class="tile-title">AI & Chatbots</div>
+                        <div class="tile-title">AI &amp; Chatbots</div>
                         <div class="tile-text">Azure OpenAI + Blazor; retrieval-ready patterns.</div>
                         <div class="chips">
                             <span class="chip">OpenAI</span><span class="chip">Azure</span><span class="chip">RAG-ready</span>
@@ -158,9 +284,8 @@
             </div>
         </section>
 
-        <!-- Certifications & Highlights (replaces Skills snapshot) -->
-        <section class="section-tight mb-4">
-            <h2 class="section-title mb-2">Certifications & highlights</h2>
+        <section class="section-tight mb-4" aria-labelledby="certs-heading">
+            <h2 id="certs-heading" class="section-title mb-2">Certifications &amp; highlights</h2>
             <div class="d-flex flex-wrap gap-2 mb-2">
                 <a class="badge bg-success-subtle text-success border" href="@Az900Url" target="_blank" rel="noopener">Azure Fundamentals (AZ-900)</a>
                 <a class="badge bg-success-subtle text-success border" href="@Ai900Url" target="_blank" rel="noopener">Azure AI Fundamentals (AI-900)</a>
@@ -171,9 +296,8 @@
             </div>
         </section>
 
-        <!-- Featured -->
-        <section class="section-tight mb-4">
-            <h2 class="section-title mb-3">Featured</h2>
+        <section class="section-tight mb-4" aria-labelledby="featured-heading">
+            <h2 id="featured-heading" class="section-title mb-3">Featured</h2>
             <div class="row row-cols-1 row-cols-md-3 g-3">
                 <div class="col reveal">
                     <div class="card tile-card h-100">
@@ -198,16 +322,15 @@
                         <div class="card-body">
                             <div class="tile-title mb-1">OpenAI Chatbot (Blazor)</div>
                             <p class="tile-text mb-2">Building an internal assistant with Azure OpenAI + Blazor. Secure, auditable, and RAG-ready — currently in active development (pre-prod).</p>
-                            <a class="btn btn-outline-primary btn-sm" href="/about">What I used</a>
+                            <a class="btn btn-outline-primary btn-sm" href="#about">What I used</a>
                         </div>
                     </div>
                 </div> *@
             </div>
         </section>
 
-        <!-- Tech strip (kept, concise) -->
-        <section class="section-tight">
-            <h2 class="section-title mb-2">Tech Stack</h2>
+        <section class="section-tight mb-4" aria-labelledby="tools-heading">
+            <h2 id="tools-heading" class="section-title mb-2">Tools I enjoy</h2>
             <div class="d-flex flex-wrap gap-2">
                 @foreach (var t in Tech)
                 {
@@ -216,20 +339,25 @@
             </div>
         </section>
 
-        <!-- CTA -->
-        <section class="mt-4">
+        <section class="mt-4" aria-labelledby="cta-heading">
             <div class="callout glass compact d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 reveal">
                 <div>
-                    <h3 class="h6 mb-1">Let’s build something great.</h3>
+                    <h3 id="cta-heading" class="h6 mb-1">Let’s build something great.</h3>
                     <p class="mb-0 text-muted">Open to .NET/Blazor, data engineering, and AI-enabled app roles.</p>
                 </div>
-                <div class="d-flex gap-2">
-                    <a class="btn btn-primary btn-sm" href="/about">About Me</a>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-primary btn-sm" href="#about">About Me</a>
+                    <a class="btn btn-outline-primary btn-sm" href="/resume">View Resume</a>
                     <a class="btn btn-outline-primary btn-sm" href="/visuals">See Visuals</a>
+                    <a class="btn btn-outline-secondary btn-sm" href="/contact">Get in touch</a>
                 </div>
             </div>
         </section>
-    </div>
+
+        <p class="text-muted small mt-4 mb-0">
+            Personal portfolio. Views are my own. Not affiliated with any agency.
+        </p>
+    </main>
 </div>
 
 @code {
@@ -238,10 +366,19 @@
     private bool _animated;
     private string _theme = "light";
 
+    // Evergreen experience counters
+    private const int FedStartYear = 2009; // 16 yrs in 2025
+    private const int DevStartYear = 2017; // 8 yrs in 2025
+    private int TotalYears => Math.Max(0, DateTime.UtcNow.Year - FedStartYear);
+    private int DevYears => Math.Max(0, DateTime.UtcNow.Year - DevStartYear);
+
     // Certification links (swap to your Credly proof links when ready)
     private const string Az900Url = "https://www.credly.com/badges/15b0a37b-949e-4524-8712-8c69ab4030d8/public_url";
     private const string Ai900Url = "https://www.credly.com/badges/fd62d8eb-1d69-4b3b-9138-44c50c2e86ae/public_url";
     private const string Dp900Url = "https://www.credly.com/badges/c430137f-c648-4e46-980e-c2670fa734d6/public_url";
+
+    private string CanonicalUrl => ToAbsolute("/");
+    private string OgImageUrl => ToAbsolute("/img/hero-farm-tech.png");
 
     // “Tech I use” strip
     private static readonly string[] Tech = new[]
@@ -252,6 +389,34 @@
         "Azure Data Factory", "Azure Functions (.NET)", "PowerShell",
         "Power BI REST API", "Microsoft Graph", "Row-Level Security (RLS)"
     };
+
+    private string JsonLdPerson => JsonSerializer.Serialize(new
+    {
+        @context = "https://schema.org",
+        @type = "Person",
+        name = "Justin",
+        jobTitle = "Senior Engineer",
+        description = "Senior engineer focused on Azure, .NET/Blazor, enterprise Power BI (RLS), and OpenAI in Blazor.",
+        url = CanonicalUrl,
+        image = OgImageUrl,
+        worksFor = new { @type = "Organization", name = "U.S. Federal Service" },
+        knowsAbout = Tech
+    });
+
+    private string ToAbsolute(string pathOrAbsolute)
+    {
+        if (string.IsNullOrWhiteSpace(pathOrAbsolute))
+        {
+            return Nav.BaseUri.TrimEnd('/');
+        }
+
+        if (Uri.TryCreate(pathOrAbsolute, UriKind.Absolute, out var absolute))
+        {
+            return absolute.ToString();
+        }
+
+        return $"{Nav.BaseUri.TrimEnd('/')}{(pathOrAbsolute.StartsWith("/") ? string.Empty : "/")}{pathOrAbsolute}";
+    }
 
     protected override async Task OnInitializedAsync()
     {
