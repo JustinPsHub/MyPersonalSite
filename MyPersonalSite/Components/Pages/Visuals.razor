@@ -71,7 +71,7 @@ else
             <div class="card shadow-sm viz-card h-100">
                 <div class="card-body">
                     <h5 class="card-title">Entries per Year</h5>
-                    <small class="text-muted">Data points: @_years.Count</small>
+                    <small class="text-muted">Data points: @_years.Count — click a year to cross-filter</small>
                     <div id="entries-per-year-chart" data-viz-type="year" style="width:100%; max-width:900px; min-height:420px;"></div>
                 </div>
             </div>
@@ -94,8 +94,57 @@ else
                                    @bind="_topN" @bind:event="oninput" />
                         </div>
                     </div>
-                    <small class="text-muted">Showing @((_orgsView?.Count ?? 0)) of @((_orgsRaw?.Count ?? 0))</small>
+                    <small class="text-muted">Showing @((_orgsView?.Count ?? 0)) of @((_orgsRaw?.Count ?? 0)) — click to filter matching bubbles</small>
                     <div id="entries-by-org-chart" data-viz-type="org" style="width:100%; max-width:900px; min-height:300px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Year momentum line (shares filter with bars) -->
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm viz-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Momentum by year</h5>
+                    <small class="text-muted">Cumulative impact — highlights when a bar is selected.</small>
+                    <div id="year-trend-chart" style="width:100%; max-width:900px; min-height:320px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Organization impact bubbles -->
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm viz-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Organization impact bubbles</h5>
+                    <small class="text-muted">Same data as the bars — choose a bubble to cross-filter.</small>
+                    <div id="org-bubbles-chart" style="width:100%; max-width:900px; min-height:320px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Capability mix (stacked) -->
+        <div class="col-12">
+            <div class="card shadow-sm viz-card h-100">
+                <div class="card-body">
+                    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between gap-2">
+                        <div>
+                            <h5 class="card-title mb-0">Capability mix per quarter</h5>
+                            <small class="text-muted">Stacked deployment counts by delivery surface.</small>
+                        </div>
+                        <div class="viz-legend" id="velocity-stack-legend"></div>
+                    </div>
+                    <div id="velocity-stack-chart" style="width:100%; max-width:1200px; min-height:360px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reliability (90 days) -->
+        <div class="col-12">
+            <div class="card shadow-sm viz-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Reliability rolling 90 days</h5>
+                    <small class="text-muted">Success rate with surfaced incidents.</small>
+                    <div id="reliability-chart" style="width:100%; max-width:1200px; min-height:320px;"></div>
                 </div>
             </div>
         </div>
@@ -111,6 +160,8 @@ else
     // --- new data ---
     private List<KpiItem>? _kpis;
     private List<MonthCount>? _velocity;
+    private List<VelocityQuarter>? _velocityMix;
+    private List<ReliabilityPoint>? _reliability;
     private BulletModel? _ado;
 
     // UI state
@@ -121,6 +172,7 @@ else
     // Render state
     private bool _d3Ready;
     private bool _yearDrawn, _orgDrawn, _kpiDrawn, _velDrawn, _adoDrawn;
+    private bool _yearTrendDrawn, _orgBubbleDrawn, _velocityStackDrawn, _reliabilityDrawn;
 
     protected override async Task OnInitializedAsync()
     {
@@ -136,6 +188,8 @@ else
             // new
             _kpis = await http.GetFromJsonAsync<List<KpiItem>>(new Uri(baseUri, "api/metrics/kpis"));
             _velocity = await http.GetFromJsonAsync<List<MonthCount>>(new Uri(baseUri, "api/metrics/velocity-monthly"));
+            _velocityMix = await http.GetFromJsonAsync<List<VelocityQuarter>>(new Uri(baseUri, "api/metrics/velocity"));
+            _reliability = await http.GetFromJsonAsync<List<ReliabilityPoint>>(new Uri(baseUri, "api/metrics/reliability-90d"));
             _ado = await http.GetFromJsonAsync<BulletModel>(new Uri(baseUri, "api/metrics/ado-migrations"));
 
             ApplyOrgView();
@@ -146,7 +200,11 @@ else
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // Return if no data or all done
-        if ((_years is null && _orgsView is null) || (_yearDrawn && _orgDrawn && _kpiDrawn && _velDrawn && _adoDrawn)) return;
+        if ((_years is null && _orgsView is null && _velocity is null && _kpis is null && _velocityMix is null && _reliability is null)
+            || (_yearDrawn && _orgDrawn && _kpiDrawn && _velDrawn && _adoDrawn && _yearTrendDrawn && _orgBubbleDrawn && _velocityStackDrawn && _reliabilityDrawn))
+        {
+            return;
+        }
 
         // Wait for D3 + interop
         if (!_d3Ready)
@@ -225,6 +283,50 @@ else
             }
             catch { await Task.Delay(100); StateHasChanged(); return; }
         }
+
+        // Year momentum line (shares year filter)
+        if (!_yearTrendDrawn && _years is not null)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("d3Interop.renderYearTrend", "#year-trend-chart", _years, new { height = 320 });
+                _yearTrendDrawn = true;
+            }
+            catch { await Task.Delay(80); StateHasChanged(); return; }
+        }
+
+        // Org bubbles (shares org filter)
+        if (!_orgBubbleDrawn && _orgsView is not null)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("d3Interop.renderOrgBubbles", "#org-bubbles-chart", _orgsView, new { height = 320 });
+                _orgBubbleDrawn = true;
+            }
+            catch { await Task.Delay(80); StateHasChanged(); return; }
+        }
+
+        // Capability mix stacked columns
+        if (!_velocityStackDrawn && _velocityMix is not null)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("d3Interop.renderVelocityStacked", "#velocity-stack-chart", _velocityMix, new { legend = "#velocity-stack-legend", height = 360 });
+                _velocityStackDrawn = true;
+            }
+            catch { await Task.Delay(100); StateHasChanged(); return; }
+        }
+
+        // Reliability success rate
+        if (!_reliabilityDrawn && _reliability is not null)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("d3Interop.renderReliabilityArea", "#reliability-chart", _reliability, new { height = 320 });
+                _reliabilityDrawn = true;
+            }
+            catch { await Task.Delay(100); StateHasChanged(); return; }
+        }
     }
 
     private void ApplyOrgView()
@@ -240,6 +342,7 @@ else
             _ => q.OrderByDescending(x => x.count).Take(_topN).ToList(),
         };
         _orgDrawn = false; // re-draw on next render
+        _orgBubbleDrawn = false;
     }
 
     private void OnSortChanged(ChangeEventArgs e)
@@ -254,6 +357,20 @@ else
     private sealed class OrgCount { public string org { get; set; } = ""; public int count { get; set; } }
     private sealed class KpiItem { public string label { get; set; } = ""; public int value { get; set; } public int[] spark { get; set; } = Array.Empty<int>(); public double? target { get; set; } }
     private sealed class MonthCount { public string month { get; set; } = ""; public int count { get; set; } }
+    private sealed class VelocityQuarter
+    {
+        public string period { get; set; } = "";
+        public int apps { get; set; }
+        public int funcs { get; set; }
+        public int adf { get; set; }
+        public int pbi { get; set; }
+    }
+    private sealed class ReliabilityPoint
+    {
+        public DateTime date { get; set; }
+        public int ok { get; set; }
+        public int fail { get; set; }
+    }
     private sealed class BulletModel { public double value { get; set; } public double? target { get; set; } public double? max { get; set; } }
 }
 s
