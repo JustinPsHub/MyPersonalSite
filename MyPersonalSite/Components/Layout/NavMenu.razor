@@ -1,27 +1,30 @@
-﻿@* No @rendermode here — inherits from the page, and layout is static *@
-
-<aside class="app-sidebar" role="navigation" aria-label="Main">
+﻿@* Drawer-aware sidebar. No @rendermode here *@
+<aside id="appSidebar"
+       class="app-sidebar @(IsOpen ? "open" : null)"
+       role="navigation"
+       aria-label="Main">
     <div class="sidebar-header d-flex justify-content-between align-items-center mb-2">
         <a class="text-decoration-none text-white fw-bold" href="/">Justin Palmer</a>
-        <label for="menuToggle"
-               class="btn btn-sm btn-outline-light d-lg-none mb-0"
-               aria-label="Close menu">✕</label>
+        <button type="button"
+                class="btn btn-sm btn-outline-light d-lg-none mb-0"
+                aria-label="Close menu"
+                @onclick="OnClose">
+            ✕
+        </button>
     </div>
 
     <nav class="nav flex-column gap-1">
-        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link">Home</NavLink>
-        <NavLink href="/resume" class="nav-link">Resume</NavLink>
-        <NavLink href="/visuals" class="nav-link">Visuals</NavLink>
-       @*  <NavLink href="/about" class="nav-link">About</NavLink> *@
-        @* Remove these if not needed *@
-        @* <NavLink href="/counter" class="nav-link d-none d-lg-block">Counter</NavLink>
-        <NavLink href="/weather" class="nav-link d-none d-lg-block">Weather</NavLink> *@
+        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link" @onclick="OnClose">Home</NavLink>
+        <NavLink href="/resume" class="nav-link" @onclick="OnClose">Resume</NavLink>
+        <NavLink href="/visuals" class="nav-link" @onclick="OnClose">Visuals</NavLink>
     </nav>
 
     <div class="mt-auto small opacity-75 d-none d-lg-block">
         © @DateTime.UtcNow.Year
     </div>
 </aside>
+
 @code {
-    public void Toggle() => StateHasChanged();
-}   
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+}
