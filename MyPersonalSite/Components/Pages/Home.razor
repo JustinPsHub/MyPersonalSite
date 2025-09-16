@@ -14,7 +14,7 @@
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Justin — .NET • Blazor • Data Engineering" />
+    <meta property="og:title" content="JustinRayPalmer.com" />
     <meta property="og:description" content="Secure .NET/Blazor apps, Power BI RLS, Azure data, and OpenAI-in-Blazor (active development)." />
     <meta property="og:url" content="@CanonicalUrl" />
     <meta property="og:image" content="@OgImageUrl" />
@@ -290,7 +290,7 @@
         @type = "Person",
         name = "Justin",
         jobTitle = "Senior Engineer",
-        description = "Senior engineer focused on Azure, .NET/Blazor, enterprise Power BI (RLS), and OpenAI in Blazor.",
+        description = "Developer focused on Azure, .NET/Blazor, enterprise Power BI (RLS), and OpenAI in Blazor.",
         url = CanonicalUrl,
         image = OgImageUrl,
         worksFor = new { @type = "Organization", name = "U.S. Federal Service" },
@@ -321,6 +321,7 @@
             {
                 await JS.InvokeVoidAsync("site.initTheme");
                 await JS.InvokeVoidAsync("site.revealOnScroll");
+                await JS.InvokeVoidAsync("resume.initExportDropdowns");
             }
             catch { }
         }
