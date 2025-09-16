@@ -252,6 +252,10 @@
             .attr("y", d => y(d[yKey]) - 6).attr("fill", COLORS.muted)
             .style("font-size", "11px").style("opacity", 0).text(d => fmt(d[yKey]))
             .transition().delay(450).style("opacity", 1);
+
+        if (BUS.sel) {
+            BUS.emit("viz:select", BUS.sel);
+        }
     };
 
     // Horizontal bars (Entries by Org) with click selection
@@ -297,6 +301,339 @@
             .attr("class", "hlab").attr("x", d => x(d[valKey]) + 6)
             .attr("y", d => y(d[labelKey]) + y.bandwidth() / 2 + 4)
             .attr("fill", COLORS.muted).style("font-size", "11px").text(d => fmt(d[valKey]));
+
+        if (BUS.sel) {
+            BUS.emit("viz:select", BUS.sel);
+        }
+    };
+
+    // Year momentum line (shares selection with bar chart)
+    api.renderYearTrend = function (selector, data, opts) {
+        if (!window.d3) return;
+        const el = clear(selector); if (!el) return;
+
+        const series = data.map(d => ({
+            year: String(d.year ?? d.x ?? d.label ?? ""),
+            count: +((d.count ?? d.y ?? d.value) || 0)
+        })).filter(d => d.year);
+
+        let running = 0;
+        const enriched = series.map(d => ({
+            year: d.year,
+            count: d.count,
+            running: (running += d.count)
+        }));
+
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 320 });
+
+        const x = d3.scalePoint().domain(enriched.map(d => d.year)).range([0, innerW]).padding(0.5);
+        const y = d3.scaleLinear().domain([0, d3.max(enriched, d => d.running) || 1]).nice().range([innerH, 0]);
+
+        gridY(g, y, innerW);
+        const axX = g.append("g").attr("transform", `translate(0,${innerH})`).call(d3.axisBottom(x).tickSizeOuter(0));
+        const axY = g.append("g").call(d3.axisLeft(y).ticks(5));
+        styleAxis(axX); styleAxis(axY);
+
+        const area = d3.area()
+            .x(d => x(d.year))
+            .y0(innerH)
+            .y1(d => y(d.running))
+            .curve(d3.curveMonotoneX);
+        const line = d3.line()
+            .x(d => x(d.year))
+            .y(d => y(d.running))
+            .curve(d3.curveMonotoneX);
+
+        g.append("path")
+            .datum(enriched)
+            .attr("d", area)
+            .attr("fill", gradient(svg, COLORS.brand))
+            .attr("opacity", 0.85);
+
+        g.append("path")
+            .datum(enriched)
+            .attr("d", line)
+            .attr("fill", "none")
+            .attr("stroke", COLORS.brandDark)
+            .attr("stroke-width", 2.5)
+            .attr("opacity", 0.95);
+
+        const dots = g.selectAll("circle.dot").data(enriched).enter().append("circle")
+            .attr("class", "dot")
+            .attr("cx", d => x(d.year))
+            .attr("cy", d => y(d.running))
+            .attr("r", 0)
+            .attr("fill", COLORS.brandDark)
+            .attr("stroke", "white")
+            .attr("stroke-width", 1.4)
+            .attr("data-viz-type", "year")
+            .attr("data-viz-key", d => d.year)
+            .style("cursor", "pointer")
+            .on("mouseenter", (ev, d) => {
+                tip.show(`<div style="font-weight:700">${d.year}</div>
+                  <div style="color:${COLORS.muted}">Entries</div>
+                  <div style="font-weight:700">${fmt(d.count)}</div>
+                  <div style="color:${COLORS.muted}">Cumulative</div>
+                  <div style="font-weight:700">${fmt(d.running)}</div>`, ev.clientX, ev.clientY);
+                BUS.emit("viz:hover", { type: "year", value: d.year });
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => { tip.hide(); BUS.emit("viz:leave"); })
+            .on("click", (_ev, d) => {
+                const t = "year", v = d.year;
+                if (BUS.sel && BUS.sel.type === t && BUS.sel.value === v) BUS.emit("viz:clear");
+                else BUS.emit("viz:select", { type: t, value: v });
+            });
+
+        dots.transition().duration(600).attr("r", 5.2);
+
+        if (BUS.sel) {
+            BUS.emit("viz:select", BUS.sel);
+        }
+    };
+
+    // Organization bubbles (paired with horizontal bars)
+    api.renderOrgBubbles = function (selector, data, opts) {
+        if (!window.d3) return;
+        const el = clear(selector); if (!el) return;
+
+        const labelKey = data[0]?.label ? "label" : (data[0]?.org ? "org" : "label");
+        const valKey = data[0]?.count !== undefined ? "count" : "value";
+
+        const rows = data.map(d => ({
+            label: d[labelKey],
+            value: +((d[valKey]) || 0)
+        })).filter(d => d.value > 0);
+
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 320 });
+
+        const pack = d3.pack().size([innerW, innerH]).padding(10);
+        const root = d3.hierarchy({ children: rows }).sum(d => d.value);
+        const nodes = pack(root).leaves();
+
+        const color = d3.scaleOrdinal(PALETTE.concat(["#38bdf8", "#fb7185", "#a855f7"]))
+            .domain(nodes.map(n => n.data.label));
+
+        const groups = g.selectAll("g.node").data(nodes).enter().append("g")
+            .attr("class", "node")
+            .attr("transform", d => `translate(${d.x},${d.y})`)
+            .style("cursor", "pointer")
+            .on("mouseenter", (ev, d) => {
+                const html = `<div style="font-weight:700">${d.data.label}</div>
+                  <div style="color:${COLORS.muted}">Entries</div>
+                  <div style="font-weight:700">${fmt(d.data.value)}</div>`;
+                tip.show(html, ev.clientX, ev.clientY);
+                BUS.emit("viz:hover", { type: "org", value: d.data.label });
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => { tip.hide(); BUS.emit("viz:leave"); })
+            .on("click", (_ev, d) => {
+                const t = "org", v = d.data.label;
+                if (BUS.sel && BUS.sel.type === t && BUS.sel.value === v) BUS.emit("viz:clear");
+                else BUS.emit("viz:select", { type: t, value: v });
+            });
+
+        groups.append("circle")
+            .attr("r", 0)
+            .attr("fill", d => gradient(svg, color(d.data.label)))
+            .attr("data-viz-type", "org")
+            .attr("data-viz-key", d => d.data.label)
+            .attr("stroke", "rgba(255,255,255,.65)")
+            .attr("stroke-width", 1.2)
+            .transition().duration(550).ease(d3.easeCubicOut)
+            .attr("r", d => d.r);
+
+        groups.each(function (d) {
+            const base = d3.color(color(d.data.label));
+            const textFill = base && d3.hsl(base).l < 0.6 ? "#f8fafc" : COLORS.text;
+            const text = d3.select(this).append("text")
+                .attr("text-anchor", "middle")
+                .attr("dy", "0.35em")
+                .style("pointer-events", "none")
+                .attr("fill", textFill)
+                .style("font-size", Math.min(16, d.r / 2.6) + "px");
+
+            const words = d.data.label.split(/\s+/);
+            if (words.length === 1 || d.r < 32) {
+                text.text(words.join(" "));
+            } else {
+                const mid = Math.ceil(words.length / 2);
+                text.append("tspan").attr("x", 0).attr("y", -6).text(words.slice(0, mid).join(" "));
+                text.append("tspan").attr("x", 0).attr("y", 12).text(words.slice(mid).join(" "));
+            }
+        });
+
+        if (BUS.sel) {
+            BUS.emit("viz:select", BUS.sel);
+        }
+    };
+
+    // Capability mix stacked columns
+    api.renderVelocityStacked = function (selector, data, opts) {
+        if (!window.d3 || !data?.length) return;
+        const el = clear(selector); if (!el) return;
+
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 360 });
+
+        const keys = Object.keys(data[0]).filter(k => k !== "period");
+        const labels = {
+            apps: "Web Apps",
+            funcs: "Azure Functions",
+            adf: "Azure Data Factory",
+            pbi: "Power BI"
+        };
+
+        const stack = d3.stack().keys(keys);
+        const stacked = stack(data.map(d => ({ ...d })));
+
+        const totals = data.map(d => keys.reduce((sum, k) => sum + (+d[k] || 0), 0));
+        const x = d3.scaleBand().domain(data.map(d => d.period)).range([0, innerW]).padding(0.24);
+        const y = d3.scaleLinear().domain([0, d3.max(totals) || 1]).nice().range([innerH, 0]);
+
+        gridY(g, y, innerW);
+        const axX = g.append("g").attr("transform", `translate(0,${innerH})`).call(d3.axisBottom(x).tickSizeOuter(0));
+        const axY = g.append("g").call(d3.axisLeft(y).ticks(5));
+        styleAxis(axX); styleAxis(axY);
+
+        const palette = [COLORS.brand, COLORS.accent1, COLORS.accent2, "#38bdf8", COLORS.accent3];
+        const color = d3.scaleOrdinal(palette).domain(keys);
+
+        const layers = g.selectAll("g.layer").data(stacked).enter().append("g").attr("class", "layer");
+
+        layers.selectAll("rect").data(d => d.map(v => Object.assign({}, v, { key: d.key }))).enter().append("rect")
+            .attr("class", "stack-segment")
+            .attr("x", d => x(d.data.period))
+            .attr("y", innerH)
+            .attr("width", x.bandwidth())
+            .attr("height", 0)
+            .attr("rx", 6).attr("ry", 6)
+            .attr("fill", d => gradient(svg, color(d.key)))
+            .on("mouseenter", (ev, d) => {
+                const value = d.data[d.key];
+                const html = `<div style="font-weight:700">${labels[d.key] || d.key}</div>
+                  <div style="color:${COLORS.muted}">${d.data.period}</div>
+                  <div style="font-weight:700">${fmt(value)}</div>`;
+                tip.show(html, ev.clientX, ev.clientY);
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => tip.hide())
+            .transition().duration(700).attr("y", d => y(d[1])).attr("height", d => Math.max(0, y(d[0]) - y(d[1])));
+
+        const legendSel = opts?.legend ? document.querySelector(opts.legend) : null;
+        if (legendSel) {
+            legendSel.innerHTML = "";
+            legendSel.classList.add("viz-legend");
+            keys.forEach(k => {
+                const chip = document.createElement("span");
+                chip.className = "legend-chip";
+                const swatch = document.createElement("span");
+                swatch.className = "swatch";
+                swatch.style.background = color(k);
+                chip.appendChild(swatch);
+                chip.appendChild(document.createTextNode(labels[k] || k));
+                legendSel.appendChild(chip);
+            });
+        }
+    };
+
+    // Reliability rolling success
+    api.renderReliabilityArea = function (selector, data, opts) {
+        if (!window.d3 || !data?.length) return;
+        const el = clear(selector); if (!el) return;
+
+        const points = data.map(d => {
+            const date = new Date(d.date);
+            const ok = +d.ok || 0;
+            const fail = +d.fail || 0;
+            const total = ok + fail;
+            const pct = total === 0 ? 100 : (ok / total) * 100;
+            return { date, ok, fail, total, pct };
+        }).sort((a, b) => a.date - b.date);
+
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 320 });
+
+        const x = d3.scaleTime().domain(d3.extent(points, d => d.date)).range([0, innerW]);
+        const minPct = d3.min(points, d => d.pct) ?? 100;
+        const lower = Math.max(80, Math.floor(minPct) - 5);
+        const y = d3.scaleLinear().domain([lower, 100]).nice().range([innerH, 0]);
+
+        gridY(g, y, innerW);
+        const axX = g.append("g").attr("transform", `translate(0,${innerH})`).call(d3.axisBottom(x).ticks(6));
+        const axY = g.append("g").call(d3.axisLeft(y).ticks(5).tickFormat(d => d + "%"));
+        styleAxis(axX); styleAxis(axY);
+
+        const area = d3.area()
+            .x(d => x(d.date))
+            .y0(innerH)
+            .y1(d => y(d.pct))
+            .curve(d3.curveMonotoneX);
+        const line = d3.line()
+            .x(d => x(d.date))
+            .y(d => y(d.pct))
+            .curve(d3.curveMonotoneX);
+
+        g.append("path").datum(points)
+            .attr("d", area)
+            .attr("fill", gradient(svg, COLORS.brand))
+            .attr("opacity", 0.6);
+
+        g.append("path").datum(points)
+            .attr("d", line)
+            .attr("class", "d3-line")
+            .attr("stroke", COLORS.brandDark)
+            .attr("stroke-width", 2.4);
+
+        const failScale = d3.scaleSqrt().domain([0, d3.max(points, d => d.fail) || 1]).range([0, 12]);
+        g.selectAll("circle.fail-bubble").data(points.filter(d => d.fail > 0)).enter().append("circle")
+            .attr("class", "fail-bubble")
+            .attr("cx", d => x(d.date))
+            .attr("cy", innerH - 8)
+            .attr("r", 0)
+            .attr("fill", "rgba(239,68,68,.75)")
+            .attr("stroke", "rgba(239,68,68,.9)")
+            .attr("stroke-width", 1.2)
+            .transition().duration(500).attr("r", d => failScale(d.fail));
+
+        const focusLine = g.append("line")
+            .attr("class", "viz-focus-line")
+            .attr("y1", 0).attr("y2", innerH)
+            .attr("stroke", COLORS.muted)
+            .attr("stroke-dasharray", "3,3")
+            .attr("opacity", 0);
+
+        const focusDot = g.append("circle")
+            .attr("class", "viz-focus-dot")
+            .attr("r", 5)
+            .attr("fill", COLORS.brandDark)
+            .attr("stroke", "white")
+            .attr("stroke-width", 1.5)
+            .attr("opacity", 0);
+
+        const bisect = d3.bisector(d => d.date).center;
+        const fmtPct = d3.format(".1f");
+        const timeFmt = d3.timeFormat("%b %d");
+
+        g.append("rect")
+            .attr("width", innerW)
+            .attr("height", innerH)
+            .attr("fill", "transparent")
+            .on("mousemove", (ev) => {
+                const [mx] = d3.pointer(ev);
+                const idx = bisect(points, x.invert(mx));
+                const d = points[Math.max(0, Math.min(points.length - 1, idx))];
+                focusLine.attr("x1", x(d.date)).attr("x2", x(d.date)).attr("opacity", 0.45);
+                focusDot.attr("cx", x(d.date)).attr("cy", y(d.pct)).attr("opacity", 1);
+                tip.show(`<div style="font-weight:700">${timeFmt(d.date)}</div>
+                  <div style="color:${COLORS.muted}">Success rate</div>
+                  <div style="font-weight:700">${fmtPct(d.pct)}%</div>
+                  <div style="color:${COLORS.muted}">Incidents</div>
+                  <div style="font-weight:700">${d.fail}</div>`, ev.clientX, ev.clientY);
+            })
+            .on("mouseleave", () => {
+                tip.hide();
+                focusLine.attr("opacity", 0);
+                focusDot.attr("opacity", 0);
+            });
     };
 
     // Bullet (goal vs actual)
