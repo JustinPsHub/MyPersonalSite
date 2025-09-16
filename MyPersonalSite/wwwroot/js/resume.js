@@ -85,4 +85,88 @@ body{font-family:Segoe UI,Arial,sans-serif;line-height:1.35;color:#111;}
     }
 
     return { printResume, exportWord };
+
+    function initExportDropdowns() {
+        const dds = document.querySelectorAll('.export-dd');
+        dds.forEach(dd => {
+            dd.addEventListener('toggle', () => {
+                const menu = dd.querySelector('.menu');
+                if (!menu) return;
+
+                if (dd.open) {
+                    const summary = dd.querySelector('summary');
+                    const r = summary.getBoundingClientRect();
+                    const gutter = 8;
+                    const maxW = Math.min(280, window.innerWidth - gutter * 2);
+                    const left = Math.max(gutter, Math.min(window.innerWidth - maxW - gutter, r.left));
+                    const top = Math.min(window.innerHeight - gutter, r.bottom + gutter);
+
+                    // Pin the dropdown to the viewport so parents can't clip it
+                    Object.assign(menu.style, {
+                        position: 'fixed',
+                        left: `${left}px`,
+                        top: `${top}px`,
+                        minWidth: `${Math.max(220, maxW)}px`,
+                        maxHeight: '60vh',
+                        overflowY: 'auto',
+                        zIndex: 4000,
+                        display: 'block'
+                    });
+
+                    // Close on outside click / resize / scroll
+                    const closeOnOutside = (ev) => { if (!dd.contains(ev.target)) dd.open = false; };
+                    const reset = () => {
+                        document.removeEventListener('click', closeOnOutside, true);
+                        window.removeEventListener('resize', reset);
+                        window.removeEventListener('scroll', reset, true);
+                        menu.removeAttribute('style');   // back to CSS defaults
+                    };
+
+                    document.addEventListener('click', closeOnOutside, true);
+                    window.addEventListener('resize', reset);
+                    window.addEventListener('scroll', reset, true);
+                    dd.addEventListener('toggle', () => { if (!dd.open) reset(); }, { once: true });
+                } else {
+                    menu.removeAttribute('style');
+                }
+            });
+        });
+    }
+
+    // expose the new function too
+    return { printResume, exportWord, initExportDropdowns };
+
+    function bindExportDropdowns() {
+        const dds = document.querySelectorAll('.export-dd');
+        dds.forEach(dd => {
+            const summary = dd.querySelector('summary');
+            const menu = dd.querySelector('.menu');
+            if (!summary || !menu) return;
+
+            const place = () => {
+                if (!dd.open) return;
+                const r = summary.getBoundingClientRect();
+                const gutter = 8;
+                const menuW = Math.max(220, Math.min(280, window.innerWidth - gutter * 2));
+                const left = Math.max(gutter, Math.min(window.innerWidth - menuW - gutter, r.left));
+                const top = Math.min(window.innerHeight - gutter, r.bottom + gutter);
+
+                menu.style.setProperty('--export-left', left + 'px');
+                menu.style.setProperty('--export-top', top + 'px');
+                menu.style.right = 'auto';      // kill any stylesheet 'right: 0'
+                menu.style.bottom = 'auto';
+                menu.style.minWidth = menuW + 'px';
+                menu.style.display = 'block';
+            };
+
+            // Reposition when opened and while viewport changes
+            dd.addEventListener('toggle', place);
+            summary.addEventListener('click', () => setTimeout(place, 0));
+            window.addEventListener('resize', () => dd.open && place());
+            window.addEventListener('scroll', () => dd.open && place(), true);
+        });
+    }
+
+    return { printResume, exportWord, initExportDropdowns: bindExportDropdowns };
+
 })();

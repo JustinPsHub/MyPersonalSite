@@ -1373,6 +1373,19 @@ svg text {
         }
 }
 
+/* Force the menu to anchor to the viewport (not clipped by parents) */
+.export-dd[open] .menu {
+    position: fixed !important;
+    left: var(--export-left, 12px) !important;
+    top: var(--export-top, 56px) !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: 4000 !important;
+    max-height: 60vh;
+    overflow: auto;
+    display: block; /* ensure visible when open */
+}
+
 
 
 
