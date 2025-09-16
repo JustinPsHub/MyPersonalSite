@@ -926,15 +926,62 @@ svg .d3-dot {
     }
 
 /* Cross-visual highlighting */
-.viz-dim {
+svg [data-viz-type] {
+    transition: opacity .16s ease, filter .16s ease, stroke .16s ease;
+}
+
+svg [data-viz-type].muted {
     opacity: .28;
-    filter: grayscale(.25);
-    transition: opacity .12s ease, filter .12s ease;
+    filter: grayscale(.35);
+}
+
+svg [data-viz-type].em {
+    filter: drop-shadow(0 6px 16px rgba(91,141,239,.28));
+}
+
+svg [data-viz-type].selected {
+    opacity: 1 !important;
+    stroke: rgba(91,141,239,.65);
+    stroke-width: 2.2px;
+    paint-order: stroke fill;
 }
 
 .viz-selected {
     outline: 2px solid rgba(91,141,239,.35);
     outline-offset: 1px;
+}
+
+.viz-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem 1rem;
+    font-size: .85rem;
+    color: var(--muted);
+}
+
+.viz-legend .legend-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .2rem .35rem;
+    border-radius: 999px;
+    background: rgba(99,102,241,.08);
+}
+
+.viz-legend .legend-chip .swatch {
+    width: .75rem;
+    height: .75rem;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(15,23,42,.08);
+}
+
+svg .fail-bubble,
+svg .viz-focus-dot {
+    pointer-events: none;
+}
+
+svg .viz-focus-line {
+    pointer-events: none;
 }
 
 /* SVG typography baseline */
@@ -1160,7 +1207,7 @@ svg text {
 /* belt-and-suspenders */
 
 .home-hero .hero-copy.wide {
-    max-width: none; /* remove the 52–54rem cap */
+    max-width: none; /* remove the 52â€“54rem cap */
     width: 50%;
     margin-left: 0;
 }
@@ -1367,7 +1414,7 @@ svg text {
             top: calc(100% + 8px); /* sits just under the button */
             min-width: 220px;
             width: max-content;
-            max-width: 92vw; /* don’t overflow the viewport */
+            max-width: 92vw; /* donâ€™t overflow the viewport */
             z-index: 4000; /* above any overlays */
             box-shadow: 0 12px 28px rgba(2,12,27,.15);
         }
