@@ -1,6 +1,6 @@
 ﻿// wwwroot/js/resume.js
 window.resume = (function () {
-    // Print only a target element (e.g., ".resume-container" or "#resume-summary")
+    // --- Print only a target element
     function printResume(selector) {
         const el = document.querySelector(selector);
         if (!el) { window.print(); return; }
@@ -10,7 +10,6 @@ window.resume = (function () {
 
         const clone = el.cloneNode(true);
         clone.id = "print-root";
-        // If the source is visually hidden (display:none), undo that on the clone
         clone.classList.remove("d-none", "sr-only-screen");
         Object.assign(clone.style, {
             position: "absolute", left: "0", top: "0", width: "100%", display: "block"
@@ -24,12 +23,11 @@ window.resume = (function () {
         }, 10);
     }
 
-    // Export a section to a .doc that opens in Word
+    // --- Export a section to .doc (Word)
     function exportWord(selector, filenameBase) {
         const el = document.querySelector(selector);
         if (!el) return;
 
-        // Minimal CSS so the 1-pager grid renders correctly in Word
         const styles = `
 @page{margin:0.75in;}
 body{font-family:Segoe UI,Arial,sans-serif;line-height:1.35;color:#111;}
@@ -58,17 +56,13 @@ body{font-family:Segoe UI,Arial,sans-serif;line-height:1.35;color:#111;}
 .rs-bullets{margin:.2rem 0 0 .95rem}
 .rs-bullets li{margin:.15rem 0}
 `;
-
         const header =
             "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
             "xmlns:w='urn:schemas-microsoft-com:office:word' " +
             "xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'>" +
-            "<style>" + styles + "</style>" +
-            "</head><body>";
-
+            "<style>" + styles + "</style></head><body>";
         const footer = "</body></html>";
 
-        // Clone so we can unhide if needed
         const clone = el.cloneNode(true);
         clone.classList.remove("d-none", "sr-only-screen");
         const html = header + clone.innerHTML + footer;
@@ -84,89 +78,77 @@ body{font-family:Segoe UI,Arial,sans-serif;line-height:1.35;color:#111;}
         URL.revokeObjectURL(url);
     }
 
-    return { printResume, exportWord };
-
+    // --- Floating export menu: place next to button, close on outside/Esc
     function initExportDropdowns() {
-        const dds = document.querySelectorAll('.export-dd');
-        dds.forEach(dd => {
-            dd.addEventListener('toggle', () => {
-                const menu = dd.querySelector('.menu');
-                if (!menu) return;
-
-                if (dd.open) {
-                    const summary = dd.querySelector('summary');
-                    const r = summary.getBoundingClientRect();
-                    const gutter = 8;
-                    const maxW = Math.min(280, window.innerWidth - gutter * 2);
-                    const left = Math.max(gutter, Math.min(window.innerWidth - maxW - gutter, r.left));
-                    const top = Math.min(window.innerHeight - gutter, r.bottom + gutter);
-
-                    // Pin the dropdown to the viewport so parents can't clip it
-                    Object.assign(menu.style, {
-                        position: 'fixed',
-                        left: `${left}px`,
-                        top: `${top}px`,
-                        minWidth: `${Math.max(220, maxW)}px`,
-                        maxHeight: '60vh',
-                        overflowY: 'auto',
-                        zIndex: 4000,
-                        display: 'block'
-                    });
-
-                    // Close on outside click / resize / scroll
-                    const closeOnOutside = (ev) => { if (!dd.contains(ev.target)) dd.open = false; };
-                    const reset = () => {
-                        document.removeEventListener('click', closeOnOutside, true);
-                        window.removeEventListener('resize', reset);
-                        window.removeEventListener('scroll', reset, true);
-                        menu.removeAttribute('style');   // back to CSS defaults
-                    };
-
-                    document.addEventListener('click', closeOnOutside, true);
-                    window.addEventListener('resize', reset);
-                    window.addEventListener('scroll', reset, true);
-                    dd.addEventListener('toggle', () => { if (!dd.open) reset(); }, { once: true });
-                } else {
-                    menu.removeAttribute('style');
-                }
-            });
-        });
-    }
-
-    // expose the new function too
-    return { printResume, exportWord, initExportDropdowns };
-
-    function bindExportDropdowns() {
-        const dds = document.querySelectorAll('.export-dd');
-        dds.forEach(dd => {
+        document.querySelectorAll('.export-dd').forEach(dd => {
             const summary = dd.querySelector('summary');
             const menu = dd.querySelector('.menu');
             if (!summary || !menu) return;
 
-            const place = () => {
-                if (!dd.open) return;
+            let overlay = null;
+
+            function place() {
                 const r = summary.getBoundingClientRect();
                 const gutter = 8;
                 const menuW = Math.max(220, Math.min(280, window.innerWidth - gutter * 2));
-                const left = Math.max(gutter, Math.min(window.innerWidth - menuW - gutter, r.left));
-                const top = Math.min(window.innerHeight - gutter, r.bottom + gutter);
 
-                menu.style.setProperty('--export-left', left + 'px');
-                menu.style.setProperty('--export-top', top + 'px');
-                menu.style.right = 'auto';      // kill any stylesheet 'right: 0'
-                menu.style.bottom = 'auto';
-                menu.style.minWidth = menuW + 'px';
-                menu.style.display = 'block';
-            };
+                let left = Math.max(gutter, Math.min(window.innerWidth - menuW - gutter, r.left));
+                let top = r.bottom + gutter;
 
-            // Reposition when opened and while viewport changes
-            dd.addEventListener('toggle', place);
-            summary.addEventListener('click', () => setTimeout(place, 0));
+                // flip up if there isn't room below
+                const menuH = menu.offsetHeight || 180;
+                if (top + menuH > window.innerHeight - gutter) {
+                    top = Math.max(gutter, r.top - gutter - menuH);
+                }
+
+                Object.assign(menu.style, {
+                    position: 'fixed',
+                    left: left + 'px',
+                    top: top + 'px',
+                    minWidth: menuW + 'px',
+                    right: 'auto',
+                    bottom: 'auto',
+                    zIndex: 4000
+                });
+            }
+
+            function close() {
+                if (!dd.open) return;
+                dd.open = false; // actually close the <details>
+                summary.setAttribute('aria-expanded', 'false');
+                menu.removeAttribute('style');
+                overlay?.remove();
+                overlay = null;
+            }
+
+            function open() {
+                overlay = document.createElement('div');
+                overlay.className = 'export-dd-overlay';  // CSS supplies fixed full-screen transparent layer
+                overlay.addEventListener('click', close, { passive: true });
+                document.body.appendChild(overlay);
+
+                // place after layout paints
+                setTimeout(place, 0);
+                summary.setAttribute('aria-expanded', 'true');
+            }
+
+            dd.addEventListener('toggle', () => (dd.open ? open() : close()));
             window.addEventListener('resize', () => dd.open && place());
             window.addEventListener('scroll', () => dd.open && place(), true);
+            document.addEventListener('keydown', (e) => e.key === 'Escape' && close());
+            // belt & suspenders outside-close
+            document.addEventListener('pointerdown', (e) => {
+                if (!dd.open) return;
+                if (!menu.contains(e.target) && !summary.contains(e.target)) close();
+            }, true);
+
+            // allow <button data-close> inside menu
+            menu.addEventListener('click', (e) => {
+                if (e.target.closest('[data-close]')) { e.preventDefault(); close(); }
+            });
         });
     }
 
-    return { printResume, exportWord, initExportDropdowns: bindExportDropdowns };
-
+    // Public API
+    return { printResume, exportWord, initExportDropdowns };
 })();

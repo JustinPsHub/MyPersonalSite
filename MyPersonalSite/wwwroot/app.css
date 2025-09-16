@@ -636,10 +636,18 @@ article.content {
 }
 
 /* =====================================================================
-   Export dropdown (JS-free)
+   Export dropdown — final (button stays normal, panel floats)
 ===================================================================== */
+
+/* so the floating panel isn't clipped */
+.resume-header,
+.resume-inner,
+.resume-container {
+    overflow: visible;
+}
+
 .export-dd {
-    position: relative;
+    position: static; /* button stays in normal flow */
     display: inline-block;
 }
 
@@ -647,30 +655,39 @@ article.content {
         list-style: none;
         cursor: pointer;
         display: inline-block;
+        -webkit-tap-highlight-color: transparent;
     }
 
         .export-dd > summary::-webkit-details-marker {
             display: none;
         }
 
-    .export-dd[open] .menu {
-        display: block;
-    }
-
+    /* The floating panel. JS sets left/top each time it opens */
     .export-dd .menu {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: calc(100% + 6px);
+        position: fixed; /* always viewport-anchored */
+        left: 0; /* JS overwrites */
+        top: 0; /* JS overwrites */
+        right: auto;
+        bottom: auto;
+        display: none; /* shown when <details open> */
+        z-index: 4000;
         min-width: 220px;
+        max-width: 92vw;
+        /* your existing styling */
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: 10px;
         box-shadow: 0 12px 28px rgba(2,12,27,.15);
         padding: .25rem;
-        z-index: 20;
+        color: var(--text);
     }
 
+    /* show when open — placement still handled in JS */
+    .export-dd[open] .menu {
+        display: block;
+    }
+
+    /* menu items (unchanged) */
     .export-dd .dropdown-item {
         width: 100%;
         text-align: left;
@@ -688,6 +705,15 @@ article.content {
     .export-dd .dropdown-divider {
         margin: .25rem .5rem;
     }
+
+/* transparent overlay so outside-click works on mobile/desktop */
+.export-dd-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3999; /* just under the panel */
+    background: transparent;
+}
+
 
 /* =====================================================================
    Resume readable column
@@ -1384,6 +1410,14 @@ svg text {
     max-height: 60vh;
     overflow: auto;
     display: block; /* ensure visible when open */
+}
+
+/* Overlay that sits behind the export menu so "outside click" works on mobile */
+.export-dd-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3999; /* just under the menu (menu is 4000) */
+    background: transparent; /* keep the page visible */
 }
 
 
