@@ -324,7 +324,7 @@ body {
     }
 }
 
-/* learning.mic/Resume hero darker overlays */
+/* learning.mic /Resume hero darker overlays */
 .about-hero::before {
     content: "";
     position: absolute;
@@ -1210,6 +1210,174 @@ svg text {
 .hero-photo .hero-scrim {
     background: linear-gradient(90deg, rgba(10,15,25,.82) 0%, rgba(10,15,25,.55) 40%, rgba(10,15,25,.18) 65%, rgba(10,15,25,0) 85%);
 }
+
+/* === Mobile off-canvas sidebar === */
+@media (max-width: 992px) {
+    .app {
+        display: block !important;
+    }
+
+    /* remove the 260px column effect */
+    .nav-host {
+        width: auto;
+        display: contents;
+    }
+
+    /* slide-in drawer */
+    .app-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100svh;
+        width: min(86vw, 320px);
+        transform: translateX(-100%);
+        transition: transform .22s ease;
+        z-index: 1050;
+        box-shadow: 0 18px 46px rgba(2,12,27,.35);
+        border-right: 0; /* shadow delineates edge */
+        overflow: auto;
+    }
+
+        .app-sidebar.open {
+            transform: translateX(0);
+        }
+
+    /* dim page behind drawer */
+    .nav-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1040;
+        background: rgba(0,0,0,.35);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .2s ease;
+    }
+
+        .nav-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+    /* floating menu button */
+    .nav-toggle {
+        position: fixed;
+        left: .5rem;
+        bottom: .5rem;
+        z-index: 1060;
+        padding: .5rem .75rem;
+        border-radius: 999px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: 0 10px 30px rgba(2,12,27,.2);
+    }
+
+    /* give content some breathing room */
+    main.flex-fill > .page {
+        padding: .75rem;
+    }
+}
+
+/* --- Fix: Export menu clipped/empty on mobile (<details> clipping) --- */
+.resume-header {
+    overflow: visible;
+}
+/* make sure the header doesn't clip */
+
+.export-dd {
+    position: relative; /* anchor the absolute menu */
+    overflow: visible; /* allow it to escape on mobile */
+    z-index: 1200; /* above page content */
+}
+
+    .export-dd .menu {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 6px);
+        z-index: 1201; /* above its trigger */
+        color: var(--text); /* belt-and-suspenders text color */
+    }
+
+@media (max-width: 576px) {
+    .export-dd {
+        position: static;
+    }
+
+        /*.export-dd .menu {
+            position: fixed;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            top: auto;
+            min-width: 0;
+            border-radius: 12px;
+            z-index: 4000;*/ /* above everything else */
+        /*}*/
+}
+/* Make sure nothing up the chain clips it */
+.resume-header,
+.resume-inner,
+.resume-container {
+    overflow: visible;
+}
+
+/* Improve tap behavior on iOS */
+.export-dd > summary {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Desktop (unchanged) keeps the absolute popover */
+.export-dd {
+    position: relative;
+    overflow: visible;
+    z-index: 1200;
+}
+
+    .export-dd .menu {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 6px);
+        min-width: 220px;
+        z-index: 1201;
+    }
+
+/* Phones: anchor the menu to the button instead of a bottom sheet */
+@media (max-width: 576px) {
+    /* ensure nothing up the chain clips it */
+    .resume-header,
+    .resume-inner,
+    .resume-container,
+    main.flex-fill > .page {
+        overflow: visible;
+    }
+
+    .export-dd {
+        position: relative;
+        isolation: isolate;
+    }
+        /* own stacking context */
+        .export-dd > summary {
+            position: relative;
+            z-index: 1;
+        }
+        /* keep the button tappable */
+
+        .export-dd .menu {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px); /* sits just under the button */
+            min-width: 220px;
+            width: max-content;
+            max-width: 92vw; /* don’t overflow the viewport */
+            z-index: 4000; /* above any overlays */
+            box-shadow: 0 12px 28px rgba(2,12,27,.15);
+        }
+}
+
+
+
+
+
+
 
 
 
