@@ -80,7 +80,7 @@ h1:focus {
     --glass: rgba(255,255,255,.85);
     --border: #e9eef8;
     /* visuals defaults */
-    --viz-bar: #5b8def; /* default bar color if D3 doesn't set one */
+    --viz-bar: #5b8def;
     --viz-grid: var(--border);
     --viz-text: var(--muted);
 }
@@ -314,9 +314,10 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,.25);
     color: rgba(255,255,255,.94);
 }
-.hero-copy.wide {
-    max-width: min(100%, 52rem);
-}
+
+    .hero-copy.wide {
+        max-width: min(100%, 52rem);
+    }
 
 @media (min-width: 992px) {
     .hero-copy.wide {
@@ -637,20 +638,28 @@ article.content {
 
 /* =====================================================================
    Export dropdown — final (button stays normal, panel floats)
+   Works with resume.initExportDropdowns()
 ===================================================================== */
 
-/* so the floating panel isn't clipped */
+/* =====================================================================
+   Export dropdown — anchored to the button (CSS-only)
+===================================================================== */
+
+/* make sure no parent clips the menu */
 .resume-header,
 .resume-inner,
-.resume-container {
+.resume-container,
+main.flex-fill > .page {
     overflow: visible;
 }
 
+/* the <details> wrapper */
 .export-dd {
-    position: static; /* button stays in normal flow */
+    position: relative; /* anchor for absolute menu */
     display: inline-block;
 }
 
+    /* the trigger */
     .export-dd > summary {
         list-style: none;
         cursor: pointer;
@@ -662,32 +671,31 @@ article.content {
             display: none;
         }
 
-    /* The floating panel. JS sets left/top each time it opens */
+    /* the menu — sits right under the button, right aligned */
     .export-dd .menu {
-        position: fixed; /* always viewport-anchored */
-        left: 0; /* JS overwrites */
-        top: 0; /* JS overwrites */
-        right: auto;
-        bottom: auto;
-        display: none; /* shown when <details open> */
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        display: none; /* shown when [open] */
         z-index: 4000;
         min-width: 220px;
         max-width: 92vw;
-        /* your existing styling */
+        max-height: 60vh;
+        overflow: auto;
         background: var(--card);
+        color: var(--text);
         border: 1px solid var(--border);
         border-radius: 10px;
         box-shadow: 0 12px 28px rgba(2,12,27,.15);
         padding: .25rem;
-        color: var(--text);
     }
 
-    /* show when open — placement still handled in JS */
+    /* show menu when the details is open */
     .export-dd[open] .menu {
         display: block;
     }
 
-    /* menu items (unchanged) */
+    /* items */
     .export-dd .dropdown-item {
         width: 100%;
         text-align: left;
@@ -706,14 +714,14 @@ article.content {
         margin: .25rem .5rem;
     }
 
+
 /* transparent overlay so outside-click works on mobile/desktop */
 .export-dd-overlay {
     position: fixed;
     inset: 0;
-    z-index: 3999; /* just under the panel */
+    z-index: 3999;
     background: transparent;
 }
-
 
 /* =====================================================================
    Resume readable column
@@ -871,8 +879,6 @@ article.content {
 /* =====================================================================
    VISUALS (D3)  cohesive theme with safe defaults
 ===================================================================== */
-
-/* KPI tiles + equal-height cards */
 .card.viz-card .card-body {
     padding: 1rem 1.1rem;
 }
@@ -891,7 +897,6 @@ article.content {
     height: 100%;
 }
 
-/* Axes & grid */
 .d3-axis-x text, .d3-axis-y text {
     fill: var(--viz-text);
     font-size: 12px;
@@ -906,8 +911,6 @@ article.content {
     shape-rendering: crispEdges;
 }
 
-/* Bars/marks  give a default fill so charts arent black
-   (D3 can still override by setting fill attribute or style) */
 svg .d3-bar, svg .d3-hbar {
     fill: var(--viz-bar);
     opacity: .95;
@@ -919,7 +922,6 @@ svg .d3-bar, svg .d3-hbar {
         filter: brightness(1.05);
     }
 
-/* Optional primitives if used */
 svg .d3-line {
     fill: none;
     stroke-width: 2;
@@ -929,7 +931,6 @@ svg .d3-dot {
     r: 3;
 }
 
-/* Tooltip */
 .viz-tip, #d3-tooltip {
     position: fixed;
     z-index: 2000;
@@ -951,25 +952,10 @@ svg .d3-dot {
         opacity: 1;
     }
 
-/* Cross-visual highlighting */
-svg [data-viz-type] {
-    transition: opacity .16s ease, filter .16s ease, stroke .16s ease;
-}
-
-svg [data-viz-type].muted {
+.viz-dim {
     opacity: .28;
-    filter: grayscale(.35);
-}
-
-svg [data-viz-type].em {
-    filter: drop-shadow(0 6px 16px rgba(91,141,239,.28));
-}
-
-svg [data-viz-type].selected {
-    opacity: 1 !important;
-    stroke: rgba(91,141,239,.65);
-    stroke-width: 2.2px;
-    paint-order: stroke fill;
+    filter: grayscale(.25);
+    transition: opacity .12s ease, filter .12s ease;
 }
 
 .viz-selected {
@@ -977,45 +963,10 @@ svg [data-viz-type].selected {
     outline-offset: 1px;
 }
 
-.viz-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .35rem 1rem;
-    font-size: .85rem;
-    color: var(--muted);
-}
-
-.viz-legend .legend-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: .45rem;
-    padding: .2rem .35rem;
-    border-radius: 999px;
-    background: rgba(99,102,241,.08);
-}
-
-.viz-legend .legend-chip .swatch {
-    width: .75rem;
-    height: .75rem;
-    border-radius: 50%;
-    box-shadow: inset 0 0 0 1px rgba(15,23,42,.08);
-}
-
-svg .fail-bubble,
-svg .viz-focus-dot {
-    pointer-events: none;
-}
-
-svg .viz-focus-line {
-    pointer-events: none;
-}
-
-/* SVG typography baseline */
 svg text {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-/* Tighten very small screens */
 @media (max-width: 576px) {
     .card.viz-card .card-body {
         padding: .9rem;
@@ -1027,8 +978,6 @@ svg text {
 }
 
 /* === Consolidated Home glue (new utilities used by Index.razor) === */
-
-/* Visually hidden heading for a11y (Quick stats) */
 .visually-hidden {
     position: absolute !important;
     width: 1px;
@@ -1042,23 +991,19 @@ svg text {
     white-space: nowrap;
 }
 
-/* Subtle break below the hero to separate image-backed section */
 .hero-break {
     height: 8px;
 }
 
-/* Body container spacing in the merged page */
 .z-body {
     scroll-margin-top: 80px;
 }
 
-/* Hero body text utility (the About page used this class; keep parity on Home) */
 .text-hero-body {
     color: rgba(255,255,255,.96) !important;
     text-shadow: 0 2px 10px rgba(0,0,0,.5);
 }
 
-/* Live stats mini-cards (used in the hero right column) */
 .mini-stat {
     min-width: 120px;
 }
@@ -1075,11 +1020,11 @@ svg text {
     font-size: .85rem;
 }
 
-/* Ensure list-group items (Skills) blend with your card theme even if Bootstrap changes */
 .list-group-flush .list-group-item {
     background: var(--card);
     border-color: var(--border);
 }
+
 /* Compact hero variant */
 .hero-copy.compact {
     padding: .75rem 1rem;
@@ -1121,9 +1066,6 @@ svg text {
         font-size: .82rem;
     }
 
-/* Option: hide hero card on md as well (uncomment if you want even cleaner fold) */
-/* .d-none.d-lg-block { display: none !important; }  @media (min-width: 1200px) { .d-none.d-lg-block { display:block !important; } } */
-
 /* Compact quick stats cards */
 .quick-stats {
     --qs-pad-y: .65rem;
@@ -1141,7 +1083,6 @@ svg text {
     }
 }
 
-/* Shrink the big number/headline and tighten type */
 .quick-stats .fs-1 {
     font-size: clamp(1.1rem, 1vw + .7rem, 1.6rem);
     line-height: 1.05;
@@ -1150,19 +1091,16 @@ svg text {
     text-wrap: balance;
 }
 
-/* Secondary line a hair smaller and dimmer */
 .quick-stats .text-muted {
     font-size: .92rem;
     color: var(--muted) !important;
 }
 
-/* The long Current Focus text gets an even smaller headline */
 .quick-stats .focus-card .fs-1 {
     font-size: clamp(1rem, .9vw + .6rem, 1.45rem);
     letter-spacing: .1px;
 }
 
-/* Optional: slightly denser shadows & radius for a crisper feel */
 .quick-stats .card {
     border-radius: 12px;
     box-shadow: 0 6px 18px rgba(2,12,27,.06);
@@ -1172,20 +1110,19 @@ svg text {
 .home-hero {
     padding-block: .15rem;
 }
-    /* less top/bottom padding */
+
     .home-hero.hero-photo {
-        min-height: clamp(140px, 15vh, 200px); /* shorter overall */
-        margin-bottom: .5rem; /* smaller gap below hero */
+        min-height: clamp(140px, 15vh, 200px);
+        margin-bottom: .5rem;
     }
 
     .home-hero .container {
         padding-block: .15rem;
     }
-/* tighten inner container */
+
 .hero-copy.compact {
     padding: .5rem .75rem;
 }
-/* denser glass panel */
 
 .home-hero .hero-title {
     font-size: clamp(1rem, .9vw + .6rem, 1.4rem);
@@ -1198,12 +1135,10 @@ svg text {
     margin-bottom: .25rem;
 }
 
-/* Buttons a bit smaller to match the compact header */
 .home-hero .btn-md {
     padding: .34rem .7rem;
 }
 
-/* Optional: hide the bullet list on md+ (keeps mobile value, saves desktop space) */
 @media (min-width: 768px) {
     .home-hero .hero-points {
         display: none;
@@ -1221,7 +1156,6 @@ svg text {
         }
 }
 
-/* Even tighter divider under the hero (or set to display:none) */
 .hero-break {
     height: 4px;
 }
@@ -1230,10 +1164,9 @@ svg text {
 .home-hero .row {
     justify-content: flex-start !important;
 }
-/* belt-and-suspenders */
 
 .home-hero .hero-copy.wide {
-    max-width: none; /* remove the 52â€“54rem cap */
+    max-width: none;
     width: 50%;
     margin-left: 0;
 }
@@ -1242,29 +1175,24 @@ svg text {
     .home-hero .hero-copy.wide {
         width: 50%;
     }
-    /* span most of the hero on desktop */
 }
 
-/* Optional: pull it a hair closer to the left edge inside the container */
 @media (min-width: 992px) {
     .home-hero .container {
         padding-left: .5rem;
     }
-    /* subtle left shift */
 }
 
 /* === Hero focal point: show the dog on the top-right === */
 .home-hero {
-    --hero-focal-x: 30%; /* more to the right */
-    --hero-focal-y: 50%; /* a bit higher */
+    --hero-focal-x: 30%;
+    --hero-focal-y: 50%;
 }
 
-    /* Force this to override earlier rules */
     .home-hero .hero-bg img {
         object-position: var(--hero-focal-x) var(--hero-focal-y) !important;
     }
 
-/* Tweak per breakpoint (dog sits lower on narrow crops) */
 @media (max-width: 992px) {
     .home-hero {
         --hero-focal-x: 50%;
@@ -1290,13 +1218,11 @@ svg text {
         display: block !important;
     }
 
-    /* remove the 260px column effect */
     .nav-host {
         width: auto;
         display: contents;
     }
 
-    /* slide-in drawer */
     .app-sidebar {
         position: fixed;
         top: 0;
@@ -1307,7 +1233,7 @@ svg text {
         transition: transform .22s ease;
         z-index: 1050;
         box-shadow: 0 18px 46px rgba(2,12,27,.35);
-        border-right: 0; /* shadow delineates edge */
+        border-right: 0;
         overflow: auto;
     }
 
@@ -1315,7 +1241,6 @@ svg text {
             transform: translateX(0);
         }
 
-    /* dim page behind drawer */
     .nav-overlay {
         position: fixed;
         inset: 0;
@@ -1331,7 +1256,6 @@ svg text {
             pointer-events: auto;
         }
 
-    /* floating menu button */
     .nav-toggle {
         position: fixed;
         left: .5rem;
@@ -1344,136 +1268,7 @@ svg text {
         box-shadow: 0 10px 30px rgba(2,12,27,.2);
     }
 
-    /* give content some breathing room */
     main.flex-fill > .page {
         padding: .75rem;
     }
 }
-
-/* --- Fix: Export menu clipped/empty on mobile (<details> clipping) --- */
-.resume-header {
-    overflow: visible;
-}
-/* make sure the header doesn't clip */
-
-.export-dd {
-    position: relative; /* anchor the absolute menu */
-    overflow: visible; /* allow it to escape on mobile */
-    z-index: 1200; /* above page content */
-}
-
-    .export-dd .menu {
-        position: absolute;
-        right: 0;
-        top: calc(100% + 6px);
-        z-index: 1201; /* above its trigger */
-        color: var(--text); /* belt-and-suspenders text color */
-    }
-
-@media (max-width: 576px) {
-    .export-dd {
-        position: static;
-    }
-
-        /*.export-dd .menu {
-            position: fixed;
-            left: 12px;
-            right: 12px;
-            bottom: 12px;
-            top: auto;
-            min-width: 0;
-            border-radius: 12px;
-            z-index: 4000;*/ /* above everything else */
-        /*}*/
-}
-/* Make sure nothing up the chain clips it */
-.resume-header,
-.resume-inner,
-.resume-container {
-    overflow: visible;
-}
-
-/* Improve tap behavior on iOS */
-.export-dd > summary {
-    -webkit-tap-highlight-color: transparent;
-}
-
-/* Desktop (unchanged) keeps the absolute popover */
-.export-dd {
-    position: relative;
-    overflow: visible;
-    z-index: 1200;
-}
-
-    .export-dd .menu {
-        position: absolute;
-        right: 0;
-        top: calc(100% + 6px);
-        min-width: 220px;
-        z-index: 1201;
-    }
-
-/* Phones: anchor the menu to the button instead of a bottom sheet */
-@media (max-width: 576px) {
-    /* ensure nothing up the chain clips it */
-    .resume-header,
-    .resume-inner,
-    .resume-container,
-    main.flex-fill > .page {
-        overflow: visible;
-    }
-
-    .export-dd {
-        position: relative;
-        isolation: isolate;
-    }
-        /* own stacking context */
-        .export-dd > summary {
-            position: relative;
-            z-index: 1;
-        }
-        /* keep the button tappable */
-
-        .export-dd .menu {
-            position: absolute;
-            right: 0;
-            top: calc(100% + 8px); /* sits just under the button */
-            min-width: 220px;
-            width: max-content;
-            max-width: 92vw; /* donâ€™t overflow the viewport */
-            z-index: 4000; /* above any overlays */
-            box-shadow: 0 12px 28px rgba(2,12,27,.15);
-        }
-}
-
-/* Force the menu to anchor to the viewport (not clipped by parents) */
-.export-dd[open] .menu {
-    position: fixed !important;
-    left: var(--export-left, 12px) !important;
-    top: var(--export-top, 56px) !important;
-    right: auto !important;
-    bottom: auto !important;
-    z-index: 4000 !important;
-    max-height: 60vh;
-    overflow: auto;
-    display: block; /* ensure visible when open */
-}
-
-/* Overlay that sits behind the export menu so "outside click" works on mobile */
-.export-dd-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 3999; /* just under the menu (menu is 4000) */
-    background: transparent; /* keep the page visible */
-}
-
-
-
-
-
-
-
-
-
-
-

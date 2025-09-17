@@ -421,6 +421,17 @@
         return t.Substring(0, Math.Max(0, max)).TrimEnd() + "…";
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Position the export menu next to the button,
+            // and wire up outside-click / Esc to close.
+            await JS.InvokeVoidAsync("resume.initExportDropdowns");
+        }
+    }
+
+
     private static string FormatDateRange(DateTime start, DateTime? end)
     {
         var to = (end ?? DateTime.Today);
