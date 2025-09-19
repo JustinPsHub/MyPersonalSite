@@ -1272,3 +1272,169 @@ svg text {
         padding: .75rem;
     }
 }
+/* === 1-PAGER (on-screen/print) ======================================= */
+#resume-summary {
+    background: #fff;
+    color: #111;
+    font-size: .95rem;
+    line-height: 1.35;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    hyphens: auto;
+}
+
+    #resume-summary a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    /* Header */
+    #resume-summary .rs-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: .5rem;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: .2rem;
+        margin-bottom: .35rem;
+    }
+
+    #resume-summary .rs-name {
+        font-weight: 800;
+        font-size: 1.25rem;
+        margin: 0
+    }
+
+    #resume-summary .rs-role {
+        font-variant-caps: all-small-caps;
+        letter-spacing: .06em;
+        font-weight: 700
+    }
+
+    #resume-summary .rs-tag {
+        margin: .2rem 0 0;
+        color: #444
+    }
+
+    #resume-summary .rs-contact {
+        text-align: right;
+        white-space: nowrap;
+        color: #333;
+        font-size: .9rem
+    }
+
+    /* Grid */
+    #resume-summary .rs-grid {
+        display: grid;
+        grid-template-columns: 34% 1fr;
+        gap: .6rem .8rem
+    }
+
+    #resume-summary .rs-label {
+        font-variant-caps: all-small-caps;
+        letter-spacing: .06em;
+        font-weight: 700;
+        color: #222;
+        margin: 0 0 .25rem
+    }
+
+    #resume-summary .rs-left .rs-block + .rs-block {
+        margin-top: .5rem
+    }
+
+    #resume-summary .rs-list {
+        list-style: none;
+        margin: 0;
+        padding: 0
+    }
+
+        #resume-summary .rs-list li {
+            margin: .12rem 0
+        }
+
+    #resume-summary .rs-edu-title {
+        font-weight: 700
+    }
+
+    #resume-summary .rs-edu-org {
+        color: #555
+    }
+
+    #resume-summary .rs-edu-dates {
+        color: #666;
+        font-size: .9rem
+    }
+
+    #resume-summary .rs-right .rs-block + .rs-block {
+        margin-top: .6rem
+    }
+
+    /* Jobs */
+    #resume-summary .rs-job + .rs-job {
+        margin-top: .5rem
+    }
+
+    #resume-summary .rs-job-head {
+        display: flex;
+        justify-content: space-between;
+        gap: .5rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: .15rem;
+        margin-bottom: .2rem;
+    }
+
+    #resume-summary .rs-job-title {
+        font-weight: 700
+    }
+
+    #resume-summary .rs-job-org {
+        color: #555;
+        font-size: .95rem
+    }
+
+    #resume-summary .rs-job-dates {
+        color: #666;
+        font-size: .9rem;
+        white-space: nowrap
+    }
+
+    #resume-summary .rs-job-desc {
+        color: #444;
+        margin-bottom: .15rem
+    }
+
+    #resume-summary .rs-bullets {
+        margin: .2rem 0 0 .95rem
+    }
+
+        #resume-summary .rs-bullets li {
+            margin: .12rem 0
+        }
+
+/* Print: lock to 1 page, tighten spacing a hair */
+@media print {
+    @page {
+        size: Letter;
+        margin: .6in;
+    }
+
+    nav, aside, header.site, footer.site, .d-print-none {
+        display: none !important;
+    }
+
+    #resume-summary {
+        font-size: .92rem;
+    }
+
+        #resume-summary .rs-grid {
+            grid-template-columns: 33% 1fr;
+            gap: .5rem .7rem;
+        }
+
+        #resume-summary .rs-job,
+        #resume-summary .rs-block {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+}
+

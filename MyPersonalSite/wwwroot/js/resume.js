@@ -142,9 +142,19 @@ body{font-family:Segoe UI,Arial,sans-serif;line-height:1.35;color:#111;}
                 if (!menu.contains(e.target) && !summary.contains(e.target)) close();
             }, true);
 
-            // allow <button data-close> inside menu
+            // ✅ allow <a data-close> to navigate (download), but still close the menu.
             menu.addEventListener('click', (e) => {
-                if (e.target.closest('[data-close]')) { e.preventDefault(); close(); }
+                const el = e.target.closest('[data-close]');
+                if (!el) return;
+
+                if (el.tagName === 'A') {
+                    setTimeout(close, 0); // let navigation happen, then close
+                    return;               // do NOT preventDefault
+                }
+
+                // Buttons or other non-anchor elements
+                e.preventDefault();
+                close();
             });
         });
     }
