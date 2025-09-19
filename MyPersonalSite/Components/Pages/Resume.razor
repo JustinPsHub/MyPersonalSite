@@ -41,13 +41,36 @@
                     <details class="export-dd d-print-none">
                         <summary class="btn btn-outline-secondary btn-sm" aria-label="Export options">Export ▾</summary>
                         <div class="menu">
+                            <!-- PDF still uses print helpers -->
                             <button class="dropdown-item" @onclick="PrintFullAsync">PDF (full)</button>
-                            <button class="dropdown-item" @onclick="ExportWordFullAsync">Word (full)</button>
+
+                            <!-- CHANGE: Word (full) now a direct link -->
+                            <a class="dropdown-item"
+                               href="/resume/Justin_Palmer_Resume_Full.doc"
+                               download
+                               target="_blank"
+                               rel="noopener"
+                               data-close>
+                                Word (full)
+                            </a>
+
                             <div class="dropdown-divider"></div>
+
                             <button class="dropdown-item" @onclick="PrintShortAsync">PDF (1-page)</button>
-                            <button class="dropdown-item" @onclick="ExportWordShortAsync">Word (1-page)</button>
+
+                            <!-- CHANGE: Word (1-page) now a direct link -->
+                            <a class="dropdown-item"
+                               href="/resume/Justin_Palmer_Resume_OnePage_Tighter.docx"
+                               download
+                               target="_blank"
+                               rel="noopener"
+                               data-close>
+                                Word (1-page)
+                            </a>
                         </div>
                     </details>
+
+
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 small text-muted">
@@ -514,12 +537,12 @@
     private Task PrintFullAsync()
         => JS.InvokeVoidAsync("resume.printResume", ".resume-container").AsTask();
 
-    private Task ExportWordFullAsync()
-        => JS.InvokeVoidAsync("resume.exportWord", ".resume-container", "Justin-Resume").AsTask();
+    // private Task ExportWordFullAsync()
+    //     => JS.InvokeVoidAsync("resume.exportWord", ".resume-container", "Justin-Resume").AsTask();
 
     private Task PrintShortAsync()
         => JS.InvokeVoidAsync("resume.printResume", "#resume-summary").AsTask();
 
-    private Task ExportWordShortAsync()
-        => JS.InvokeVoidAsync("resume.exportWord", "#resume-summary", "Justin-Resume-1pg").AsTask();
+    // private Task ExportWordShortAsync()
+    //     => JS.InvokeVoidAsync("resume.exportWord", "#resume-summary", "Justin-Resume-1pg").AsTask();
 }
