@@ -41,10 +41,17 @@
                     <details class="export-dd d-print-none">
                         <summary class="btn btn-outline-secondary btn-sm" aria-label="Export options">Export ▾</summary>
                         <div class="menu">
-                            <!-- PDF still uses print helpers -->
-                            <button class="dropdown-item" @onclick="PrintFullAsync">PDF (full)</button>
+                            <!-- PDFs: static files you exported from Word -->
+                            <a class="dropdown-item"
+                               href="/resume/Justin_Palmer_Resume_Full.pdf"
+                               download
+                               target="_blank"
+                               rel="noopener"
+                               data-close>
+                                PDF (full)
+                            </a>
 
-                            <!-- CHANGE: Word (full) now a direct link -->
+                            <!-- Word: static files -->
                             <a class="dropdown-item"
                                href="/resume/Justin_Palmer_Resume_Full.doc"
                                download
@@ -56,9 +63,15 @@
 
                             <div class="dropdown-divider"></div>
 
-                            <button class="dropdown-item" @onclick="PrintShortAsync">PDF (1-page)</button>
+                            <a class="dropdown-item"
+                               href="/resume/Justin_Palmer_Resume_OnePage_Tighter.pdf"
+                               download
+                               target="_blank"
+                               rel="noopener"
+                               data-close>
+                                PDF (1-page)
+                            </a>
 
-                            <!-- CHANGE: Word (1-page) now a direct link -->
                             <a class="dropdown-item"
                                href="/resume/Justin_Palmer_Resume_OnePage_Tighter.docx"
                                download
@@ -67,10 +80,13 @@
                                data-close>
                                 Word (1-page)
                             </a>
-                        </div>
+
+                            <!-- Optional: keep HTML print fallbacks -->
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item" @onclick="PrintFullAsync" data-close>Print from page (full)</button>
+@*                             <button class="dropdown-item" @onclick="PrintShortAsync" data-close>Print from page (1-page)</button>
+ *@                        </div>
                     </details>
-
-
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 small text-muted">
@@ -454,7 +470,6 @@
         }
     }
 
-
     private static string FormatDateRange(DateTime start, DateTime? end)
     {
         var to = (end ?? DateTime.Today);
@@ -499,6 +514,7 @@
                    .ThenByDescending(e => e.StartDate);
     }
 
+
     private IEnumerable<ResumeEntryDto> GetExperience(int take = 2)
         => GetExperienceAll().Take(take);
 
@@ -533,16 +549,10 @@
         => e.BulletPoints?.OrderBy(b => b.Order).Select(b => b.Text).Take(count)
            ?? Enumerable.Empty<string>();
 
-    // === Exports (resume.js must provide resume.printResume / resume.exportWord) ===
+    // === Print fallbacks (optional) ===
     private Task PrintFullAsync()
         => JS.InvokeVoidAsync("resume.printResume", ".resume-container").AsTask();
 
-    // private Task ExportWordFullAsync()
-    //     => JS.InvokeVoidAsync("resume.exportWord", ".resume-container", "Justin-Resume").AsTask();
-
     private Task PrintShortAsync()
         => JS.InvokeVoidAsync("resume.printResume", "#resume-summary").AsTask();
-
-    // private Task ExportWordShortAsync()
-    //     => JS.InvokeVoidAsync("resume.exportWord", "#resume-summary", "Justin-Resume-1pg").AsTask();
 }
