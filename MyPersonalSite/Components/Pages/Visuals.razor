@@ -6,23 +6,26 @@
 @inject IJSRuntime JS
 
 <HeadContent>
+
     <!-- Keep your extras; d3Interop is loaded globally or in App.razor -->
     <script src='@Assets["js/visuals-extra.js"]' defer></script>
 </HeadContent>
-
+<div class="container-fluid">
 <h1 class="display-5 mb-3">Visuals</h1>
 <p class="text-muted">Interactive charts powered by EF Core + minimal APIs + D3.</p>
-
+</div>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <div class="alert alert-danger"><strong>Error:</strong> @_error</div>
 }
-else if (_years is null || _orgsRaw is null || _kpis is null || _velocity is null || _ado is null)
+else if (_years is null || _orgsRaw is null || _kpis is null || _velocity is null || _ado is null
+         || _velocityMix is null || _reliability is null)
 {
     <p>Loading…</p>
 }
+
 else
-{
+{<div class="container-fluid">
     <!-- KPI strip -->
     <div class="card shadow-sm mb-3 viz-card">
         <div class="card-body">
@@ -91,7 +94,7 @@ else
                                 <option value="labelDesc">Z–A</option>
                             </select>
                             <input class="form-control form-control-sm" style="width:90px" type="number" min="3" max="25" step="1"
-                                   @bind="_topN" @bind:event="oninput" />
+                                   @bind="TopN" />
                         </div>
                     </div>
                     <small class="text-muted">Showing @((_orgsView?.Count ?? 0)) of @((_orgsRaw?.Count ?? 0)) — click to filter matching bubbles</small>
@@ -131,7 +134,7 @@ else
                             <h5 class="card-title mb-0">Capability mix per quarter</h5>
                             <small class="text-muted">Stacked deployment counts by delivery surface.</small>
                         </div>
-                        <div class="viz-legend" id="velocity-stack-legend"></div>
+                        <div class="viz-legend ms-lg-auto" id="velocity-stack-legend"></div>
                     </div>
                     <div id="velocity-stack-chart" style="width:100%; max-width:1200px; min-height:360px;"></div>
                 </div>
@@ -148,6 +151,7 @@ else
                 </div>
             </div>
         </div>
+    </div>
     </div>
 }
 
@@ -173,6 +177,16 @@ else
     private bool _d3Ready;
     private bool _yearDrawn, _orgDrawn, _kpiDrawn, _velDrawn, _adoDrawn;
     private bool _yearTrendDrawn, _orgBubbleDrawn, _velocityStackDrawn, _reliabilityDrawn;
+
+    private int TopN
+    {
+        get => _topN;
+        set
+        {
+            _topN = value;
+            ApplyFilters(); // Call your filter logic here!
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -200,7 +214,7 @@ else
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // Return if no data or all done
-        if ((_years is null && _orgsView is null && _velocity is null && _kpis is null && _velocityMix is null && _reliability is null)
+        if ((_years is null || _orgsView is null || _velocity is null || _kpis is null || _ado is null || _velocityMix is null || _reliability is null)
             || (_yearDrawn && _orgDrawn && _kpiDrawn && _velDrawn && _adoDrawn && _yearTrendDrawn && _orgBubbleDrawn && _velocityStackDrawn && _reliabilityDrawn))
         {
             return;
@@ -221,7 +235,9 @@ else
             {
                 for (var i = 0; i < _kpis.Count; i++)
                 {
-                    await JS.InvokeVoidAsync("d3Interop.renderSparkline", $"#kpi-spark-{i}", _kpis[i].spark, new { width = 140, height = 28 });
+                    await JS.InvokeVoidAsync("d3Interop.renderSparkline", $"#kpi-spark-{i}", _kpis[i].spark,
+              new { width = 140, height = 28, palette = "blues" });
+
                 }
                 _kpiDrawn = true;
             }
@@ -248,9 +264,9 @@ else
             try
             {
                 await JS.InvokeVoidAsync("d3Interop.renderBulletChart",
-                    "#ado-bullet", _ado,
-                    new { height = 56 }
-                );
+     "#ado-bullet", _ado,
+     new { height = 56, palette = "blues" });
+
                 _adoDrawn = true;
             }
             catch { await Task.Delay(50); StateHasChanged(); return; }
@@ -276,9 +292,10 @@ else
             try
             {
                 await JS.InvokeVoidAsync("d3Interop.renderHorizontalBarChart",
-                    "#entries-by-org-chart", _orgsView,
-                    new { barHeight = 28, sort = _sort, palette = "tableau", colorBy = "org" }
-                );
+    "#entries-by-org-chart", _orgsView,
+    new { barHeight = 48, sort = _sort, palette = "tableau", colorBy = "org", yLabelMode = "wrap", yLabelWidth = 240 }
+);
+
                 _orgDrawn = true;
             }
             catch { await Task.Delay(100); StateHasChanged(); return; }
@@ -329,6 +346,13 @@ else
         }
     }
 
+    private void ApplyFilters()
+    {
+        ApplyOrgView();
+        // No need for StateHasChanged() here, as the framework handles it
+        // when an event handler is invoked.
+    }
+
     private void ApplyOrgView()
     {
         if (_orgsRaw is null) return;
@@ -348,8 +372,7 @@ else
     private void OnSortChanged(ChangeEventArgs e)
     {
         _sort = e.Value?.ToString() ?? "countDesc";
-        ApplyOrgView();
-        StateHasChanged();
+        ApplyFilters();
     }
 
     // DTOs for this page
@@ -373,4 +396,3 @@ else
     }
     private sealed class BulletModel { public double value { get; set; } public double? target { get; set; } public double? max { get; set; } }
 }
-s
