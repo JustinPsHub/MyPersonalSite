@@ -42,7 +42,7 @@ public static class DbInitializer
                 StartDate = new DateTime(2022, 11, 1),
                 EndDate = null,
                 Description =
-                    "Lead engineer for Treasury’s shared virtual analytics environment (600+ users). " +
+                    "Lead engineer for Treasury’s shared virtual analytics environment (250+ users). " +
                     "Deliver secure, data-driven .NET solutions, Python/R runtime governance, dimensional modeling, " +
                     "and automation across Azure/Power BI.",
                 TechStack = "C#/.NET, SQL Server/SSIS, Power BI (Service & RS), Azure (VMs/DevOps), Python, R, LDAP/AD, REST, Git, CI/CD",

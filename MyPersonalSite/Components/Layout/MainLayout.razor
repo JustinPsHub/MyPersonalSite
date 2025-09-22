@@ -1,28 +1,30 @@
 ﻿@inherits LayoutComponentBase
 
+<header class="topbar d-flex px-2 align-items-center gap-2">
+    <button type="button"
+            class="btn btn-outline-secondary btn-sm nav-toggle-top"
+            data-nav-toggle
+            aria-controls="appSidebar"
+            aria-expanded="false"
+            aria-label="Open menu">
+        ☰
+    </button>
+
+    <a class="text-decoration-none fw-bold" href="/">Justin Palmer</a>
+</header>
+
 <div class="app">
     <div class="nav-host">
-        <NavMenu IsOpen="_navOpen" OnClose="CloseNav" />
+        <NavMenu />
     </div>
 
-    <main class="flex-fill">
-        <!-- Mobile toggle button -->
-    @*     <button class="nav-toggle d-lg-none"
-                @onclick="ToggleNav"
-                aria-controls="appSidebar"
-                aria-expanded="@_navOpen">
-            ☰ Menu
-        </button> *@
-
-        <div class="page">
+    <main class="flex-fill push-target">
+     
             @Body
-        </div>
+    
     </main>
 
-    <!-- Dim overlay when drawer is open -->
-    <button class="nav-overlay @( _navOpen ? "show" : null )"
-            @onclick="CloseNav"
-            aria-label="Close menu"></button>
+    <button class="nav-overlay" data-nav-close aria-label="Close menu"></button>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
@@ -30,22 +32,3 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
-
-@code {
-    private bool _navOpen;
-
-    [Inject] NavigationManager Nav { get; set; } = default!;
-
-    void ToggleNav() => _navOpen = !_navOpen;
-    void CloseNav() => _navOpen = false;
-
-    protected override void OnInitialized()
-    {
-        // Auto-close drawer after navigation
-        Nav.LocationChanged += (_, __) =>
-        {
-            _navOpen = false;
-            InvokeAsync(StateHasChanged);
-        };
-    }
-}

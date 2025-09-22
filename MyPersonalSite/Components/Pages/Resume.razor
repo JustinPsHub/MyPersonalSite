@@ -18,7 +18,7 @@
     <meta itemprop="email" content="justinraypalmer@gmail.com" />
 </div>
 
-<section class="resume-container">
+<section class="container-fluid resume-container">
     <div class="resume-inner">
         <!-- HEADER -->
         <header class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3 resume-header">
@@ -184,7 +184,7 @@
 
                                     @if (!string.IsNullOrWhiteSpace(ex.Description))
                                     {
-                                        <div class="rs-job-desc">@Shorten(ex.Description, 160)</div>
+                                        <div class="rs-job-desc">ex.Description</div>
                                     }
 
                                     @if (TakeBullets(ex, 3).Any())
@@ -254,7 +254,7 @@
 
                         @if (!string.IsNullOrWhiteSpace(e.Description))
                         {
-                            <p class="mb-2 small text-muted">@Shorten(e.Description, 160)</p>
+                            <p class="mb-2 small text-muted">@e.Description</p>
                         }
 
                         @if (bullets?.Any() == true)
@@ -297,7 +297,7 @@
 
                         @if (!string.IsNullOrWhiteSpace(ed.Description))
                         {
-                            <p class="mb-2 small text-muted">@Shorten(ed.Description, 140)</p>
+                            <p class="mb-2 small text-muted">@ed.Description</p>
                         }
                     </article>
                 }

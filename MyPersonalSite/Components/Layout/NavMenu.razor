@@ -1,6 +1,6 @@
-﻿@* Drawer-aware sidebar. No @rendermode here *@
+﻿@* Drawer-aware sidebar *@
 <aside id="appSidebar"
-       class="app-sidebar @(IsOpen ? "open" : null)"
+       class="app-sidebar p-3 @(IsOpen ? "open" : null)"
        role="navigation"
        aria-label="Main">
     <div class="sidebar-header d-flex justify-content-between align-items-center mb-2">
@@ -8,21 +8,22 @@
         <button type="button"
                 class="btn btn-sm btn-outline-light d-lg-none mb-0"
                 aria-label="Close menu"
-                @onclick="OnClose">
+                data-nav-close>
             ✕
         </button>
     </div>
 
     <nav class="nav flex-column gap-1">
-        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link" @onclick="OnClose">Home</NavLink>
-        <NavLink href="/resume" class="nav-link" @onclick="OnClose">Resume</NavLink>
-        <NavLink href="/visuals" class="nav-link" @onclick="OnClose">Visuals</NavLink>
+        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link" data-nav-close>Home</NavLink>
+        <NavLink href="/resume" class="nav-link" data-nav-close>Resume</NavLink>
+        <NavLink href="/visuals" class="nav-link" data-nav-close>Visuals</NavLink>
     </nav>
 
     <div class="mt-auto small opacity-75 d-none d-lg-block">
         © @DateTime.UtcNow.Year
     </div>
 </aside>
+
 
 @code {
     [Parameter] public bool IsOpen { get; set; }
