@@ -251,16 +251,26 @@ main {
 /* =====================================================================
    Resume Page
 ===================================================================== */
+/* =====================================================================
+   Resume Page Layout
+===================================================================== */
+
+/* This is a readable column for the resume content */
 .resume-inner {
-    max-width: 1100px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 1rem; /* Added padding for smaller viewports */
+    width: 90%; /* Ensures it fills its container */
+}
+/* Add this inside the "Resume Page Layout" section of your app.css */
+
+.exp-title {
+    font-weight: 700; /* 700 is the numeric value for bold */
 }
 
+/* --- On large screens, create the wide, off-center layout --- */
 @media (min-width: 992px) {
-    .resume-inner {
-        padding: 0; /* Remove padding on larger screens */
+    .resume-container.container {
+        max-width: 85%; /* Make the container much wider than the default */
+        margin-left: 5%; /* Position it off-center to the left */
+        margin-right: auto;
     }
 }
 
@@ -361,4 +371,17 @@ main {
         border-radius: 3px;
         display: inline-block;
     }
+
+/*
+  On small screens, rotate the x-axis labels on the capability mix chart
+  to prevent them from overlapping.
+*/
+@media (max-width: 767.98px) {
+    #velocity-stack-chart .d3-axis-x text {
+        /* Aligns the end of the text to the tick mark */
+        text-anchor: end;
+        /* Rotates the text and nudges it into place */
+        transform: translateX(-8px) translateY(8px) rotate(-45deg);
+    }
+}
 

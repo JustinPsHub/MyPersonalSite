@@ -469,19 +469,22 @@
     };
 
     // Capability mix stacked columns
+    // Capability mix stacked columns
     api.renderVelocityStacked = function (selector, data, opts) {
         if (!window.d3 || !data?.length) return;
         const el = clear(selector); if (!el) return;
 
         const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 360 });
 
-        const keys = Object.keys(data[0]).filter(k => k !== "period");
-        const labels = {
-            apps: "Web Apps",
-            funcs: "Azure Functions",
-            adf: "Azure Data Factory",
-            pbi: "Power BI"
-        };
+        // Use explicit keys (and keep only those that exist in the data)
+        const SERIES = [
+            { key: "apps", label: "Web Apps" },
+            { key: "funcs", label: "Azure Functions" },
+            { key: "adf", label: "Azure Data Factory" },
+            { key: "pbi", label: "Power BI" }
+        ];
+        const keys = SERIES.map(s => s.key).filter(k => k in data[0]);
+        const labelOf = k => (SERIES.find(s => s.key === k)?.label ?? k);
 
         const stack = d3.stack().keys(keys);
         const stacked = stack(data.map(d => ({ ...d })));
@@ -495,12 +498,12 @@
         const axY = g.append("g").call(d3.axisLeft(y).ticks(5));
         styleAxis(axX); styleAxis(axY);
 
-        const palette = [COLORS.brand, COLORS.accent1, COLORS.accent2, "#38bdf8", COLORS.accent3];
+        const palette = [COLORS.brand, COLORS.accent1, COLORS.accent2, "#38bdf8"];
         const color = d3.scaleOrdinal(palette).domain(keys);
 
         const layers = g.selectAll("g.layer").data(stacked).enter().append("g").attr("class", "layer");
-
-        layers.selectAll("rect").data(d => d.map(v => Object.assign({}, v, { key: d.key }))).enter().append("rect")
+        layers.selectAll("rect")
+            .data(d => d.map(v => Object.assign({}, v, { key: d.key }))).enter().append("rect")
             .attr("class", "stack-segment")
             .attr("x", d => x(d.data.period))
             .attr("y", innerH)
@@ -510,31 +513,50 @@
             .attr("fill", d => gradient(svg, color(d.key)))
             .on("mouseenter", (ev, d) => {
                 const value = d.data[d.key];
-                const html = `<div style="font-weight:700">${labels[d.key] || d.key}</div>
-                  <div style="color:${COLORS.muted}">${d.data.period}</div>
-                  <div style="font-weight:700">${fmt(value)}</div>`;
-                tip.show(html, ev.clientX, ev.clientY);
+                tip.show(
+                    `<div style="font-weight:700">${labelOf(d.key)}</div>
+           <div style="color:${COLORS.muted}">${d.data.period}</div>
+           <div style="font-weight:700">${fmt(value)}</div>`,
+                    ev.clientX, ev.clientY);
             })
             .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
             .on("mouseleave", () => tip.hide())
-            .transition().duration(700).attr("y", d => y(d[1])).attr("height", d => Math.max(0, y(d[0]) - y(d[1])));
+            .transition().duration(700)
+            .attr("y", d => y(d[1]))
+            .attr("height", d => Math.max(0, y(d[0]) - y(d[1])));
 
-        const legendSel = opts?.legend ? document.querySelector(opts.legend) : null;
-        if (legendSel) {
-            legendSel.innerHTML = "";
-            legendSel.classList.add("viz-legend");
-            keys.forEach(k => {
-                const chip = document.createElement("span");
-                chip.className = "legend-chip";
-                const swatch = document.createElement("span");
-                swatch.className = "swatch";
-                swatch.style.background = color(k);
-                chip.appendChild(swatch);
-                chip.appendChild(document.createTextNode(labels[k] || k));
-                legendSel.appendChild(chip);
-            });
+        // ---- Legend ----
+        if (opts?.legend) {
+            const host = typeof opts.legend === "string" ? document.querySelector(opts.legend) : opts.legend;
+            if (host) {
+                host.innerHTML = "";
+                host.classList.add("viz-legend");
+                keys.forEach(k => {
+                    const item = document.createElement("span");
+                    item.className = "legend-item";
+
+                    const sw = document.createElement("span");
+                    sw.className = "legend-swatch";
+                    sw.style.background = color(k);
+
+                    const txt = document.createElement("span");
+                    txt.className = "legend-text";
+                    txt.textContent = labelOf(k);
+
+                    item.appendChild(sw);
+                    item.appendChild(txt);
+                    host.appendChild(item);
+
+                    // Optional: toggle layer visibility
+                    item.addEventListener("click", () => {
+                        const off = item.classList.toggle("off");
+                        d3.select(el).selectAll(`.layer`).filter(d => d.key === k).style("opacity", off ? 0.15 : 1);
+                    });
+                });
+            }
         }
     };
+
 
     // Reliability rolling success
     api.renderReliabilityArea = function (selector, data, opts) {
