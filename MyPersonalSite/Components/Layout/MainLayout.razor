@@ -1,34 +1,57 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-<header class="topbar d-flex px-2 align-items-center gap-2">
-    <button type="button"
-            class="btn btn-outline-secondary btn-sm nav-toggle-top"
-            data-nav-toggle
-            aria-controls="appSidebar"
-            aria-expanded="false"
-            aria-label="Open menu">
-        ☰
-    </button>
+<header class="site-header">
+    <div class="header-inner">
+        <button type="button"
+                class="nav-toggle-top"
+                data-nav-toggle
+                aria-controls="appSidebar"
+                aria-expanded="false"
+                aria-label="Open menu">
+            Menu
+        </button>
 
-    <a class="text-decoration-none fw-bold" href="/">Justin Palmer</a>
+        <div class="brand-block">
+            <a class="brand-title" href="/">Justin Palmer</a>
+            <span class="brand-subtitle">Cloud and data developer</span>
+        </div>
+
+        <nav class="header-nav d-none d-lg-flex">
+            <a href="/">Overview</a>
+            <a href="/resume">Resume</a>
+            <a href="/visuals">Visuals</a>
+            <a href="/about">Approach</a>
+            <a href="/platform">Platform</a>
+        </nav>
+
+        <div class="header-actions d-none d-md-flex">
+            <a class="btn btn-sm btn-outline-dark" href="/resume">Resume</a>
+            <a class="btn btn-sm btn-primary" href="mailto:justinraypalmer@gmail.com">Contact</a>
+        </div>
+    </div>
 </header>
 
-<div class="app">
+<div class="app-shell">
     <div class="nav-host">
         <NavMenu />
     </div>
 
-    <main class="flex-fill push-target">
-     
-            @Body
-    
+    <main class="content-area">
+        @Body
     </main>
 
     <button class="nav-overlay" data-nav-close aria-label="Close menu"></button>
 </div>
 
+<footer class="site-footer">
+    <div class="d-flex flex-column flex-md-row gap-2 justify-content-between">
+        <span>Justin Palmer � Cloud and data developer</span>
+        <span>Focused on Azure data platforms, .NET APIs, and production analytics.</span>
+    </div>
+</footer>
+
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
+    <span class="dismiss">Close</span>
 </div>

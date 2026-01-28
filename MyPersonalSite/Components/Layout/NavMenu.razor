@@ -1,29 +1,38 @@
-﻿@* Drawer-aware sidebar *@
+@* Drawer-aware sidebar *@
 <aside id="appSidebar"
-       class="app-sidebar p-3 @(IsOpen ? "open" : null)"
+       class="app-sidebar @(IsOpen ? "open" : null)"
        role="navigation"
        aria-label="Main">
-    <div class="sidebar-header d-flex justify-content-between align-items-center mb-2">
-        <a class="text-decoration-none text-white fw-bold" href="/">Justin Palmer</a>
+    <div class="sidebar-header">
+        <div>
+            <div class="sidebar-name">Justin Palmer</div>
+            <div class="sidebar-role">Cloud and Data Developer</div>
+        </div>
         <button type="button"
-                class="btn btn-sm btn-outline-light d-lg-none mb-0"
+                class="btn btn-sm btn-outline-light d-lg-none"
                 aria-label="Close menu"
                 data-nav-close>
-            ✕
+            Close
         </button>
     </div>
 
-    <nav class="nav flex-column gap-1">
-        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link" data-nav-close>Home</NavLink>
+    <nav class="nav flex-column gap-1 sidebar-links">
+        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link" data-nav-close>Overview</NavLink>
         <NavLink href="/resume" class="nav-link" data-nav-close>Resume</NavLink>
         <NavLink href="/visuals" class="nav-link" data-nav-close>Visuals</NavLink>
+        <NavLink href="/about" class="nav-link" data-nav-close>Approach</NavLink>
+        <NavLink href="/platform" class="nav-link" data-nav-close>Platform</NavLink>
     </nav>
 
-    <div class="mt-auto small opacity-75 d-none d-lg-block">
-        © @DateTime.UtcNow.Year
+    <div class="sidebar-actions">
+        <a class="btn btn-sm btn-outline-light" href="/resume" data-nav-close>Download resume</a>
+        <a class="btn btn-sm btn-light" href="mailto:justinraypalmer@gmail.com">Email</a>
+    </div>
+
+    <div class="sidebar-footer small">
+        Hillsboro, Ohio � Open to remote and hybrid work
     </div>
 </aside>
-
 
 @code {
     [Parameter] public bool IsOpen { get; set; }

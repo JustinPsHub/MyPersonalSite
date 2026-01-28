@@ -1,64 +1,88 @@
-﻿@page "/weather"
-@attribute [StreamRendering]
+﻿@page "/platform"
+@page "/weather"
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>Platform - Justin Palmer</PageTitle>
 
-<h1>Weather</h1>
+<div class="container-fluid">
+    <section class="hero" role="region" aria-labelledby="platform-title">
+        <div class="hero-grid">
+            <div>
+                <span class="tag">Cloud platform view</span>
+                <h1 id="platform-title" class="hero-title">End-to-end cloud data platform</h1>
+                <p class="hero-copy">
+                    A blueprint for delivering secure data products, modern front ends, and reliable analytics
+                    with Azure services and .NET APIs.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="chip">Blazor / MVC / React</span>
+                    <span class="chip">.NET APIs</span>
+                    <span class="chip">Azure SQL</span>
+                    <span class="chip">Synapse SQL pool</span>
+                </div>
+            </div>
+            <div class="hero-panel">
+                <h2 class="h5 mb-2">Delivery pillars</h2>
+                <ul class="list-unstyled d-grid gap-2">
+                    <li>Reliable data ingestion and transformation.</li>
+                    <li>Governed access and security boundaries.</li>
+                    <li>Analytics experiences designed for action.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
 
-<p>This component demonstrates showing data.</p>
+    <section class="section">
+        <h2 class="section-title">Architecture layers</h2>
+        <div class="row g-3">
+            <div class="col-12 col-lg-4 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">Experience layer</div>
+                    <div class="tile-text">Blazor, MVC, and React front ends optimized for business workflows.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">API layer</div>
+                    <div class="tile-text">.NET APIs and Azure Functions exposing secure data services.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">Data layer</div>
+                    <div class="tile-text">Azure SQL Database and Synapse dedicated SQL pool with clean models.</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th aria-label="Temperature in Celsius">Temp. (C)</th>
-                <th aria-label="Temperature in Farenheit">Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+    <section class="section">
+        <h2 class="section-title">Analytics and governance</h2>
+        <div class="row g-3">
+            <div class="col-12 col-lg-6 reveal">
+                <div class="card compact p-4 h-100">
+                    <h3 class="h5">Power BI delivery</h3>
+                    <p>
+                        Row-level security, automated refresh, and dashboards aligned to operational outcomes.
+                    </p>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 reveal">
+                <div class="card compact p-4 h-100">
+                    <h3 class="h5">Operations and automation</h3>
+                    <p>
+                        CI/CD pipelines, monitoring, and alerting to keep data products stable and trusted.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-@code {
-    private WeatherForecast[]? forecasts;
+    <section class="section">
+        <div class="card p-4 reveal">
+            <h3 class="h5">Need a cloud platform builder?</h3>
+            <p class="mb-2">Let's talk about the role and the delivery goals.</p>
+            <a class="btn btn-primary" href="mailto:justinraypalmer@gmail.com">Reach out</a>
+        </div>
+    </section>
+</div>
 
-    protected override async Task OnInitializedAsync()
-    {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
-
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = startDate.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = summaries[Random.Shared.Next(summaries.Length)]
-        }).ToArray();
-    }
-
-    private class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
-}
