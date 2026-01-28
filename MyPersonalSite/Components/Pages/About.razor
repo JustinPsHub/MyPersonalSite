@@ -3,57 +3,69 @@
 <PageTitle>Approach - Justin Palmer</PageTitle>
 
 <div class="container-fluid">
-    <section class="hero" role="region" aria-labelledby="about-title">
+    <section class="hero" role="region" aria-labelledby="approach-title">
         <div class="hero-grid">
             <div>
-                <span class="tag">Approach</span>
-                <h1 id="about-title" class="hero-title">How I architect governed data platforms</h1>
+                <span class="tag">Technical Philosophy</span>
+                <h1 id="approach-title" class="hero-title">Federal-grade engineering standards</h1>
                 <p class="hero-copy">
-                    I blend enterprise data engineering, GenAI enablement, and application delivery so teams
-                    can trust their analytics and access data through secure, intuitive experiences.
+                    My approach is defined by the constraints I work within: high security, strict compliance, 
+                    and mission-critical uptime. I build .NET platforms designed to survive decades of policy changes 
+                    and technology shifts.
                 </p>
                 <div class="d-flex flex-wrap gap-2">
-                    <span class="chip">Azure OpenAI</span>
-                    <span class="chip">RAG</span>
-                    <span class="chip">Tabular models</span>
-                    <span class="chip">Governance</span>
+                    <span class="chip">Zero Trust Security</span>
+                    <span class="chip">Legacy Modernization</span>
+                    <span class="chip">Audit-Ready Code</span>
+                    <span class="chip">Domain-Driven Design</span>
                 </div>
             </div>
             <div class="hero-panel">
-                <h2 class="h5 mb-2">Principles</h2>
+                <h2 class="h5 mb-2">Core Tenets</h2>
                 <ul class="list-unstyled d-grid gap-2">
-                    <li>Start with data contracts, lineage, and security boundaries.</li>
-                    <li>Design for retrieval, observability, and scale from day one.</li>
-                    <li>Automate CI/CD, access workflows, and compliance reviews.</li>
+                    <li><strong>Security is Architecture:</strong> Identity, logging, and access controls are foundational, not afterthoughts.</li>
+                    <li><strong>Boring is Better:</strong> I choose proven, LTS (Long Term Support) technologies over bleeding-edge hype.</li>
+                    <li><strong>Data Stewardship:</strong> Applications come and go; data is the permanent asset that must be protected.</li>
                 </ul>
             </div>
         </div>
     </section>
 
     <section class="section">
-        <h2 class="section-title">Delivery framework</h2>
+        <h2 class="section-title">The "Strangler Fig" Methodology</h2>
+        <p class="section-subtitle">
+            How I modernize legacy government systems without risking the mission.
+        </p>
+        <p class="mb-2">
+            In large enterprises, "rewrite from scratch" is rarely a viable option. 
+            My architectural approach focuses on incremental modernization—slowly replacing legacy mainframe/desktop functions 
+            with modern cloud-native slices until the old system becomes obsolete.
+        </p>
         <div class="row g-3">
             <div class="col-12 col-lg-4 reveal">
                 <div class="tile h-100">
-                    <div class="tile-title">Discovery and alignment</div>
+                    <div class="tile-title">1. Isolate</div>
                     <div class="tile-text">
-                        Define success metrics, governance boundaries, and data contracts up front.
+                        Identify a specific domain within the legacy monolith (e.g., "Payroll Processing"). 
+                        Build an anti-corruption layer (ACL) or API facade to wrap the legacy logic.
                     </div>
                 </div>
             </div>
             <div class="col-12 col-lg-4 reveal">
                 <div class="tile h-100">
-                    <div class="tile-title">Platform build-out</div>
+                    <div class="tile-title">2. Modernize</div>
                     <div class="tile-text">
-                        Implement Azure Data Factory, Data Lake, tabular models, and secure API surfaces.
+                        Rebuild that specific domain using <strong>.NET 8</strong> and <strong>Azure SQL</strong>. 
+                        Deploy it alongside the old system, routing traffic to the new service via the API gateway.
                     </div>
                 </div>
             </div>
             <div class="col-12 col-lg-4 reveal">
                 <div class="tile h-100">
-                    <div class="tile-title">Insight delivery</div>
+                    <div class="tile-title">3. Extinguish</div>
                     <div class="tile-text">
-                        Publish governed Power BI experiences and GenAI copilots for self-service access.
+                        Once the new micro-app is stable and data parity is confirmed, turn off the legacy module. 
+                        Repeat the process for the next domain.
                     </div>
                 </div>
             </div>
@@ -61,23 +73,102 @@
     </section>
 
     <section class="section">
-        <h2 class="section-title">How I partner</h2>
+        <h2 class="section-title">Technical Standards</h2>
+        <p class="section-subtitle">
+            The non-negotiables I bring to every engineering team.
+        </p>
         <div class="row g-3">
             <div class="col-12 col-lg-6 reveal">
                 <div class="card compact p-4 h-100">
-                    <h3 class="h5">Security and compliance</h3>
+                    <h3 class="h5">Defense in Depth</h3>
                     <p>
-                        I prioritize least-privilege access, clear data lineage, and audit-ready delivery,
-                        including vulnerability scans and change control for package intake.
+                        I architect systems assuming the network is already compromised (Zero Trust).
                     </p>
+                    <ul class="list-unstyled d-grid gap-2 mb-0 text-muted small">
+                        <li><strong>Identity:</strong> Entra ID (OIDC) for all authentication. No custom auth schemes.</li>
+                        <li><strong>Networking:</strong> Azure Private Link for all PaaS services (SQL, Key Vault, Storage).</li>
+                        <li><strong>Secrets:</strong> Managed Identities over connection strings. No secrets in code.</li>
+                    </ul>
                 </div>
             </div>
             <div class="col-12 col-lg-6 reveal">
                 <div class="card compact p-4 h-100">
-                    <h3 class="h5">Team cadence</h3>
+                    <h3 class="h5">Maintainability & Quality</h3>
                     <p>
-                        Transparent communication, documentation, and shared demos keep stakeholders aligned.
+                        Code is read much more often than it is written. I enforce patterns that make onboarding easy.
                     </p>
+                    <ul class="list-unstyled d-grid gap-2 mb-0 text-muted small">
+                        <li><strong>Clean Architecture:</strong> Strict separation of UI, Application, Domain, and Infrastructure layers.</li>
+                        <li><strong>Testing:</strong> Integration tests over unit tests. I prioritize testing the "happy path" and critical failure modes.</li>
+                        <li><strong>Documentation:</strong> OpenAPI (Swagger) is the contract. If it's not in the spec, it doesn't exist.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">The Toolchain</h2>
+        <p class="section-subtitle">
+            My preferred stack for building audit-ready enterprise platforms.
+        </p>
+        <div class="row g-3">
+            <div class="col-12 col-lg-4 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">Experience</div>
+                    <div class="tile-text">
+                        <strong>Blazor (Server & WASM):</strong> For building rich, internal LOB applications with C# reusability.
+                    </div>
+                    <div class="tile-text">
+                        <strong>D3.js:</strong> For complex, bespoke data visualizations that standard libraries can't handle.
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">Compute & API</div>
+                    <div class="tile-text">
+                        <strong>ASP.NET Core 8:</strong> The backbone of high-performance, cross-platform APIs.
+                    </div>
+                    <div class="tile-text">
+                        <strong>Azure Functions:</strong> For event-driven background processing and lightweight integrations.
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">Data & Governance</div>
+                    <div class="tile-text">
+                        <strong>Azure SQL / Synapse:</strong> For structured, relational data at scale.
+                    </div>
+                    <div class="tile-text">
+                        <strong>Entra ID (Azure AD):</strong> The single source of truth for identity and role-based access (RBAC).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Leadership Style</h2>
+        <p class="section-subtitle">
+            Bridging the gap between "Government Policy" and "Git Commit".
+        </p>
+        <div class="row g-3">
+            <div class="col-12 col-lg-6 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">Translator</div>
+                    <div class="tile-text">
+                        My value add is translating bureaucratic requirements (NIST controls, Section 508, Security Policies) into clear, actionable technical tickets for developers. I keep the "red tape" away from the IDE.
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">Remote-First Mentor</div>
+                    <div class="tile-text">
+                        Having worked remotely for years, I emphasize asynchronous communication. Code reviews, architecture decision records (ADRs), and recorded demos replace endless meetings.
+                    </div>
                 </div>
             </div>
         </div>
@@ -85,11 +176,11 @@
 
     <section class="section">
         <div class="card p-4 reveal">
-            <h3 class="h5">Let's talk about your data platform roadmap.</h3>
-            <p class="mb-2">Available for senior data engineering roles focused on Azure, GenAI, and analytics.</p>
-            <a class="btn btn-primary" href="mailto:justinraypalmer@gmail.com">Contact me</a>
+            <h3 class="h5">Align with this approach?</h3>
+            <p class="mb-2">
+                I am looking for roles where architecture, security, and long-term thinking are valued over short-term hacks.
+            </p>
+            <a class="btn btn-primary" href="mailto:justinraypalmer@gmail.com">Let's Discuss</a>
         </div>
     </section>
 </div>
-
-

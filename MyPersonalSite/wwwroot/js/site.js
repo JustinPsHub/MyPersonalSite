@@ -112,9 +112,22 @@ window.site = (function () {
         URL.revokeObjectURL(url);
     }
 
+    function downloadFile(url, filename) {
+        if (!url) return;
+        const a = document.createElement("a");
+        a.href = url;
+        if (filename) a.download = filename;
+        a.rel = "noopener";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
     return {
         initTheme, getTheme, setTheme,
         animateCount, revealOnScroll,
-        printElement, exportElementToWord
+        printElement, exportElementToWord,
+        downloadFile
     };
 })();

@@ -1,4 +1,4 @@
-@rendermode InteractiveServer
+﻿@rendermode InteractiveServer
 @page "/resume"
 @using System.Net.Http.Json
 @using System.Text.RegularExpressions
@@ -9,7 +9,7 @@
 @inject IJSRuntime JS
 @using MyPersonalSite.Components.Shared
 
-<PageTitle>Resume - Justin Palmer - Senior Data Engineer & Cloud Architect</PageTitle>
+<PageTitle>Resume - Justin Palmer - Senior Cloud Engineer & Data Architect</PageTitle>
 
 <!-- Quiet heading for a11y -->
 <div class="container-fluid pt-3">
@@ -25,25 +25,32 @@
             <div>
                 <h2 class="h3 mb-1" itemprop="name">Justin Palmer</h2>
                 <div class="d-flex flex-wrap gap-2 mb-1">
-                    <span class="chip" itemprop="jobTitle">Senior Data Engineer &amp; Cloud Architect</span>
+                    <span class="chip" itemprop="jobTitle">Senior Cloud Engineer &amp; Data Architect</span>
+                    <span class="chip">Azure Synapse / Data Factory</span>
                     <span class="chip">Azure OpenAI / RAG</span>
-                    <span class="chip">Tabular Models / Power BI</span>
                     <link itemprop="url" href="@Nav.BaseUri" />
                 </div>
                 <p class="mb-0 text-muted small">
-                    Senior Data Engineer &amp; Cloud Architect with 16+ years delivering enterprise Azure data platforms,
-                    governed analytics, and GenAI experiences with Blazor/React, .NET APIs, Azure Data Factory, and secure models.
+                    Senior Cloud Engineer &amp; Data Architect with 16+ years delivering enterprise data solutions
+                    and 8+ years building Azure cloud platforms, governed analytics, and GenAI solutions with secure
+                    networking, scalable APIs, and full-stack apps.
                 </p>
             </div>
 
             <div class="d-flex flex-column align-items-stretch align-items-md-end gap-2">
                 <div class="d-flex gap-2 align-items-center">
                     <details class="export-dd d-print-none">
-                        <summary class="btn btn-outline-secondary btn-sm" aria-label="Export options">Export v</summary>
+                        <summary class="btn btn-outline-secondary btn-sm" aria-label="Export options">Export</summary>
                         <div class="menu">
-                            <button class="dropdown-item" @onclick="PrintFullAsync" data-close>Print from page (full)</button>
-@*                             <button class="dropdown-item" @onclick="PrintShortAsync" data-close>Print from page (1-page)</button>
- *@                        </div>
+                            <a class="dropdown-item"
+                               href="/resume/jrp_resume_20260128.docx"
+                               download
+                               target="_blank"
+                               rel="noopener"
+                               data-close>
+                                Word
+                            </a>
+                        </div>
                     </details>
                 </div>
 
@@ -74,10 +81,10 @@
                 <header class="rs-header">
                     <div class="rs-nameblock">
                         <h1 class="rs-name">Justin Palmer</h1>
-                        <div class="rs-role">Senior Data Engineer &amp; Cloud Architect</div>
+                        <div class="rs-role">Senior Cloud Engineer &amp; Data Architect</div>
                         <p class="rs-tag">
-                            16+ years delivering Azure OpenAI RAG, enterprise tabular models, Azure Data Factory pipelines,
-                            Power BI governance, and Blazor/React + .NET APIs.
+                            16+ years delivering Azure-native data platforms, Synapse + ADF pipelines, GenAI (Azure OpenAI RAG),
+                            and secure API ecosystems with Blazor/MVC/React.
                         </p>
                     </div>
                     <div class="rs-contact">
@@ -91,20 +98,20 @@
                         <section class="rs-block">
                             <h3 class="rs-label">Skills</h3>
                             <ul class="rs-list">
-                                <li><strong>Big Data &amp; Cloud:</strong> Azure Data Factory, Functions, Azure SQL, Data Lake</li>
-                                <li><strong>GenAI &amp; LLM:</strong> Azure OpenAI, RAG, prompt engineering, AI-augmented dev (Windsurf, Codex, Claude)</li>
-                                <li><strong>Analytics &amp; Modeling:</strong> Tabular models, Power BI, DAX, star schema</li>
-                                <li><strong>App &amp; API:</strong> React, Blazor, ASP.NET Core Web API, C#, Python</li>
-                                <li><strong>Governance &amp; DevOps:</strong> RLS, vulnerability scanning, Azure DevOps CI/CD</li>
+                                <li><strong>Cloud Data Architecture:</strong> Synapse Dedicated Pools, ADF, Azure SQL, Data Lake Gen2, Event Grid, Blob</li>
+                                <li><strong>Full Stack:</strong> C#, ASP.NET Core, Blazor, MVC, React, Node.js, Python, REST, Swagger</li>
+                                <li><strong>AI &amp; Automation:</strong> Azure OpenAI, RAG, Windsurf, Codex, ChatGPT Pro, PowerShell</li>
+                                <li><strong>Security &amp; Networking:</strong> VNETs, Private Endpoints, inbound/outbound controls, Nexus</li>
+                                <li><strong>DevOps &amp; Governance:</strong> Azure DevOps, IaC, RLS, Data Governance</li>
                             </ul>
                         </section>
 
                         <section class="rs-block">
                             <h3 class="rs-label">Certifications</h3>
                             <ul class="rs-list">
-                                <li>Microsoft Azure AI Fundamentals (AI-900)</li>
-                                <li>Microsoft Azure Data Fundamentals (DP-900)</li>
-                                <li>Microsoft Azure Fundamentals (AZ-900)</li>
+                                <li>Microsoft Certified: Azure AI Fundamentals (AI-900)</li>
+                                <li>Microsoft Certified: Azure Data Fundamentals (DP-900)</li>
+                                <li>Microsoft Certified: Azure Fundamentals (AZ-900)</li>
                             </ul>
                         </section>
 
@@ -162,12 +169,12 @@
                         </section>
 
                         <section class="rs-block">
-                            <h3 class="rs-label">Selected Projects</h3>
+                            <h3 class="rs-label">Selected Impact</h3>
                             <ul class="rs-bullets">
                                 <li>Azure OpenAI <strong>RAG</strong> observability agent for Power BI audit logs.</li>
                                 <li>Human Capital <strong>Tabular Model</strong> with 25 fact tables and 90 dimensions.</li>
-                                <li>Azure <strong>ADF</strong> pipelines and <strong>Functions</strong> for automated ingestion and alerting.</li>
-                                <li>Blazor governance hub and React org chart app with secure .NET APIs.</li>
+                                <li>Azure <strong>ADF</strong> pipelines and Functions with timer/HTTP triggers.</li>
+                                <li>Secure API ecosystem with <strong>Swagger/OpenAPI</strong> documentation.</li>
                             </ul>
                         </section>
                     </main>
@@ -176,21 +183,21 @@
             <!-- =================== /1-PAGE SUMMARY =================== -->
             <!-- ===== TOP-OF-PAGE: Highlights -> Experience -> Education ===== -->
             <section class="mb-3" id="highlights">
-                <h2 class="sect">Highlights</h2>
+                <h2 class="sect">Professional Profile</h2>
                 <div class="exp">
-                    <ul class="exp-bullets">
-                        <li>Architected Azure OpenAI <strong>RAG</strong> agent indexing millions of Power BI audit log events.</li>
-                        <li>Built a Human Capital <strong>Tabular Model</strong> with 25 fact tables and 90 dimensions.</li>
-                        <li>Led Python environment governance with vulnerability scanning and CCB approvals.</li>
-                        <li>Delivered a React org chart app with .NET APIs and Azure SQL for real-time hierarchy data.</li>
-                        <li>Built production <strong>ADF</strong> pipelines and Azure Functions for automated ingestion and alerting.</li>
-                        <li>Migrated <strong>600+</strong> projects to Azure DevOps with reusable CI/CD templates.</li>
-                    </ul>
+                    <p class="mb-2">
+                        Senior Cloud Engineer and Data Architect with over 16 years of experience delivering secure,
+                        enterprise-scale data solutions. Specialized in architecting Azure-native Big Data pipelines,
+                        governed analytics, and Generative AI solutions that democratize data access across complex
+                        enterprise domains. Expert in AI-accelerated delivery with advanced agentic workflows
+                        (Windsurf, Codex, ChatGPT Pro). Proven track record of designing secure network architectures
+                        and API ecosystems in high-compliance federal sectors.
+                    </p>
                 </div>
             </section>
 
             <section class="mb-3" id="experience">
-                <h2 class="sect">Experience</h2>
+                <h2 class="sect">Professional Experience</h2>
 
                 @foreach (var e in GetExperienceAll())
                 {
@@ -268,56 +275,56 @@
 
             <!-- ===== BELOW THE FOLD: Skills, Certifications, Other DB-backed sections ===== -->
             <section class="mb-3" id="skills">
-                <h2 class="sect">Skills</h2>
+                <h2 class="sect">Technical Skills</h2>
                 <div class="row g-2">
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Big Data &amp; Cloud</div>
+                            <div class="tile-title mb-1">Cloud Data Architecture</div>
                             <div class="chips">
-                                @Chip("Azure Data Factory") @Chip("Azure Functions")
-                                @Chip("Azure SQL") @Chip("Blob Storage")
-                                @Chip("Data Lake") @Chip("Event-driven pipelines")
+                                @Chip("Azure Synapse (Dedicated Pools)") @Chip("Azure Data Factory")
+                                @Chip("Azure SQL") @Chip("Data Lake Gen2")
+                                @Chip("Event Grid") @Chip("Blob Storage")
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Generative AI &amp; LLM Engineering</div>
+                            <div class="tile-title mb-1">Full-Stack Engineering</div>
                             <div class="chips">
-                                @Chip("Azure OpenAI Service") @Chip("RAG")
-                                @Chip("Prompt engineering") @Chip("AI-augmented development")
-                                @Chip("Windsurf") @Chip("Codex") @Chip("Claude")
+                                @Chip("C#") @Chip("ASP.NET Core")
+                                @Chip("Blazor") @Chip("React") @Chip("MVC")
+                                @Chip("Node.js") @Chip("Python")
+                                @Chip("REST API Design") @Chip("Swagger/OpenAPI")
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Analytics &amp; Modeling</div>
+                            <div class="tile-title mb-1">AI &amp; Automation</div>
                             <div class="chips">
-                                @Chip("Tabular Models / Cubes") @Chip("Power BI")
-                                @Chip("DAX") @Chip("SSAS")
-                                @Chip("Incremental Refresh") @Chip("Star Schema Design")
+                                @Chip("Azure OpenAI Service") @Chip("RAG Patterns")
+                                @Chip("AI-Augmented Dev (Windsurf, Codex, ChatGPT Pro)")
+                                @Chip("PowerShell Automation")
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Application &amp; API</div>
+                            <div class="tile-title mb-1">Security &amp; Networking</div>
                             <div class="chips">
-                                @Chip("React") @Chip("Blazor")
-                                @Chip("ASP.NET Core Web API") @Chip("C#")
-                                @Chip("Python") @Chip("RESTful Services")
-                                @Chip("OAuth/OpenID Connect")
+                                @Chip("Azure VNETs") @Chip("Private Endpoints")
+                                @Chip("Inbound/Outbound Traffic Security")
+                                @Chip("Vulnerability Management (Nexus)")
+                                @Chip("OAuth/OIDC")
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Governance &amp; DevOps</div>
+                            <div class="tile-title mb-1">DevOps &amp; Governance</div>
                             <div class="chips">
-                                @Chip("RLS") @Chip("Vulnerability scanning")
-                                @Chip("Conda/Venv management") @Chip("Azure DevOps CI/CD")
-                                @Chip("Metadata governance")
+                                @Chip("Azure DevOps (CI/CD)") @Chip("Infrastructure as Code (IaC)")
+                                @Chip("Row-Level Security (RLS)") @Chip("Data Governance")
                             </div>
                         </div>
                     </div>
@@ -328,11 +335,10 @@
                 <h2 class="sect">Certifications</h2>
                 <div class="exp">
                     <div class="d-flex flex-wrap gap-2 mb-1">
-                        <a class="chip" href="https://www.credly.com/badges/fd62d8eb-1d69-4b3b-9138-44c50c2e86ae/public_url" target="_blank" rel="noopener">Microsoft Azure AI Fundamentals (AI-900)</a>
-                        <a class="chip" href="https://www.credly.com/badges/c430137f-c648-4e46-980e-c2670fa734d6/public_url" target="_blank" rel="noopener">Microsoft Azure Data Fundamentals (DP-900)</a>
-                        <a class="chip" href="https://www.credly.com/badges/15b0a37b-949e-4524-8712-8c69ab4030d8/public_url" target="_blank" rel="noopener">Microsoft Azure Fundamentals (AZ-900)</a>
+                        <span class="chip">Microsoft Certified: Azure AI Fundamentals (AI-900)</span>
+                        <span class="chip">Microsoft Certified: Azure Data Fundamentals (DP-900)</span>
+                        <span class="chip">Microsoft Certified: Azure Fundamentals (AZ-900)</span>
                     </div>
-                    <div class="text-muted small">Credly profile linked.</div>
                 </div>
             </section>
 
