@@ -9,7 +9,7 @@
 @inject IJSRuntime JS
 @using MyPersonalSite.Components.Shared
 
-<PageTitle>Resume - Justin Palmer - Cloud and Data Developer</PageTitle>
+<PageTitle>Resume - Justin Palmer - Senior Data Engineer & Cloud Architect</PageTitle>
 
 <!-- Quiet heading for a11y -->
 <div class="container-fluid pt-3">
@@ -25,14 +25,14 @@
             <div>
                 <h2 class="h3 mb-1" itemprop="name">Justin Palmer</h2>
                 <div class="d-flex flex-wrap gap-2 mb-1">
-                    <span class="chip" itemprop="jobTitle">Cloud and Data Developer</span>
-                    <span class="chip">Blazor / MVC / React</span>
-                    <span class="chip">Azure SQL / Synapse SQL pool</span>
+                    <span class="chip" itemprop="jobTitle">Senior Data Engineer &amp; Cloud Architect</span>
+                    <span class="chip">Azure OpenAI / RAG</span>
+                    <span class="chip">Tabular Models / Power BI</span>
                     <link itemprop="url" href="@Nav.BaseUri" />
                 </div>
                 <p class="mb-0 text-muted small">
-                    Builds secure .NET apps and APIs with Azure SQL and Synapse; delivers Blazor, MVC, and React front ends;
-                    integrates analytics with Power BI (governed RLS, refresh, and access automation).
+                    Senior Data Engineer &amp; Cloud Architect with 16+ years delivering enterprise Azure data platforms,
+                    governed analytics, and GenAI experiences with Blazor/React, .NET APIs, Azure Data Factory, and secure models.
                 </p>
             </div>
 
@@ -41,48 +41,6 @@
                     <details class="export-dd d-print-none">
                         <summary class="btn btn-outline-secondary btn-sm" aria-label="Export options">Export v</summary>
                         <div class="menu">
-                            <!-- PDFs: static files you exported from Word -->
-                            <a class="dropdown-item"
-                               href="/resume/Justin_Palmer_Resume_Full.pdf"
-                               download
-                               target="_blank"
-                               rel="noopener"
-                               data-close>
-                                PDF (full)
-                            </a>
-
-                            <!-- Word: static files -->
-                            <a class="dropdown-item"
-                               href="/resume/Justin_Palmer_Resume_Full.doc"
-                               download
-                               target="_blank"
-                               rel="noopener"
-                               data-close>
-                                Word (full)
-                            </a>
-
-                            <div class="dropdown-divider"></div>
-
-                            <a class="dropdown-item"
-                               href="/resume/Justin_Palmer_Resume_OnePage_Tighter.pdf"
-                               download
-                               target="_blank"
-                               rel="noopener"
-                               data-close>
-                                PDF (1-page)
-                            </a>
-
-                            <a class="dropdown-item"
-                               href="/resume/Justin_Palmer_Resume_OnePage_Tighter.docx"
-                               download
-                               target="_blank"
-                               rel="noopener"
-                               data-close>
-                                Word (1-page)
-                            </a>
-
-                            <!-- Optional: keep HTML print fallbacks -->
-                            <div class="dropdown-divider"></div>
                             <button class="dropdown-item" @onclick="PrintFullAsync" data-close>Print from page (full)</button>
 @*                             <button class="dropdown-item" @onclick="PrintShortAsync" data-close>Print from page (1-page)</button>
  *@                        </div>
@@ -92,6 +50,8 @@
                 <div class="d-flex flex-wrap gap-2 small text-muted">
                     <span class="chip">Hillsboro, Ohio</span>
                     <a class="chip" href="mailto:justinraypalmer@gmail.com" rel="noopener">justinraypalmer@gmail.com</a>
+                    <span class="chip">859-462-9740</span>
+                    <a class="chip" href="https://justinpalmer.com" target="_blank" rel="noopener">justinpalmer.com</a>
                 </div>
             </div>
         </header>
@@ -114,13 +74,14 @@
                 <header class="rs-header">
                     <div class="rs-nameblock">
                         <h1 class="rs-name">Justin Palmer</h1>
-                        <div class="rs-role">Cloud and Data Developer</div>
+                        <div class="rs-role">Senior Data Engineer &amp; Cloud Architect</div>
                         <p class="rs-tag">
-                            Secure .NET delivery; Blazor/MVC/React; Azure SQL and Synapse SQL pool; Power BI governance; Azure Functions and ADF ELT.
+                            16+ years delivering Azure OpenAI RAG, enterprise tabular models, Azure Data Factory pipelines,
+                            Power BI governance, and Blazor/React + .NET APIs.
                         </p>
                     </div>
                     <div class="rs-contact">
-                        Hillsboro, OH - <a href="mailto:justinraypalmer@gmail.com">justinraypalmer@gmail.com</a> - <span>@Nav.BaseUri</span>
+                        Hillsboro, OH - <a href="mailto:justinraypalmer@gmail.com">justinraypalmer@gmail.com</a> - 859-462-9740 - justinpalmer.com
                     </div>
                 </header>
 
@@ -130,24 +91,20 @@
                         <section class="rs-block">
                             <h3 class="rs-label">Skills</h3>
                             <ul class="rs-list">
-                                <li><strong>.NET:</strong> C#, ASP.NET Core, APIs, LINQ</li>
-                                <li><strong>Front end:</strong> Blazor, MVC, React, Razor</li>
-                                <li><strong>Data/BI:</strong> Azure SQL, Synapse SQL pool, EF Core, Power BI (Service/RS, RLS)</li>
-                                <li><strong>Cloud/DevOps:</strong> Azure, Azure DevOps, CI/CD, Git</li>
-                                <li><strong>Automation:</strong> Azure Functions, ADF, PowerShell, Graph</li>
-                                <li><strong>Security:</strong> CSP/headers, validation, antiforgery</li>
+                                <li><strong>Big Data &amp; Cloud:</strong> Azure Data Factory, Functions, Azure SQL, Data Lake</li>
+                                <li><strong>GenAI &amp; LLM:</strong> Azure OpenAI, RAG, prompt engineering, AI-augmented dev (Windsurf, Codex, Claude)</li>
+                                <li><strong>Analytics &amp; Modeling:</strong> Tabular models, Power BI, DAX, star schema</li>
+                                <li><strong>App &amp; API:</strong> React, Blazor, ASP.NET Core Web API, C#, Python</li>
+                                <li><strong>Governance &amp; DevOps:</strong> RLS, vulnerability scanning, Azure DevOps CI/CD</li>
                             </ul>
                         </section>
 
                         <section class="rs-block">
                             <h3 class="rs-label">Certifications</h3>
                             <ul class="rs-list">
-                                <li><strong>.NET:</strong> C#, ASP.NET Core, APIs, LINQ</li>
-                                <li><strong>Front end:</strong> Blazor, MVC, React, Razor</li>
-                                <li><strong>Data/BI:</strong> Azure SQL, Synapse SQL pool, EF Core, Power BI (Service/RS, RLS)</li>
-                                <li><strong>Cloud/DevOps:</strong> Azure, Azure DevOps, CI/CD, Git</li>
-                                <li><strong>Automation:</strong> Azure Functions, ADF, PowerShell, Graph</li>
-                                <li><strong>Security:</strong> CSP/headers, validation, antiforgery</li>
+                                <li>Microsoft Azure AI Fundamentals (AI-900)</li>
+                                <li>Microsoft Azure Data Fundamentals (DP-900)</li>
+                                <li>Microsoft Azure Fundamentals (AZ-900)</li>
                             </ul>
                         </section>
 
@@ -207,10 +164,10 @@
                         <section class="rs-block">
                             <h3 class="rs-label">Selected Projects</h3>
                             <ul class="rs-bullets">
-                                <li>.NET <strong>APIs</strong> and Azure <strong>Function Apps</strong> for governance and user lifecycle automation.</li>
-                                <li><strong>ADF ELT</strong> pipelines into Azure SQL and <strong>Synapse SQL pool</strong> with dimensional models.</li>
-                                <li>Enterprise <strong>Power BI RLS</strong> patterns and automated refresh/access flows.</li>
-                                <li>Blazor, MVC, and React front ends aligned to data products and stakeholder workflows.</li>
+                                <li>Azure OpenAI <strong>RAG</strong> observability agent for Power BI audit logs.</li>
+                                <li>Human Capital <strong>Tabular Model</strong> with 25 fact tables and 90 dimensions.</li>
+                                <li>Azure <strong>ADF</strong> pipelines and <strong>Functions</strong> for automated ingestion and alerting.</li>
+                                <li>Blazor governance hub and React org chart app with secure .NET APIs.</li>
                             </ul>
                         </section>
                     </main>
@@ -222,12 +179,12 @@
                 <h2 class="sect">Highlights</h2>
                 <div class="exp">
                     <ul class="exp-bullets">
-                        <li>Lead engineer for Treasury's shared analytics platform serving <strong>250+</strong> devs/analysts.</li>
-                        <li>Migrated <strong>600+</strong> projects to Azure DevOps; standardized Repos/Boards/Wikis/Pipelines.</li>
-                        <li>Admin for <strong>Power BI Service</strong> &amp; <strong>Report Server</strong> (upgrades, tuning, uptime).</li>
-                        <li>Built production <strong>ADF</strong> ELT into Azure SQL and <strong>Synapse SQL pool</strong>.</li>
-                        <li>Delivered <strong>.NET APIs</strong> and Azure Functions for automation and integration.</li>
-                        <li>Own enterprise <strong>RLS</strong> patterns and security tables; automate refresh/access.</li>
+                        <li>Architected Azure OpenAI <strong>RAG</strong> agent indexing millions of Power BI audit log events.</li>
+                        <li>Built a Human Capital <strong>Tabular Model</strong> with 25 fact tables and 90 dimensions.</li>
+                        <li>Led Python environment governance with vulnerability scanning and CCB approvals.</li>
+                        <li>Delivered a React org chart app with .NET APIs and Azure SQL for real-time hierarchy data.</li>
+                        <li>Built production <strong>ADF</strong> pipelines and Azure Functions for automated ingestion and alerting.</li>
+                        <li>Migrated <strong>600+</strong> projects to Azure DevOps with reusable CI/CD templates.</li>
                     </ul>
                 </div>
             </section>
@@ -315,40 +272,52 @@
                 <div class="row g-2">
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Languages &amp; Frameworks</div>
+                            <div class="tile-title mb-1">Big Data &amp; Cloud</div>
                             <div class="chips">
-                                @Chip("C# / .NET") @Chip("ASP.NET Core")
-                                @Chip("Blazor") @Chip("MVC") @Chip("React")
-                                @Chip("Python") @Chip("T-SQL")
-                                @Chip("PowerShell")
-                                @Chip("Razor") @Chip("REST APIs") @Chip("LINQ")
+                                @Chip("Azure Data Factory") @Chip("Azure Functions")
+                                @Chip("Azure SQL") @Chip("Blob Storage")
+                                @Chip("Data Lake") @Chip("Event-driven pipelines")
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Data &amp; BI</div>
+                            <div class="tile-title mb-1">Generative AI &amp; LLM Engineering</div>
                             <div class="chips">
-                                @Chip("Azure SQL") @Chip("Synapse SQL pool") @Chip("EF Core")
-                                @Chip("Power BI (Service/RS, RLS)") @Chip("DAX") @Chip("Dimensional Modeling")
+                                @Chip("Azure OpenAI Service") @Chip("RAG")
+                                @Chip("Prompt engineering") @Chip("AI-augmented development")
+                                @Chip("Windsurf") @Chip("Codex") @Chip("Claude")
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Cloud &amp; DevOps</div>
+                            <div class="tile-title mb-1">Analytics &amp; Modeling</div>
                             <div class="chips">
-                                @Chip("Azure") @Chip("Azure DevOps (Repos/Boards/Wikis/Pipelines)")
-                                @Chip("CI/CD") @Chip("Git") @Chip("Azure Functions") @Chip("Azure Data Factory")
+                                @Chip("Tabular Models / Cubes") @Chip("Power BI")
+                                @Chip("DAX") @Chip("SSAS")
+                                @Chip("Incremental Refresh") @Chip("Star Schema Design")
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Security &amp; Delivery</div>
+                            <div class="tile-title mb-1">Application &amp; API</div>
                             <div class="chips">
-                                @Chip("CSP / Headers / Validation") @Chip("Antiforgery") @Chip("Rate Limiting")
-                                @Chip("Agile / Scrum") @Chip("Mentoring & Reviews")
+                                @Chip("React") @Chip("Blazor")
+                                @Chip("ASP.NET Core Web API") @Chip("C#")
+                                @Chip("Python") @Chip("RESTful Services")
+                                @Chip("OAuth/OpenID Connect")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="tile h-100">
+                            <div class="tile-title mb-1">Governance &amp; DevOps</div>
+                            <div class="chips">
+                                @Chip("RLS") @Chip("Vulnerability scanning")
+                                @Chip("Conda/Venv management") @Chip("Azure DevOps CI/CD")
+                                @Chip("Metadata governance")
                             </div>
                         </div>
                     </div>
@@ -359,9 +328,9 @@
                 <h2 class="sect">Certifications</h2>
                 <div class="exp">
                     <div class="d-flex flex-wrap gap-2 mb-1">
-                        <a class="chip" href="https://www.credly.com/badges/15b0a37b-949e-4524-8712-8c69ab4030d8/public_url" target="_blank" rel="noopener">Azure Fundamentals</a>
-                        <a class="chip" href="https://www.credly.com/badges/c430137f-c648-4e46-980e-c2670fa734d6/public_url" target="_blank" rel="noopener">Azure Data Fundamentals</a>
-                        <a class="chip" href="https://www.credly.com/badges/fd62d8eb-1d69-4b3b-9138-44c50c2e86ae/public_url" target="_blank" rel="noopener">Azure AI Fundamentals</a>
+                        <a class="chip" href="https://www.credly.com/badges/fd62d8eb-1d69-4b3b-9138-44c50c2e86ae/public_url" target="_blank" rel="noopener">Microsoft Azure AI Fundamentals (AI-900)</a>
+                        <a class="chip" href="https://www.credly.com/badges/c430137f-c648-4e46-980e-c2670fa734d6/public_url" target="_blank" rel="noopener">Microsoft Azure Data Fundamentals (DP-900)</a>
+                        <a class="chip" href="https://www.credly.com/badges/15b0a37b-949e-4524-8712-8c69ab4030d8/public_url" target="_blank" rel="noopener">Microsoft Azure Fundamentals (AZ-900)</a>
                     </div>
                     <div class="text-muted small">Credly profile linked.</div>
                 </div>
