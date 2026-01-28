@@ -1,9 +1,10 @@
 ﻿@page "/Error"
+@rendermode InteractiveServer
 @using System.Diagnostics
 
 <PageTitle>Error - Justin Palmer</PageTitle>
 
-<div class="container-fluid">
+<div class="container-fluid page-shell">
     <div class="card p-4">
         <h1 class="h4 mb-2">Something went wrong</h1>
         <p class="mb-2">An error occurred while processing your request.</p>
@@ -35,3 +36,4 @@
     protected override void OnInitialized() =>
         RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
 }
+

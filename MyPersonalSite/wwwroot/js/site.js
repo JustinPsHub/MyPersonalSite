@@ -42,13 +42,31 @@ window.site = (function () {
         requestAnimationFrame(step);
     }
 
+    let revealObserver;
     function revealOnScroll() {
         const items = Array.from(document.querySelectorAll(".reveal"));
         if (!items.length) return;
-        const io = new IntersectionObserver((entries) => {
-            for (const e of entries) if (e.isIntersecting) { e.target.classList.add("reveal-in"); io.unobserve(e.target); }
-        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.08 });
-        items.forEach(el => io.observe(el));
+
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            items.forEach(el => el.classList.add("reveal-in"));
+            return;
+        }
+
+        if (!revealObserver) {
+            revealObserver = new IntersectionObserver((entries, obs) => {
+                for (const e of entries) {
+                    if (!e.isIntersecting) continue;
+                    e.target.classList.add("reveal-in");
+                    obs.unobserve(e.target);
+                }
+            }, { rootMargin: "0px 0px -10% 0px", threshold: 0.08 });
+        }
+
+        items.forEach(el => {
+            if (el.dataset.revealBound) return;
+            el.dataset.revealBound = "true";
+            revealObserver.observe(el);
+        });
     }
 
     /* =========================
