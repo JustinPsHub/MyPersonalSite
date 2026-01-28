@@ -5,14 +5,25 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
+<PageTitle>Visuals - Delivery Metrics</PageTitle>
+
 <HeadContent>
 
     <!-- Keep your extras; d3Interop is loaded globally or in App.razor -->
     <script src='@Assets["js/visuals-extra.js"]' defer></script>
 </HeadContent>
+
 <div class="container-fluid">
-<h1 class="display-5 mb-3">Visuals</h1>
-<p class="text-muted">Interactive charts powered by EF Core + minimal APIs + D3.</p>
+    <section class="viz-hero">
+        <div class="card p-4">
+            <span class="tag">Telemetry and delivery signals</span>
+            <h1 class="display-6 mb-2">Data platform visuals</h1>
+            <p class="mb-0">
+                Interactive charts powered by EF Core, .NET minimal APIs, and D3. These views highlight
+                delivery velocity, reliability, and operational impact for cloud data programs.
+            </p>
+        </div>
+    </section>
 </div>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
@@ -21,34 +32,35 @@
 else if (_years is null || _orgsRaw is null || _kpis is null || _velocity is null || _ado is null
          || _velocityMix is null || _reliability is null)
 {
-    <p>Loading…</p>
+    <p>Loading...</p>
 }
 
 else
-{<div class="container-fluid">
-    <!-- KPI strip -->
-    <div class="card shadow-sm mb-3 viz-card">
-        <div class="card-body">
-            <h5 class="card-title">Impact at a glance</h5>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 viz-kpi">
-                @for (var i = 0; i < _kpis.Count; i++)
-                {
-                    var k = _kpis[i];
-                    <div class="col">
-                        <div class="tile d-flex justify-content-between align-items-center h-100">
-                            <div>
-                                <div class="text-muted small">@k.label</div>
-                                <div id="@($"kpi-spark-{i}")" style="width:140px;height:28px"></div>
+{
+    <div class="container-fluid">
+        <!-- KPI strip -->
+        <div class="card shadow-sm mb-3 viz-card">
+            <div class="card-body">
+                <h5 class="card-title">Impact at a glance</h5>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 viz-kpi">
+                    @for (var i = 0; i < _kpis.Count; i++)
+                    {
+                        var k = _kpis[i];
+                        <div class="col">
+                            <div class="tile d-flex justify-content-between align-items-center h-100">
+                                <div>
+                                    <div class="text-muted small">@k.label</div>
+                                    <div id="@($"kpi-spark-{i}")" style="width:140px;height:28px"></div>
+                                </div>
+                                <div class="fs-4 fw-bold text-primary">@k.value</div>
                             </div>
-                            <div class="fs-4 fw-bold text-primary">@k.value</div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
         </div>
-    </div>
+
         <div class="row gy-4 viz-row">
-            <!-- Row 1 -->
             <div class="col-12 col-xl-6">
                 <div class="card shadow-sm viz-card h-100">
                     <div class="card-body">
@@ -67,12 +79,11 @@ else
                 </div>
             </div>
 
-            <!-- Row 2 -->
             <div class="col-12 col-xl-6">
                 <div class="card shadow-sm viz-card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Entries per Year</h5>
-                        <small class="text-muted">Data points: @_years.Count — click a year to cross-filter</small>
+                        <small class="text-muted">Data points: @_years.Count - click a year to cross-filter</small>
                         <div id="entries-per-year-chart" data-viz-type="year" style="width:100%; min-height:420px;"></div>
                     </div>
                 </div>
@@ -82,18 +93,17 @@ else
                 <div class="card shadow-sm viz-card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Organization impact bubbles</h5>
-                        <small class="text-muted">Same data as the bars — choose a bubble to cross-filter.</small>
+                        <small class="text-muted">Same data as the bars - choose a bubble to cross-filter.</small>
                         <div id="org-bubbles-chart" style="width:100%; min-height:320px;"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Row 3 -->
             <div class="col-12 col-xl-6">
                 <div class="card shadow-sm viz-card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Momentum by year</h5>
-                        <small class="text-muted">Cumulative impact — highlights when a bar is selected.</small>
+                        <small class="text-muted">Cumulative impact - highlights when a bar is selected.</small>
                         <div id="year-trend-chart" style="width:100%; min-height:320px;"></div>
                     </div>
                 </div>
@@ -108,36 +118,8 @@ else
                     </div>
                 </div>
             </div>
-
-            <!-- Row 4 (full width) -->
-            @* <div class="col-12">
-                <div class="card shadow-sm viz-card h-100">
-                    <div class="card-body">
-                        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between gap-2">
-                            <div>
-                                <h5 class="card-title mb-0">Capability mix per quarter</h5>
-                                <small class="text-muted">Stacked deployment counts by delivery surface.</small>
-                            </div>
-                            <div class="viz-legend ms-lg-auto" id="velocity-stack-legend"></div>
-                        </div>
-                        <div id="velocity-stack-chart" style="width:100%; min-height:360px;"></div>
-                    </div> *@
-                </div>
-          
-      
-
-
-     @*    <!-- Reliability (90 days) -->
-        <div class="col-12">
-            <div class="card shadow-sm viz-card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Reliability rolling 90 days</h5>
-                    <small class="text-muted">Success rate with surfaced incidents.</small>
-                    <div id="reliability-chart" style="width:100%; max-width:1200px; min-height:320px;"></div>
-                </div>
-            </div>
-        </div> *@
-    </div> 
+        </div>
+    </div>
 }
 
 @code {
@@ -381,3 +363,5 @@ else
     }
     private sealed class BulletModel { public double value { get; set; } public double? target { get; set; } public double? max { get; set; } }
 }
+
+

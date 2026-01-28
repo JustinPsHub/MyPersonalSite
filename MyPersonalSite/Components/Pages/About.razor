@@ -1,22 +1,95 @@
 ﻿@page "/about"
-@inject NavigationManager Nav
 
-<HeadContent>
-    <meta name="robots" content="noindex, follow" />
-    <link rel="canonical" href="@ToAbsolute("/")" />
-</HeadContent>
+<PageTitle>Approach - Justin Palmer</PageTitle>
 
-<div class="container py-5">
-    <p class="text-muted">This page has moved to the home page.</p>
-    <a class="btn btn-primary" href="/">Go to Home</a>
+<div class="container-fluid">
+    <section class="hero" role="region" aria-labelledby="about-title">
+        <div class="hero-grid">
+            <div>
+                <span class="tag">Approach</span>
+                <h1 id="about-title" class="hero-title">How I build cloud data products</h1>
+                <p class="hero-copy">
+                    I focus on clarity, secure data access, and predictable delivery. My work blends
+                    application development with data engineering so teams can ship faster and trust the output.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="chip">Azure data platforms</span>
+                    <span class="chip">.NET APIs</span>
+                    <span class="chip">Power BI governance</span>
+                    <span class="chip">Reliable delivery</span>
+                </div>
+            </div>
+            <div class="hero-panel">
+                <h2 class="h5 mb-2">Principles</h2>
+                <ul class="list-unstyled d-grid gap-2">
+                    <li>Start with the data model and security boundaries.</li>
+                    <li>Build APIs that make downstream analytics predictable.</li>
+                    <li>Automate deployment, monitoring, and access workflows.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Delivery framework</h2>
+        <div class="row g-3">
+            <div class="col-12 col-lg-4 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">Discovery and alignment</div>
+                    <div class="tile-text">
+                        Define success metrics, data contracts, and stakeholder needs up front.
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">Platform build-out</div>
+                    <div class="tile-text">
+                        Implement Azure SQL and Synapse storage, ELT pipelines, and API surfaces.
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 reveal">
+                <div class="tile h-100">
+                    <div class="tile-title">Insight delivery</div>
+                    <div class="tile-text">
+                        Publish governed Power BI experiences and operational dashboards.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">How I partner</h2>
+        <div class="row g-3">
+            <div class="col-12 col-lg-6 reveal">
+                <div class="card compact p-4 h-100">
+                    <h3 class="h5">Security and compliance</h3>
+                    <p>
+                        I prioritize least-privilege access, clear data lineage, and audit-ready delivery
+                        to support regulated industries.
+                    </p>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 reveal">
+                <div class="card compact p-4 h-100">
+                    <h3 class="h5">Team cadence</h3>
+                    <p>
+                        Transparent communication, documentation, and shared demos keep stakeholders aligned.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="card p-4 reveal">
+            <h3 class="h5">Let's talk about your data platform roadmap.</h3>
+            <p class="mb-2">Available for cloud developer roles focused on Azure, analytics, and automation.</p>
+            <a class="btn btn-primary" href="mailto:justinraypalmer@gmail.com">Contact me</a>
+        </div>
+    </section>
 </div>
 
-@code {
-    protected override void OnInitialized()
-    {
-        // Replace=true to update browser history and avoid back/forward loops
-        Nav.NavigateTo("/", true);
-    }
 
-    private string ToAbsolute(string path) => $"{Nav.BaseUri.TrimEnd('/')}{path}";
-}
