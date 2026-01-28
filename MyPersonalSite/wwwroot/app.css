@@ -1,7 +1,6 @@
 /* =====================================================================
-   Fonts
+   Fonts (loaded via <link> in App.razor)
 ===================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 /* =====================================================================
    Theme Tokens
@@ -85,6 +84,43 @@ main {
 /* =====================================================================
    Global UI
 ===================================================================== */
+.skip-link {
+    position: absolute;
+    left: -999px;
+    top: 0.75rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    z-index: 2000;
+}
+
+.skip-link:focus {
+    left: 1rem;
+    outline: 0;
+}
+
+.page-shell {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-shell-wide {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.ls-1 {
+    letter-spacing: 0.08em;
+}
+
+:root.nav-open,
+:root.nav-open body {
+    overflow: hidden;
+}
+
 .btn-primary {
     background: var(--brand);
     border-color: var(--brand);
@@ -105,6 +141,10 @@ main {
     color: #fff;
 }
 
+.theme-toggle {
+    white-space: nowrap;
+}
+
 .card {
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -114,6 +154,16 @@ main {
 
 .card.compact {
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.soft-card {
+    background: var(--bg-accent);
+    border-color: var(--border);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="dark"] .soft-card {
+    background: rgba(15, 27, 46, 0.85);
 }
 
 .tile {
@@ -166,8 +216,74 @@ main {
     border: 1px solid rgba(245, 158, 11, 0.22);
 }
 
+.impact-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.35rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.impact-card::after {
+    content: "";
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(15, 118, 110, 0.12);
+    right: -70px;
+    top: -70px;
+}
+
+.impact-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.impact-value {
+    font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.impact-label {
+    font-weight: 700;
+    margin-top: 0.15rem;
+}
+
+.impact-meta {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.impact-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-strong);
+}
+
 .section {
     margin-top: 2.2rem;
+}
+
+.dense-sections .section {
+    margin-top: 1.4rem;
+}
+
+.dense-sections .section-title {
+    margin-bottom: 0.6rem;
+}
+
+.dense-sections .section-subtitle {
+    margin-bottom: 0.75rem;
 }
 
 .section-title {
@@ -182,14 +298,27 @@ main {
 }
 
 .reveal {
+    opacity: 1;
+    transform: none;
+}
+
+:root.js .reveal {
     opacity: 0;
     transform: translateY(18px);
     transition: all 0.6s ease;
 }
 
-.reveal.reveal-in {
+:root.js .reveal.reveal-in {
     opacity: 1;
     transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root.js .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
 }
 
 /* =====================================================================
@@ -245,6 +374,7 @@ main {
 .header-actions {
     display: flex;
     gap: 0.5rem;
+    margin-left: auto;
 }
 
 .nav-toggle-top {
@@ -267,6 +397,7 @@ main {
 .content-area {
     padding: 1.5rem 1.25rem 3rem;
 }
+
 
 .app-sidebar {
     position: fixed;
@@ -329,12 +460,19 @@ main {
     border: 1px solid rgba(15, 118, 110, 0.2);
 }
 
+.hero > * {
+    position: relative;
+    z-index: 1;
+}
+
 .hero::before,
 .hero::after {
     content: "";
     position: absolute;
     border-radius: 50%;
     filter: blur(0);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .hero::before {
@@ -410,7 +548,7 @@ main {
    Resume
 ===================================================================== */
 .resume-container {
-    max-width: 1200px;
+    max-width: 1600px;
 }
 
 .resume-inner {
@@ -558,6 +696,13 @@ main {
 .export-dd {
     position: relative;
     display: inline-block;
+}
+
+.export-dd-overlay {
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    z-index: 3500;
 }
 
 .export-dd > summary {
@@ -762,7 +907,7 @@ main {
 }
 
 .viz-hero-copy {
-    color: rgba(226, 232, 240, 0.85);
+    color: rgba(240, 247, 255, 0.92);
     font-size: 1.05rem;
 }
 
@@ -980,7 +1125,7 @@ main {
 @media (min-width: 992px) {
     .app-shell {
         grid-template-columns: minmax(240px, 280px) 1fr;
-        gap: 1.5rem;
+        gap: 1rem;
     }
 
     .app-sidebar {

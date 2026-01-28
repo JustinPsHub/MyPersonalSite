@@ -30,7 +30,7 @@
     </script>
 </HeadContent>
 
-<div class="container-fluid">
+<div class="container-fluid page-shell-wide">
     <section class="hero" role="region" aria-labelledby="hero-title">
         <div class="hero-grid">
             <div>
@@ -54,9 +54,13 @@
                     <li>Full stack delivery: MVC/Blazor/React, .NET APIs, Swagger, secure networking.</li>
                 </ul>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <button class="btn btn-outline-dark ms-md-auto theme-toggle" @onclick="ToggleTheme">
-                        Theme: @(_theme == "dark" ? "Dark" : "Light")
-                    </button>
+                    <a class="btn btn-primary" href="mailto:justinraypalmer@gmail.com">Start a conversation</a>
+                    <a class="btn btn-outline-dark"
+                       href="/resume/jrp_resume_20260128.docx"
+                       target="_blank"
+                       rel="noopener">
+                        Download resume
+                    </a>
                 </div>
             </div>
 
@@ -82,46 +86,40 @@
 
     <section class="section">
         <h2 class="section-title">Where I add value</h2>
-        <p class="section-subtitle">
-            A focused blend of cloud application delivery, ETL automation, and stakeholder-to-solution translation.
-        </p>
+        <p class="section-subtitle">Data architecture, cloud app delivery, and governed analytics that stay reliable at scale.</p>
         <div class="row g-3">
             <div class="col-12 col-lg-4 reveal">
                 <div class="tile h-100">
+                    <div class="tile-title">Data architecture & standards</div>
+                    <div class="tile-text">Translate concepts into resilient architectures, semantic models, and automation standards.</div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="chip">Reference designs</span>
+                        <span class="chip">Semantic models</span>
+                        <span class="chip">Refresh automation</span>
+                        <span class="chip">Standards</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 reveal">
+                <div class="tile h-100">
                     <div class="tile-title">Cloud app delivery</div>
-                    <div class="tile-text">
-                        Function Apps and App Services with secure APIs, production hardening, and modernization of existing apps.
-                    </div>
+                    <div class="tile-text">Production-ready Blazor/React apps with secure APIs, telemetry, and performance tuning.</div>
                     <div class="d-flex flex-wrap gap-2">
-                        <span class="chip">Azure Functions</span>
-                        <span class="chip">App Service</span>
-                        <span class="chip">REST APIs</span>
+                        <span class="chip">Blazor + React</span>
+                        <span class="chip">.NET APIs</span>
+                        <span class="chip">Observability</span>
                     </div>
                 </div>
             </div>
             <div class="col-12 col-lg-4 reveal">
                 <div class="tile h-100">
-                    <div class="tile-title">ETL automation</div>
-                    <div class="tile-text">
-                        Low-code pipelines paired with Function Apps for reliable ingestion, transforms, and orchestration.
-                    </div>
+                    <div class="tile-title">Governed analytics</div>
+                    <div class="tile-text">Data modeling, RLS, and governed refresh pipelines for trusted insights.</div>
                     <div class="d-flex flex-wrap gap-2">
-                        <span class="chip">Data Factory</span>
-                        <span class="chip">Functions</span>
-                        <span class="chip">Pipelines</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-lg-4 reveal">
-                <div class="tile h-100">
-                    <div class="tile-title">Requirement translation</div>
-                    <div class="tile-text">
-                        Translate complex stakeholder needs into automated, enterprise-grade cloud solutions.
-                    </div>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span class="chip">Automation</span>
-                        <span class="chip">Governance</span>
-                        <span class="chip">Delivery</span>
+                        <span class="chip">Data quality</span>
+                        <span class="chip">RLS</span>
+                        <span class="chip">Metadata</span>
+                        <span class="chip">Refresh automation</span>
                     </div>
                 </div>
             </div>
@@ -136,12 +134,13 @@
                     <h3 class="h5">Big data platform focus</h3>
                     <p>
                         Targeting architecture and implementation roles on enterprise data platforms where I can
-                        design ingestion, governance, and analytics solutions across complex domains.
-                        I bring hands-on Azure delivery and a practical engineering mindset.
+                        design cloud data services, semantic models, and secure analytics across complex domains.
+                        I bring hands-on Azure delivery, cloud app development, and a practical engineering mindset.
                     </p>
                     <div class="d-flex flex-wrap gap-2">
                         <span class="chip">Architecture</span>
-                        <span class="chip">Ingestion</span>
+                        <span class="chip">Cloud apps</span>
+                        <span class="chip">Semantic models</span>
                         <span class="chip">Data governance</span>
                         <span class="chip">Reliability</span>
                     </div>
@@ -152,14 +151,54 @@
                     <h3 class="h5">Delivery style</h3>
                     <p>
                         Clear requirements, fast iteration, and production-safe releases. I focus on observability,
-                        data integrity, and secure access patterns from day one.
+                        data integrity, and secure access patterns (RLS + least privilege) from day one.
                     </p>
                     <div class="d-flex flex-wrap gap-2">
                         <span class="chip">Governance</span>
                         <span class="chip">RLS</span>
+                        <span class="chip">Refresh automation</span>
                         <span class="chip">Audit-ready</span>
                         <span class="chip">Performance</span>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Signature outcomes</h2>
+        <p class="section-subtitle">Proof points from enterprise delivery and analytics modernization.</p>
+        <div class="row g-3">
+            <div class="col-12 col-lg-3 reveal">
+                <div class="impact-card h-100">
+                    <div class="impact-chip">Tabular model</div>
+                    <div class="impact-value">25 fact tables</div>
+                    <div class="impact-label">Human capital analytics</div>
+                    <div class="impact-meta">90 dimensions with incremental refresh and RLS.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3 reveal">
+                <div class="impact-card h-100">
+                    <div class="impact-chip">Pipelines</div>
+                    <div class="impact-value">20M+ rows/day</div>
+                    <div class="impact-label">Unified ingestion</div>
+                    <div class="impact-meta">Consolidated 20+ scripts into governed ETL.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3 reveal">
+                <div class="impact-card h-100">
+                    <div class="impact-chip">Adoption</div>
+                    <div class="impact-value">500k+ views</div>
+                    <div class="impact-label">Executive dashboards</div>
+                    <div class="impact-meta">Served 500+ stakeholders across HR and finance.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3 reveal">
+                <div class="impact-card h-100">
+                    <div class="impact-chip">Delivery</div>
+                    <div class="impact-value">100+ projects</div>
+                    <div class="impact-label">Azure DevOps CI/CD</div>
+                    <div class="impact-meta">Standardized pipelines, policies, and release gates.</div>
                 </div>
             </div>
         </div>
@@ -171,7 +210,7 @@
             <span class="chip">Azure OpenAI RAG solutions</span>
             <span class="chip">25-fact / 90-dimension tabular model</span>
             <span class="chip">ADF + Functions ingestion pipelines</span>
-            <span class="chip">Azure DevOps CI/CD (600+ projects)</span>
+            <span class="chip">Azure DevOps CI/CD (100+ projects)</span>
             <span class="chip">Enterprise data governance hub</span>
             <span class="chip">Python environment CCB governance</span>
             <span class="chip">REST APIs with Swagger documentation</span>
@@ -199,7 +238,7 @@
     <section class="section">
         <div class="card p-4 reveal">
             <h3 class="h5">Let's build a secure, governed data platform.</h3>
-            <p class="mb-2">Open to senior data engineering roles focused on Azure, GenAI, and analytics.</p>
+            <p class="mb-2">Open to senior data engineering roles focused on cloud services, GenAI, and analytics.</p>
             <a class="btn btn-primary" href="mailto:justinraypalmer@gmail.com">Start a conversation</a>
         </div>
     </section>
@@ -210,8 +249,6 @@
 </div>
 
 @code {
-    private string _theme = "light";
-
     private const int FedStartYear = 2009;
     private const int DevStartYear = 2017;
     private int TotalYears => Math.Max(0, DateTime.UtcNow.Year - FedStartYear);
@@ -239,7 +276,7 @@
     });
 
     private string CanonicalUrl => ToAbsolute("/");
-    private string OgImageUrl => ToAbsolute("/img/autumn-hero.png");
+    private string OgImageUrl => ToAbsolute("/favicon.png");
 
     private string ToAbsolute(string pathOrAbsolute)
     {
@@ -248,32 +285,16 @@
         return $"{Nav.BaseUri.TrimEnd('/')}{(pathOrAbsolute.StartsWith("/") ? string.Empty : "/")}{pathOrAbsolute}";
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        try { _theme = await JS.InvokeAsync<string>("site.getTheme"); }
-        catch { _theme = "light"; }
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             try
             {
-                await JS.InvokeVoidAsync("site.initTheme");
                 await JS.InvokeVoidAsync("site.revealOnScroll");
-                await JS.InvokeVoidAsync("resume.initExportDropdowns");
             }
             catch { }
         }
     }
 
-    private async Task ToggleTheme()
-    {
-        _theme = _theme == "dark" ? "light" : "dark";
-        try { await JS.InvokeVoidAsync("site.setTheme", _theme); }
-        catch { }
-    }
-
 }
-

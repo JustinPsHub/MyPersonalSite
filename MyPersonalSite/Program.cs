@@ -89,10 +89,14 @@ app.Use(async (ctx, next) =>
     h["Content-Security-Policy"] =
         "default-src 'self'; " +
         "script-src 'self'; " +                  // local JS only
-        "style-src 'self' 'unsafe-inline'; " +   // Bootstrap inline styles
-        "img-src 'self' data:; font-src 'self' data:; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+        "font-src 'self' data: https://fonts.gstatic.com; " +
+        "img-src 'self' data:; " +
         "connect-src 'self' wss: https:; " +     // Blazor circuit + APIs
-        "base-uri 'self'; frame-ancestors 'none'";
+        "base-uri 'self'; " +
+        "form-action 'self'; " +
+        "object-src 'none'; " +
+        "frame-ancestors 'none'";
 
     // If you DO keep a CDN for d3, swap script-src line to:
     // "script-src 'self' https://cdn.jsdelivr.net; "
@@ -100,6 +104,7 @@ app.Use(async (ctx, next) =>
     h["X-Content-Type-Options"] = "nosniff";
     h["Referrer-Policy"] = "strict-origin-when-cross-origin";
     h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+    h["X-Frame-Options"] = "DENY";
     await next();
 });
 

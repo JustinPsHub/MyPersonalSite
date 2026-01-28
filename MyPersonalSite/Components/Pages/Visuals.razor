@@ -7,13 +7,7 @@
 
 <PageTitle>Visuals - Cloud Ops Command Center</PageTitle>
 
-<HeadContent>
-
-    <!-- Keep your extras; d3Interop is loaded globally or in App.razor -->
-    <script src='@Assets["js/visuals-extra.js"]' defer></script>
-</HeadContent>
-
-<div class="container-fluid">
+<div class="container-fluid page-shell-wide">
     @if (!string.IsNullOrWhiteSpace(_error))
     {
         <div class="alert alert-danger"><strong>Error:</strong> @_error</div>
@@ -381,7 +375,9 @@
     private int TotalDeliveryEvents => ReliabilityOk + ReliabilityFail;
     private double ReliabilityRate => TotalDeliveryEvents == 0 ? 0 : (double)ReliabilityOk / TotalDeliveryEvents;
     private double FailureRate => TotalDeliveryEvents == 0 ? 0 : (double)ReliabilityFail / TotalDeliveryEvents;
-    private int PeakDailyOps => _reliabilityView?.Max(r => r.ok + r.fail) ?? 0;
+    private int PeakDailyOps => _reliabilityView is { Count: > 0 }
+        ? _reliabilityView.Max(r => r.ok + r.fail)
+        : 0;
     private int AvgDailyOps => _reliabilityView is { Count: > 0 }
         ? (int)Math.Round(_reliabilityView.Average(r => r.ok + r.fail))
         : 0;

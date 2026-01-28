@@ -1,7 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@inject IJSRuntime JS
+
+<a class="skip-link" href="#main-content">Skip to content</a>
 
 <header class="site-header">
-    <div class="header-inner">
+    <div class="header-inner page-shell">
         <button type="button"
                 class="nav-toggle-top d-lg-none"
                 data-nav-toggle
@@ -13,9 +16,12 @@
 
         <div class="brand-block">
             <a class="brand-title" href="/">Justin Palmer</a>
+            <span class="brand-subtitle d-none d-sm-inline">Senior Data Engineer &amp; Cloud Architect</span>
         </div>
 
-        <!-- Single nav menu lives in the left sidebar; header stays minimal for mobile -->
+        <div class="header-actions">
+            <ThemeToggle />
+        </div>
     </div>
 </header>
 
@@ -24,7 +30,7 @@
         <NavMenu />
     </div>
 
-    <main class="content-area">
+    <main id="main-content" class="content-area" tabindex="-1">
         @Body
     </main>
 
@@ -32,7 +38,7 @@
 </div>
 
 <footer class="site-footer">
-    <div class="d-flex flex-column flex-md-row gap-2 justify-content-between">
+    <div class="page-shell d-flex flex-column flex-md-row gap-2 justify-content-between">
         <span>Enterprise data platforms · GenAI enablement · Secure governance</span>
         <span>Focused on Azure OpenAI, governed analytics, and enterprise data platforms.</span>
     </div>
@@ -43,3 +49,18 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">Close</span>
 </div>
+
+@code {
+    private bool _themeReady;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _themeReady) return;
+        try
+        {
+            await JS.InvokeVoidAsync("site.initTheme");
+            _themeReady = true;
+        }
+        catch { }
+    }
+}
