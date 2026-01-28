@@ -2,18 +2,18 @@
 (function () {
     // ----------- Theme -----------
     const COLORS = {
-        brand: "#5b8def",
-        brandDark: "#3558e6",
+        brand: "#0ea5e9",
+        brandDark: "#0284c7",
         accent1: "#22c55e",
-        accent2: "#f59e0b",
-        accent3: "#a78bfa",
+        accent2: "#f97316",
+        accent3: "#14b8a6",
         text: "#0f172a",
-        axis: "#cfd8ea",
-        grid: "#e9eef8",
-        muted: "#67758f",
-        chip: "#eef3ff"
+        axis: "#d7e2f0",
+        grid: "#eef2f7",
+        muted: "#64748b",
+        chip: "#e0f2fe"
     };
-    const PALETTE = [COLORS.brand, COLORS.accent1, COLORS.accent2, COLORS.accent3, "#60a5fa", "#f97316"];
+    const PALETTE = [COLORS.brand, COLORS.accent1, COLORS.accent2, COLORS.accent3, "#38bdf8", "#f59e0b"];
 
     const fmt = (v) => {
         const n = +v;
@@ -180,7 +180,7 @@
             .attr("data-viz-type", "month").attr("data-viz-key", d3.timeFormat("%Y-%m"))
             .on("mouseenter", (ev, d) => {
                 tip.show(`<div style="font-weight:700">${d3.timeFormat("%b %Y")(d.date)}</div>
-                  <div style="color:${COLORS.muted}">Items</div>
+                  <div style="color:${COLORS.muted}">Deployments</div>
                   <div style="font-weight:700">${fmt(d.value)}</div>`, ev.clientX, ev.clientY);
                 BUS.emit("viz:hover", { type: "month", value: d3.timeFormat("%Y-%m")(d.date) });
             })
@@ -231,7 +231,7 @@
             .attr("data-viz-key", d => String(d[xKey]))
             .on("mouseenter", (ev, d) => {
                 tip.show(`<div style="font-weight:700">${d[xKey]}</div>
-                  <div style="color:${COLORS.muted}">Count</div>
+                  <div style="color:${COLORS.muted}">Changes</div>
                   <div style="font-weight:700">${fmt(d[yKey])}</div>`, ev.clientX, ev.clientY);
                 BUS.emit("viz:hover", { type: has("year") ? "year" : "x", value: String(d[xKey]) });
             })
@@ -283,7 +283,7 @@
             .attr("data-viz-type", "org").attr("data-viz-key", d => d[labelKey])
             .on("mouseenter", (ev, d) => {
                 tip.show(`<div style="font-weight:700">${d[labelKey]}</div>
-                  <div style="color:${COLORS.muted}">Entries</div>
+                  <div style="color:${COLORS.muted}">Changes</div>
                   <div style="font-weight:700">${fmt(d[valKey])}</div>`, ev.clientX, ev.clientY);
                 BUS.emit("viz:hover", { type: "org", value: d[labelKey] });
             })
@@ -371,7 +371,7 @@
             .style("cursor", "pointer")
             .on("mouseenter", (ev, d) => {
                 tip.show(`<div style="font-weight:700">${d.year}</div>
-                  <div style="color:${COLORS.muted}">Entries</div>
+                  <div style="color:${COLORS.muted}">Changes</div>
                   <div style="font-weight:700">${fmt(d.count)}</div>
                   <div style="color:${COLORS.muted}">Cumulative</div>
                   <div style="font-weight:700">${fmt(d.running)}</div>`, ev.clientX, ev.clientY);
@@ -411,7 +411,7 @@
         const root = d3.hierarchy({ children: rows }).sum(d => d.value);
         const nodes = pack(root).leaves();
 
-        const color = d3.scaleOrdinal(PALETTE.concat(["#38bdf8", "#fb7185", "#a855f7"]))
+        const color = d3.scaleOrdinal(PALETTE.concat(["#38bdf8", "#fb7185", "#22c55e"]))
             .domain(nodes.map(n => n.data.label));
 
         const groups = g.selectAll("g.node").data(nodes).enter().append("g")
@@ -420,7 +420,7 @@
             .style("cursor", "pointer")
             .on("mouseenter", (ev, d) => {
                 const html = `<div style="font-weight:700">${d.data.label}</div>
-                  <div style="color:${COLORS.muted}">Entries</div>
+                  <div style="color:${COLORS.muted}">Changes</div>
                   <div style="font-weight:700">${fmt(d.data.value)}</div>`;
                 tip.show(html, ev.clientX, ev.clientY);
                 BUS.emit("viz:hover", { type: "org", value: d.data.label });
@@ -478,10 +478,10 @@
 
         // Use explicit keys (and keep only those that exist in the data)
         const SERIES = [
-            { key: "apps", label: "Web Apps" },
-            { key: "funcs", label: "Azure Functions" },
-            { key: "adf", label: "Azure Data Factory" },
-            { key: "pbi", label: "Power BI" }
+            { key: "apps", label: "Containers" },
+            { key: "funcs", label: "Serverless" },
+            { key: "adf", label: "Data" },
+            { key: "pbi", label: "Observability" }
         ];
         const keys = SERIES.map(s => s.key).filter(k => k in data[0]);
         const labelOf = k => (SERIES.find(s => s.key === k)?.label ?? k);
@@ -555,6 +555,325 @@
                 });
             }
         }
+    };
+
+    // Monthly heatmap (year x month)
+    api.renderMonthlyHeatmap = function (selector, data, opts) {
+        if (!window.d3 || !data?.length) return;
+        const el = clear(selector); if (!el) return;
+
+        const parseMonth = (v) => d3.timeParse("%Y-%m")(v) || d3.timeParse("%Y-%m-%d")(v);
+        const rows = data.map(d => {
+            const date = parseMonth(d.month);
+            return date ? { date, value: +d.count || 0 } : null;
+        }).filter(Boolean);
+
+        const years = Array.from(new Set(rows.map(r => r.date.getFullYear()))).sort((a, b) => a - b);
+        const months = d3.range(0, 12);
+        const lookup = new Map(rows.map(r => [`${r.date.getFullYear()}-${r.date.getMonth()}`, r.value]));
+
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 260 });
+        const cellW = Math.max(18, Math.floor(innerW / 12));
+        const cellH = Math.max(18, Math.floor(innerH / Math.max(1, years.length)));
+
+        const maxVal = d3.max(rows, r => r.value) || 1;
+        const color = d3.scaleSequential(d3.interpolateBlues).domain([0, maxVal]);
+
+        const x = d3.scaleBand().domain(months).range([0, cellW * 12]).padding(0.08);
+        const y = d3.scaleBand().domain(years).range([0, cellH * years.length]).padding(0.12);
+
+        const monthFmt = d3.timeFormat("%b");
+        g.selectAll("text.month").data(months).enter().append("text")
+            .attr("class", "month")
+            .attr("x", m => x(m) + x.bandwidth() / 2)
+            .attr("y", -6)
+            .attr("text-anchor", "middle")
+            .attr("fill", COLORS.muted)
+            .style("font-size", "11px")
+            .text(m => monthFmt(new Date(2024, m, 1)));
+
+        g.selectAll("text.year").data(years).enter().append("text")
+            .attr("class", "year")
+            .attr("x", -8)
+            .attr("y", y)
+            .attr("dy", "0.95em")
+            .attr("text-anchor", "end")
+            .attr("fill", COLORS.muted)
+            .style("font-size", "11px")
+            .text(d => d);
+
+        g.selectAll("rect.cell").data(years.flatMap(year => months.map(month => ({
+            year,
+            month,
+            value: lookup.get(`${year}-${month}`) || 0
+        })))).enter().append("rect")
+            .attr("class", "cell")
+            .attr("x", d => x(d.month))
+            .attr("y", d => y(d.year))
+            .attr("width", x.bandwidth())
+            .attr("height", y.bandwidth())
+            .attr("rx", 6).attr("ry", 6)
+            .attr("fill", d => color(d.value))
+            .attr("stroke", "rgba(15,23,42,0.05)")
+            .on("mouseenter", (ev, d) => {
+                const label = `${d3.timeFormat("%b")(new Date(d.year, d.month, 1))} ${d.year}`;
+                tip.show(`<div style="font-weight:700">${label}</div>
+                  <div style="color:${COLORS.muted}">Deployments</div>
+                  <div style="font-weight:700">${fmt(d.value)}</div>`, ev.clientX, ev.clientY);
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => tip.hide());
+    };
+
+    // ADO radial gauge
+    api.renderAdoGauge = function (selector, model, opts) {
+        if (!window.d3 || !model) return;
+        const el = clear(selector); if (!el) return;
+
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 220 });
+        const size = Math.min(innerW, innerH);
+        const cx = innerW / 2;
+        const cy = innerH / 2 + 10;
+        const radius = size / 2 - 20;
+
+        const max = Math.max(model.max ?? 0, model.value ?? 0, model.target ?? 0, 1);
+        const val = model.value ?? 0;
+        const target = model.target ?? max;
+
+        const scale = d3.scaleLinear().domain([0, max]).range([-Math.PI * 0.75, Math.PI * 0.75]);
+        const arc = d3.arc().innerRadius(radius * 0.65).outerRadius(radius);
+
+        const bg = arc({ startAngle: scale(0), endAngle: scale(max) });
+        g.append("path")
+            .attr("d", bg)
+            .attr("transform", `translate(${cx},${cy})`)
+            .attr("fill", "#e2e8f0");
+
+        const progress = arc({ startAngle: scale(0), endAngle: scale(val) });
+        g.append("path")
+            .attr("d", progress)
+            .attr("transform", `translate(${cx},${cy})`)
+            .attr("fill", gradient(svg, COLORS.brandDark));
+
+        const targetAngle = scale(target);
+        g.append("line")
+            .attr("x1", cx + Math.cos(targetAngle) * radius * 0.6)
+            .attr("y1", cy + Math.sin(targetAngle) * radius * 0.6)
+            .attr("x2", cx + Math.cos(targetAngle) * radius)
+            .attr("y2", cy + Math.sin(targetAngle) * radius)
+            .attr("stroke", COLORS.accent2)
+            .attr("stroke-width", 3)
+            .attr("stroke-linecap", "round");
+
+        g.append("text")
+            .attr("x", cx)
+            .attr("y", cy - 6)
+            .attr("text-anchor", "middle")
+            .attr("fill", COLORS.text)
+            .style("font-size", "22px")
+            .style("font-weight", 700)
+            .text(fmt(val));
+
+        g.append("text")
+            .attr("x", cx)
+            .attr("y", cy + 16)
+            .attr("text-anchor", "middle")
+            .attr("fill", COLORS.muted)
+            .style("font-size", "12px")
+            .text(`Target ${fmt(target)}`);
+
+        g.append("circle")
+            .attr("cx", cx)
+            .attr("cy", cy)
+            .attr("r", radius)
+            .attr("fill", "transparent")
+            .on("mouseenter", (ev) => {
+                tip.show(`<div style="font-weight:700">IaC adoption</div>
+                  <div style="color:${COLORS.muted}">Current</div>
+                  <div style="font-weight:700">${fmt(val)}</div>
+                  <div style="color:${COLORS.muted}">Target</div>
+                  <div style="font-weight:700">${fmt(target)}</div>`, ev.clientX, ev.clientY);
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => tip.hide());
+    };
+
+    // Capability radar (averaged across periods)
+    api.renderCapabilityRadar = function (selector, data, opts) {
+        if (!window.d3 || !data?.length) return;
+        const el = clear(selector); if (!el) return;
+
+        const keys = ["apps", "funcs", "adf", "pbi"].filter(k => k in data[0]);
+        const labels = {
+            apps: "Containers",
+            funcs: "Serverless",
+            adf: "Data",
+            pbi: "Observability"
+        };
+        const weights = { apps: 1.25, funcs: 1.15, adf: 1.1, pbi: 1.05 };
+        const avg = keys.map(k => ({
+            key: k,
+            label: labels[k] || k,
+            value: (d3.mean(data, d => +d[k] || 0) || 0) * (weights[k] ?? 1)
+        }));
+
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 360 });
+        const radius = Math.min(innerW, innerH) / 2 - 20;
+        const centerX = innerW / 2;
+        const centerY = innerH / 2;
+
+        const maxVal = d3.max(avg, d => d.value) || 1;
+        const r = d3.scaleLinear().domain([0, maxVal]).range([0, radius]);
+        const angle = d3.scaleLinear().domain([0, avg.length]).range([0, Math.PI * 2]);
+
+        const gridLevels = 4;
+        for (let i = 1; i <= gridLevels; i++) {
+            g.append("circle")
+                .attr("cx", centerX).attr("cy", centerY)
+                .attr("r", (radius / gridLevels) * i)
+                .attr("fill", "none")
+                .attr("stroke", "rgba(15,23,42,0.12)");
+        }
+
+        avg.forEach((d, i) => {
+            const a = angle(i) - Math.PI / 2;
+            const x = centerX + Math.cos(a) * radius;
+            const y = centerY + Math.sin(a) * radius;
+            g.append("line")
+                .attr("x1", centerX).attr("y1", centerY)
+                .attr("x2", x).attr("y2", y)
+                .attr("stroke", "rgba(15,23,42,0.18)");
+
+            g.append("text")
+                .attr("x", centerX + Math.cos(a) * (radius + 16))
+                .attr("y", centerY + Math.sin(a) * (radius + 16))
+                .attr("text-anchor", Math.cos(a) > 0.2 ? "start" : Math.cos(a) < -0.2 ? "end" : "middle")
+                .attr("fill", COLORS.muted)
+                .style("font-size", "11px")
+                .text(d.label);
+        });
+
+        const line = d3.lineRadial()
+            .radius(d => r(d.value))
+            .angle((d, i) => angle(i))
+            .curve(d3.curveCatmullRomClosed);
+
+        g.append("path")
+            .datum(avg)
+            .attr("transform", `translate(${centerX},${centerY})`)
+            .attr("d", line)
+            .attr("fill", gradient(svg, COLORS.brand))
+            .attr("stroke", COLORS.brandDark)
+            .attr("stroke-width", 2)
+            .attr("opacity", 0.9);
+
+        g.selectAll("circle.point").data(avg).enter().append("circle")
+            .attr("class", "point")
+            .attr("cx", (d, i) => centerX + Math.cos(angle(i) - Math.PI / 2) * r(d.value))
+            .attr("cy", (d, i) => centerY + Math.sin(angle(i) - Math.PI / 2) * r(d.value))
+            .attr("r", 4.5)
+            .attr("fill", COLORS.brandDark)
+            .attr("stroke", "white")
+            .attr("stroke-width", 1.2)
+            .on("mouseenter", (ev, d) => {
+                tip.show(`<div style="font-weight:700">${d.label}</div>
+                  <div style="color:${COLORS.muted}">Average</div>
+                  <div style="font-weight:700">${fmt(d.value)}</div>`, ev.clientX, ev.clientY);
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => tip.hide());
+    };
+
+    // Year distribution donut
+    api.renderYearDonut = function (selector, data, opts) {
+        if (!window.d3 || !data?.length) return;
+        const el = clear(selector); if (!el) return;
+
+        const rows = data.map(d => ({ label: String(d.year ?? d.x ?? d.label ?? ""), value: +d.count || 0 }))
+            .filter(d => d.label && d.value > 0);
+
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 320 });
+        const radius = Math.min(innerW, innerH) / 2 - 10;
+
+        const arc = d3.arc().innerRadius(radius * 0.55).outerRadius(radius);
+        const pie = d3.pie().value(d => d.value).sort(null);
+        const color = d3.scaleOrdinal(PALETTE.concat(["#38bdf8", "#fb7185", "#22c55e"]))
+            .domain(rows.map(r => r.label));
+
+        const group = g.append("g").attr("transform", `translate(${innerW / 2},${innerH / 2})`);
+        group.selectAll("path").data(pie(rows)).enter().append("path")
+            .attr("d", arc)
+            .attr("fill", d => color(d.data.label))
+            .attr("data-viz-type", "year")
+            .attr("data-viz-key", d => d.data.label)
+            .attr("stroke", "white")
+            .attr("stroke-width", 2)
+            .on("mouseenter", (ev, d) => {
+                tip.show(`<div style="font-weight:700">${d.data.label}</div>
+                  <div style="color:${COLORS.muted}">Changes</div>
+                  <div style="font-weight:700">${fmt(d.data.value)}</div>`, ev.clientX, ev.clientY);
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => tip.hide());
+
+        group.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dy", "0.35em")
+            .attr("fill", COLORS.muted)
+            .style("font-size", "12px")
+            .text("Changes");
+    };
+
+    // Organization impact treemap
+    api.renderOrgTreemap = function (selector, data, opts) {
+        if (!window.d3 || !data?.length) return;
+        const el = clear(selector); if (!el) return;
+
+        const rows = data.map(d => ({ label: d.org ?? d.label ?? "", value: +d.count || 0 }))
+            .filter(d => d.label && d.value > 0);
+
+        const { svg, g, innerW, innerH } = makeSvg(el, { height: opts?.height ?? 320 });
+        const root = d3.hierarchy({ children: rows }).sum(d => d.value);
+        d3.treemap().size([innerW, innerH]).padding(6).round(true)(root);
+
+        const color = d3.scaleOrdinal(PALETTE.concat(["#38bdf8", "#fb7185", "#22c55e"]))
+            .domain(rows.map(r => r.label));
+
+        const nodes = g.selectAll("g.node").data(root.leaves()).enter().append("g")
+            .attr("class", "node")
+            .attr("transform", d => `translate(${d.x0},${d.y0})`)
+            .on("mouseenter", (ev, d) => {
+                tip.show(`<div style="font-weight:700">${d.data.label}</div>
+                  <div style="color:${COLORS.muted}">Changes</div>
+                  <div style="font-weight:700">${fmt(d.data.value)}</div>`, ev.clientX, ev.clientY);
+            })
+            .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
+            .on("mouseleave", () => tip.hide());
+
+        nodes.append("rect")
+            .attr("width", d => d.x1 - d.x0)
+            .attr("height", d => d.y1 - d.y0)
+            .attr("rx", 10).attr("ry", 10)
+            .attr("fill", d => gradient(svg, color(d.data.label)))
+            .attr("data-viz-type", "org")
+            .attr("data-viz-key", d => d.data.label)
+            .attr("stroke", "rgba(255,255,255,.65)");
+
+        nodes.append("text")
+            .attr("x", 8)
+            .attr("y", 18)
+            .attr("fill", "#f8fafc")
+            .style("font-size", "12px")
+            .style("font-weight", 600)
+            .text(d => d.data.label)
+            .each(function (d) {
+                const w = d.x1 - d.x0;
+                if (this.getComputedTextLength() > w - 16) {
+                    const text = d.data.label;
+                    const truncated = text.length > 18 ? text.slice(0, 16) + "..." : text;
+                    d3.select(this).text(truncated);
+                }
+            });
     };
 
 

@@ -29,29 +29,30 @@ public static class DbInitializer
             db.ResumeSections.Add(experience);
         }
 
-        // Treasury — Senior Data Engineer / Technical Lead (Nov 2022 – Present)
+        // Treasury — Senior Cloud Engineer / Technical Lead (Nov 2022 – Present)
         UpsertExperience(
             experience,
             start: new DateTime(2022, 11, 1),
             org: "U.S. Department of the Treasury",
             () => new ResumeEntry
             {
-                Title = "Senior Data Engineer / Technical Lead",
+                Title = "Senior Cloud Engineer / Technical Lead",
                 Organization = "U.S. Department of the Treasury",
                 Location = "Washington, DC",
                 StartDate = new DateTime(2022, 11, 1),
                 EndDate = null,
                 Description =
-                    "Architect enterprise-scale data solutions, governed analytics, and GenAI enablement for Treasury.",
-                TechStack = "Azure OpenAI, RAG, Azure Data Factory, Azure Functions, Azure SQL, Data Lake, Power BI, SSAS Tabular, Blazor, React, .NET, Azure DevOps",
+                    "Lead cloud architect for enterprise Azure data platforms serving HR, budget, cyber, procurement, and other Treasury domains.",
+                TechStack = "Azure Synapse (Dedicated Pools), Azure Data Factory, Azure SQL, Data Lake Gen2, Event Grid, Blob Storage, Azure OpenAI, RAG, .NET, Node.js, Python, REST, Swagger, Azure DevOps",
                 BulletPoints = Bullets(
-                    "Architected an Azure OpenAI RAG observability agent embedded in a Blazor portal, indexing millions of Power BI audit log events for natural language diagnostics.",
-                    "Designed the Human Capital Tabular Model (25 fact tables, 90 dimensions) with incremental refresh and partition management for sub-second performance.",
-                    "Led secure Python environment governance and chaired the CCB process for package intake, including vulnerability scans and risk assessments.",
-                    "Built a React organizational chart application backed by .NET Core Web APIs and Azure SQL for real-time hierarchy data.",
-                    "Developed a Blazor governance and metadata hub to monitor platform health, access, and compliance.",
-                    "Built production Azure Data Factory pipelines and Azure Functions for automated ingestion, transformation, and alerting.",
-                    "Migrated 600+ projects to Azure DevOps and implemented reusable YAML CI/CD pipelines."
+                    "Architected an Azure OpenAI RAG solution in the enterprise Blazor portal, indexing millions of Power BI audit log events for natural language diagnostics.",
+                    "Serve as lead cloud architect for enterprise big data processing using Azure Synapse Dedicated Pools and Azure SQL.",
+                    "Designed low-code ETL pipelines in Data Factory with high-code Azure Functions in .NET, Node, and Python for complex transformations.",
+                    "Engineered secure network architectures with advanced ingress/egress controls, private endpoints, and API gateways.",
+                    "Built and maintained the agency API ecosystem with ASP.NET Core and comprehensive Swagger/OpenAPI documentation.",
+                    "Automated security operations with AI-augmented PowerShell, integrating Nexus scans to quarantine vulnerable VMs.",
+                    "Architected a Human Capital Tabular Model (25 fact tables, 90 dimensions) with incremental refresh and partition management.",
+                    "Delivered a Blazor administrative hub for platform health, access visibility, and compliance monitoring."
                 )
             });
 
@@ -130,11 +131,11 @@ public static class DbInitializer
         EnsureEducationEntry(
             education,
             start: new DateTime(2010, 12, 1),
-            title: "MBA (Finance/Strategy/Analytics)",
+            title: "Master of Business Administration (MBA) | Finance & Analytics",
             org: "Murray State University",
             () => new ResumeEntry
             {
-                Title = "MBA (Finance/Strategy/Analytics)",
+                Title = "Master of Business Administration (MBA) | Finance & Analytics",
                 Organization = "Murray State University",
                 Location = "Murray, KY, United States",
                 StartDate = new DateTime(2010, 12, 1),
@@ -148,21 +149,30 @@ public static class DbInitializer
         EnsureEducationEntry(
             education,
             start: new DateTime(2006, 8, 1),
-            title: "Bachelor of Science, Accounting",
+            title: "Bachelor of Science (BS) | Accounting",
             org: "University of Kentucky",
             () => new ResumeEntry
             {
-                Title = "Bachelor of Science, Accounting",
+                Title = "Bachelor of Science (BS) | Accounting",
                 Organization = "University of Kentucky",
                 Location = "Lexington, KY, United States",
                 StartDate = new DateTime(2006, 8, 1),
                 EndDate = new DateTime(2009, 8, 1),
-                Description = "BS in Accounting with strong foundations in financial reporting, auditing, taxation, and information systems.",
-                BulletPoints = Bullets(
-                    "GPA: 3.4 / 4.0 (136 semester hours)",
-                    "Selected coursework: Financial & Managerial Accounting; Accounting Information Systems; Intermediate Accounting I & II; Auditing; Income Taxation; Cost Management; NFP & Regulatory Accounting; Corporate Finance; Strategic Management; Quantitative Analysis; Information Systems in the Modern Enterprise"
-                )
+                Description = "Bachelor of Science in Accounting.",
+                BulletPoints = Bullets()
             });
+
+        var educationKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Murray State University|2010-12",
+            "University of Kentucky|2006-08"
+        };
+        education.Entries.RemoveAll(e =>
+        {
+            var key = $"{e.Organization}|{e.StartDate:yyyy-MM}";
+            return !educationKeys.Contains(key);
+        });
+        RemoveDuplicateEducation(education);
 
         await db.SaveChangesAsync();
     }
@@ -222,4 +232,21 @@ public static class DbInitializer
 
     private static List<BulletPoint> Bullets(params string[] lines) =>
         lines.Select((text, i) => new BulletPoint { Text = text, Order = i }).ToList();
+
+    private static void RemoveDuplicateEducation(ResumeSection education)
+    {
+        var dupes = education.Entries
+            .GroupBy(e => $"{e.Organization}|{e.StartDate:yyyy-MM}")
+            .Where(g => g.Count() > 1);
+
+        foreach (var group in dupes)
+        {
+            var keep = group.OrderBy(e => e.Id).First();
+            foreach (var entry in group)
+            {
+                if (entry != keep)
+                    education.Entries.Remove(entry);
+            }
+        }
+    }
 }
