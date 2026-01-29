@@ -89,10 +89,14 @@ app.Use(async (ctx, next) =>
     h["Content-Security-Policy"] =
         "default-src 'self'; " +
         "script-src 'self'; " +                  // local JS only
-        "style-src 'self' 'unsafe-inline'; " +   // Bootstrap inline styles
-        "img-src 'self' data:; font-src 'self' data:; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+        "font-src 'self' data: https://fonts.gstatic.com; " +
+        "img-src 'self' data:; " +
         "connect-src 'self' wss: https:; " +     // Blazor circuit + APIs
-        "base-uri 'self'; frame-ancestors 'none'";
+        "base-uri 'self'; " +
+        "form-action 'self'; " +
+        "object-src 'none'; " +
+        "frame-ancestors 'none'";
 
     // If you DO keep a CDN for d3, swap script-src line to:
     // "script-src 'self' https://cdn.jsdelivr.net; "
@@ -100,6 +104,7 @@ app.Use(async (ctx, next) =>
     h["X-Content-Type-Options"] = "nosniff";
     h["Referrer-Policy"] = "strict-origin-when-cross-origin";
     h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+    h["X-Frame-Options"] = "DENY";
     await next();
 });
 
@@ -125,67 +130,63 @@ api.MapGet("/debug/db-stats", async (AppDbContext db) =>
     return Results.Json(new { items, sections, entries });
 }).CacheOutput(p => p.Expire(TimeSpan.FromMinutes(1)));
 
-// Metrics for visuals - entries per year
-api.MapGet("/metrics/entries-per-year", async (AppDbContext db) =>
+// Metrics for visuals - change events by year (seeded mock data)
+api.MapGet("/metrics/entries-per-year", () =>
 {
-    var data = await db.ResumeItems
-        .OfType<ResumeEntry>()
-        .AsNoTracking()
-        .GroupBy(e => e.StartDate.Year)
-        .OrderBy(g => g.Key)
-        .Select(g => new YearCount(g.Key, g.Count()))
-        .ToListAsync();
-
-    if (data.Count == 0)
+    var rng = new Random(42);
+    var startYear = DateTime.UtcNow.Year - 4;
+    var baseValue = 160;
+    var data = Enumerable.Range(0, 5).Select(i =>
     {
-        var y = DateTime.UtcNow.Year;
-        data = new List<YearCount> { new(y - 3, 1), new(y - 2, 2), new(y - 1, 3), new(y, 2) };
-    }
+        var jitter = rng.Next(-12, 18);
+        var value = baseValue + (i * 40) + jitter;
+        return new YearCount(startYear + i, value);
+    }).ToList();
+
     return Results.Json(data);
 }).CacheOutput(p => p.Expire(TimeSpan.FromMinutes(5)));
 
-// Metrics for visuals - entries by org (fixed translation)
-api.MapGet("/metrics/entries-by-org", async (AppDbContext db) =>
+// Metrics for visuals - service portfolio activity (seeded mock data)
+api.MapGet("/metrics/entries-by-org", () =>
 {
-    // 1) Query provider-friendly shape
-    var rows = await db.ResumeItems
-        .OfType<ResumeEntry>()
-        .AsNoTracking()
-        .GroupBy(e => e.Organization) // no coalesce here
-        .Select(g => new { org = g.Key, count = g.Count() })
-        .OrderByDescending(x => x.count)
-        .Take(25)
-        .ToListAsync();
-
-    // 2) Coalesce in memory
-    var data = rows.Select(x => new OrgCount(x.org ?? "(Unspecified)", x.count)).ToList();
-
-    if (data.Count == 0)
+    var services = new[]
     {
-        data = new()
-        {
-            new("(Demo) Acme", 3),
-            new("(Demo) Contoso", 2),
-            new("(Demo) Fabrikam", 1),
-        };
-    }
+        "Identity & Access",
+        "Payments API",
+        "Edge Gateway",
+        "Data Platform",
+        "Observability",
+        "Compute Fleet",
+        "Messaging",
+        "Search",
+        "Security Posture",
+        "Storage Core",
+        "CI/CD",
+        "Networking",
+        "Cost Insights",
+        "Streaming"
+    };
+
+    var rng = new Random(77);
+    var data = services
+        .Select(name => new OrgCount(name, rng.Next(40, 160)))
+        .OrderByDescending(x => x.count)
+        .ToList();
+
     return Results.Json(data);
 }).CacheOutput(p => p.Expire(TimeSpan.FromMinutes(5)));
 
 
 
 app.MapGet("/api/metrics/velocity", () => Results.Ok(new[]{
-   new { period="2022-Q4", apps=1, funcs=2, adf=2, pbi=2 },
-   new { period="2023-Q1", apps=1, funcs=3, adf=2, pbi=1 },
-   new { period="2023-Q2", apps=2, funcs=2, adf=3, pbi=2 },
-   new { period="2023-Q3", apps=1, funcs=3, adf=4, pbi=2 },
-   new { period="2023-Q4", apps=2, funcs=2, adf=3, pbi=3 },
-   new { period="2024-Q1", apps=1, funcs=2, adf=2, pbi=2 },
-   new { period="2024-Q2", apps=2, funcs=3, adf=3, pbi=1 },
-   new { period="2024-Q3", apps=1, funcs=3, adf=4, pbi=2 },
-   new { period="2024-Q4", apps=1, funcs=2, adf=3, pbi=2 },
-   new { period="2025-Q1", apps=1, funcs=2, adf=2, pbi=2 },
-   new { period="2025-Q2", apps=2, funcs=2, adf=3, pbi=1 }
+   new { period="2024-Q1", apps=6, funcs=8, adf=4, pbi=3 },
+   new { period="2024-Q2", apps=7, funcs=9, adf=5, pbi=4 },
+   new { period="2024-Q3", apps=8, funcs=10, adf=6, pbi=4 },
+   new { period="2024-Q4", apps=9, funcs=11, adf=7, pbi=5 },
+   new { period="2025-Q1", apps=8, funcs=12, adf=7, pbi=6 },
+   new { period="2025-Q2", apps=10, funcs=13, adf=8, pbi=6 },
+   new { period="2025-Q3", apps=11, funcs=14, adf=9, pbi=7 },
+   new { period="2025-Q4", apps=12, funcs=14, adf=9, pbi=7 }
 })); // List<VelocityItem>
 
 app.MapGet("/api/metrics/migrations", () => Results.Ok(new[]{
@@ -242,10 +243,10 @@ metrics.MapGet("/kpis", () =>
 {
     var list = new List<KpiItem>
     {
-        new() { label = "Projects shipped", value = 18,  spark = new[]{2,1,0,3,2,1,4,5} },
-        new() { label = "ADO migrations",   value = 612, spark = new[]{120,240,360,480,612}, target = 600 },
-        new() { label = "Refresh jobs",     value = 145, spark = new[]{18,24,32,48,67,92,118,145} },
-        new() { label = "RLS models",       value = 36,  spark = new[]{6,12,18,22,27,31,34,36} }
+        new() { label = "SLO compliance", value = 99, suffix = "%", spark = new[]{98,98,99,99,99,99,99,99} },
+        new() { label = "IaC coverage", value = 92, suffix = "%", spark = new[]{78,82,84,88,90,91,92,92} },
+        new() { label = "Patch compliance", value = 97, suffix = "%", spark = new[]{92,93,95,96,96,97,97,97} },
+        new() { label = "FinOps savings (QTD)", value = 320, prefix = "$", suffix = "k", spark = new[]{120,160,200,240,270,290,310,320} }
     };
     return Results.Ok(list);
 });
@@ -262,10 +263,10 @@ metrics.MapGet("/velocity-monthly", () =>
         month = $"{dt:yyyy-MM}",
         count = i switch
         {
-            < 12 => rng.Next(1, 3),
-            < 24 => rng.Next(2, 4),
-            < 36 => rng.Next(3, 6),
-            _ => rng.Next(4, 8)
+            < 12 => rng.Next(18, 36),
+            < 24 => rng.Next(28, 52),
+            < 36 => rng.Next(40, 70),
+            _ => rng.Next(55, 95)
         }
     }).ToList();
 
@@ -275,7 +276,7 @@ metrics.MapGet("/velocity-monthly", () =>
 // ADO migrations — bullet (actual vs goal)
 metrics.MapGet("/ado-migrations", () =>
 {
-    var model = new BulletModel { value = 612, target = 600, max = 700 };
+    var model = new BulletModel { value = 78, target = 85, max = 100 };
     return Results.Ok(model);
 });
 
@@ -335,6 +336,8 @@ public sealed class KpiItem
 {
     public string label { get; set; } = "";
     public int value { get; set; }
+    public string? prefix { get; set; }
+    public string? suffix { get; set; }
     public int[] spark { get; set; } = Array.Empty<int>();
     public double? target { get; set; }
 }

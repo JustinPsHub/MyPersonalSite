@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Justin Palmer Resume</title>
+<style>
+    body { font-family: "Calibri", "Segoe UI", Arial, sans-serif; font-size: 11pt; color: #111; margin: 24pt; }
+    h1 { font-size: 20pt; margin: 0 0 4pt 0; }
+    h2 { font-size: 13pt; margin: 16pt 0 6pt 0; text-transform: uppercase; letter-spacing: 0.06em; color: #2a2a2a; }
+    h3 { font-size: 12pt; margin: 10pt 0 2pt 0; }
+    .sub { color: #444; margin: 0 0 8pt 0; }
+    .contact { font-size: 10.5pt; color: #333; margin-bottom: 14pt; }
+    .section { margin-bottom: 10pt; }
+    ul { margin: 4pt 0 6pt 18pt; padding: 0; }
+    li { margin: 3pt 0; }
+    .job { margin-bottom: 10pt; }
+    .job-title { font-weight: bold; }
+    .job-meta { color: #444; margin-bottom: 2pt; }
+    .skills { column-count: 2; column-gap: 18pt; }
+    .skills p { margin: 0 0 6pt 0; }
+    .certs { margin: 0; }
+</style>
+</head>
+<body>
+    <h1>Justin Palmer</h1>
+    <div class="contact">justinraypalmer@gmail.com | justinpalmer.com | 859-462-9740</div>
+
+    <h2>Professional Profile</h2>
+    <div class="section">
+        Senior Cloud Engineer and Data Architect with over 16 years of experience delivering secure, enterprise-scale data solutions.
+        Specialized in architecting Azure-native Big Data pipelines, governed analytics, and Generative AI solutions that democratize data access
+        across complex enterprise domains. Expert in AI-accelerated delivery, orchestrating advanced agentic workflows (Windsurf, Codex, ChatGPT Pro)
+        to transform development velocity and ship production-ready applications with superior code integrity. Proven track record of designing secure
+        network architectures and API ecosystems in high-compliance federal sectors.
+    </div>
+
+    <h2>Technical Skills</h2>
+    <div class="section skills">
+        <p><strong>Cloud Data Architecture:</strong> Azure Synapse (Dedicated Pools), Azure Data Factory, Azure SQL, Data Lake Gen2, Event Grid, Blob Storage.</p>
+        <p><strong>Full-Stack Engineering:</strong> C#, ASP.NET Core, Blazor, React, Node.js, Python, REST API Design, Swagger/OpenAPI.</p>
+        <p><strong>AI & Automation:</strong> Azure OpenAI Service, RAG Patterns, AI-Augmented Development (Windsurf, Codex), PowerShell Automation.</p>
+        <p><strong>Security & Networking:</strong> Azure VNETs, Private Endpoints, Inbound/Outbound Traffic Security, Vulnerability Management (Nexus), OAuth/OIDC.</p>
+        <p><strong>DevOps & Governance:</strong> Azure DevOps (CI/CD), Infrastructure as Code (IaC), Row-Level Security (RLS), Data Governance.</p>
+    </div>
+
+    <h2>Professional Experience</h2>
+
+    <div class="job">
+        <div class="job-title">U.S. Department of the Treasury — Senior Cloud Engineer / Technical Lead</div>
+        <div class="job-meta">Nov 2022 – Present</div>
+        <ul>
+            <li>Architected and integrated a custom Azure OpenAI solution using a RAG pattern within the enterprise Blazor portal, indexing millions of Power BI audit log events for natural language diagnostics.</li>
+            <li>Serve as the Lead Cloud Architect for enterprise Big Data processing utilizing Azure Synapse Dedicated Pools and Azure SQL.</li>
+            <li>Design low-code ETL pipelines in Data Factory complemented by Azure Functions in .NET, Node, or Python for complex transformations.</li>
+            <li>Design and secure network infrastructure with advanced ingress/egress controls, private endpoints, and API gateways.</li>
+            <li>Develop and maintain the agency’s core API ecosystem with ASP.NET Core and comprehensive Swagger/OpenAPI documentation.</li>
+            <li>Automate security operations with AI-augmented PowerShell, integrating Nexus scans to quarantine vulnerable VMs.</li>
+            <li>Architected a Human Capital Tabular Model (25 fact tables, 90 dimensions) with incremental refresh and partition management.</li>
+            <li>Developed a centralized Blazor admin hub to monitor platform health, access visibility, and compliance.</li>
+        </ul>
+    </div>
+
+    <div class="job">
+        <div class="job-title">Internal Revenue Service — Senior Data Engineer / Analyst</div>
+        <div class="job-meta">Jun 2019 – Nov 2022</div>
+        <ul>
+            <li>Managed the transition of training analytics to Treasury’s enterprise warehouse, consolidating 20+ PL/SQL scripts into a unified Big Data model processing 20M+ rows daily.</li>
+            <li>Developed .NET/SQL reconciliation utilities to synchronize data across three disparate HR/payroll systems, improving data integrity.</li>
+            <li>Engineered automated data pipelines using Python and APIs (CDC/JHU) to publish COVID-19 tracking data with zero manual intervention.</li>
+            <li>Designed signature HR dashboards serving 500k+ views to 500+ stakeholders, reducing ad-hoc requests through self-service analytics.</li>
+        </ul>
+    </div>
+
+    <div class="job">
+        <div class="job-title">Internal Revenue Service — Operations Research Analyst</div>
+        <div class="job-meta">Nov 2017 – Jun 2019</div>
+        <ul>
+            <li>Replaced a $3M legacy organizational tool with a custom, governed solution, encoding complex hierarchy rules and driving enterprise adoption.</li>
+            <li>Implemented R-based outlier detection and forecasting models to automate the ingestion and analysis of complex paginated records.</li>
+        </ul>
+    </div>
+
+    <h2>Education</h2>
+    <div class="section">
+        <div><strong>Master of Business Administration (MBA) | Finance & Analytics</strong> — Murray State University (4.0 GPA)</div>
+        <div><strong>Bachelor of Science (BS) | Accounting</strong> — University of Kentucky</div>
+    </div>
+
+    <h2>Certifications</h2>
+    <div class="section certs">
+        <div>Microsoft Certified: Azure AI Fundamentals (AI-900)</div>
+        <div>Microsoft Certified: Azure Data Fundamentals (DP-900)</div>
+        <div>Microsoft Certified: Azure Fundamentals (AZ-900)</div>
+    </div>
+</body>
+</html>

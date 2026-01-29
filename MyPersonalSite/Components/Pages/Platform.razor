@@ -1,0 +1,247 @@
+@page "/platform"
+@rendermode InteractiveServer
+
+<PageTitle>Current Platform & Approach - Justin Palmer</PageTitle>
+
+<div class="container-fluid page-shell-wide dense-sections">
+    <section class="hero" role="region" aria-labelledby="platform-title">
+        <div class="hero-grid align-items-center">
+            <div>
+                <span class="tag mb-2">Current Platform & Approach</span>
+                <h1 id="platform-title" class="hero-title">Enterprise Azure platforms with full-stack delivery and governed data</h1>
+                <p class="hero-copy mb-3">
+                    I build secure, scalable cloud platforms for federal environments. With 16+ years in government IT and 8+ years delivering cloud applications,
+                    I prioritize architecture patterns over tool ideology: <strong>security</strong>, <strong>scalability</strong>, and <strong>maintainability</strong> come first.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="chip">.NET 8</span>
+                    <span class="chip">Blazor + React</span>
+                    <span class="chip">Azure PaaS</span>
+                    <span class="chip">API Management</span>
+                    <span class="chip">Data Factory</span>
+                    <span class="chip">Functions</span>
+                </div>
+            </div>
+            <div class="hero-panel">
+                <h2 class="h6 text-uppercase text-muted mb-2 ls-1">Development principles</h2>
+                <ul class="list-unstyled d-grid gap-2 mb-0 small">
+                    <li><strong>Security by design:</strong> Entra ID, private endpoints, and least privilege by default.</li>
+                    <li><strong>Contract-first delivery:</strong> OpenAPI + typed clients reduce integration risk.</li>
+                    <li><strong>Operational readiness:</strong> Telemetry, alerts, and runbooks before launch.</li>
+                    <li><strong>Pragmatic stack:</strong> Right tool for the mission, consistent patterns for the team.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Development lifecycle</h2>
+        <p class="section-subtitle">A repeatable method for taking ideas to enterprise production quickly and safely.</p>
+        <div class="row g-3">
+            <div class="col-12 col-lg-4">
+                <div class="tile h-100">
+                    <div class="tile-title">Discover & design</div>
+                    <div class="tile-text">Translate stakeholder intent into architecture diagrams, ADRs, and delivery epics.</div>
+                    <div class="tile-text">Define SLAs, data contracts, and governance requirements before sprint zero.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="tile h-100">
+                    <div class="tile-title">Build & integrate</div>
+                    <div class="tile-text">ASP.NET Core APIs, Azure Functions, and low-code ETL via Data Factory.</div>
+                    <div class="tile-text">Shared libraries, typed clients, and deterministic CI/CD pipelines.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="tile h-100">
+                    <div class="tile-title">Operate & evolve</div>
+                    <div class="tile-text">SLOs, alerting, and audit-ready runbooks for production ownership.</div>
+                    <div class="tile-text">Post-release reviews driven by telemetry and continuous hardening.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Platform blueprint</h2>
+        <p class="section-subtitle">Clear boundaries across the experience, service, data, and integration layers.</p>
+        <div class="row g-3">
+            <div class="col-12 col-lg-3">
+                <div class="tile h-100">
+                    <div class="tile-title">Experience</div>
+                    <div class="tile-text">Blazor and React front ends with shared UI contracts and accessibility baked in.</div>
+                    <div class="tile-text">App Service hosting, managed identity auth, and composable component libraries.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3">
+                <div class="tile h-100">
+                    <div class="tile-title">Service</div>
+                    <div class="tile-text">ASP.NET Core APIs behind Azure API Management for throttling, policy, and discovery.</div>
+                    <div class="tile-text">OpenAPI as the source of truth for SDK generation and governance.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3">
+                <div class="tile h-100">
+                    <div class="tile-title">Data</div>
+                    <div class="tile-text">Synapse dedicated pools and Azure SQL for analytics and operational workloads.</div>
+                    <div class="tile-text">ADLS Gen2 as the system of record with lineage and retention enforcement.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3">
+                <div class="tile h-100">
+                    <div class="tile-title">Integration</div>
+                    <div class="tile-text">ADF for orchestration, Functions for high-code transforms, Event Grid for triggers.</div>
+                    <div class="tile-text">Service Bus for durable messaging and workflow decoupling.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Technology strategy</h2>
+        <p class="section-subtitle">Microsoft-centric for compliance, but flexible enough to fit the mission.</p>
+        <div class="row g-3">
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 p-3 soft-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="tag me-2">App</span>
+                        <h3 class="h6 fw-bold mb-0">Application development</h3>
+                    </div>
+                    <p class="small text-muted mb-2">
+                        <strong>Approach:</strong> Choose the front end that fits the mission and team. Internal apps move fastest with Blazor; large-scale portals benefit from React.
+                    </p>
+                    <ul class="small mb-0 ps-3">
+                        <li><strong>Blazor:</strong> High velocity + shared logic across tiers.</li>
+                        <li><strong>React:</strong> Ecosystem depth for complex UI workflows.</li>
+                        <li><strong>MVC/Razor:</strong> Lightweight content and admin portals.</li>
+                        <li><strong>Flexibility:</strong> Comfortable in Node or Python when required.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 p-3 soft-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="tag me-2">Cloud</span>
+                        <h3 class="h6 fw-bold mb-0">Cloud infrastructure</h3>
+                    </div>
+                    <p class="small text-muted mb-2">
+                        <strong>Approach:</strong> Prefer PaaS to reduce patching risk and accelerate delivery. Secure ingress/egress with private endpoints and API gateways.
+                    </p>
+                    <ul class="small mb-0 ps-3">
+                        <li><strong>Zero trust:</strong> Entra ID + managed identities for service auth.</li>
+                        <li><strong>Network controls:</strong> Private links, WAF, and routing policies.</li>
+                        <li><strong>Governance:</strong> Azure Policy and IaC for enforceability.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Data lifecycle & governance</h2>
+        <p class="section-subtitle">From ingestion to decision support with explicit contracts and auditability.</p>
+        <div class="row g-3">
+            <div class="col-12 col-lg-3">
+                <div class="tile h-100">
+                    <div class="tile-title">Ingest</div>
+                    <div class="tile-text">ADF pipelines and Functions manage batch loads, CDC, and API pulls.</div>
+                    <div class="tile-text">Data contracts include <code>domain</code>, <code>schemaVersion</code>, <code>piiClass</code>, <code>slaHours</code>.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3">
+                <div class="tile h-100">
+                    <div class="tile-title">Transform</div>
+                    <div class="tile-text">Validation gates, reconciliation, and automated exception handling.</div>
+                    <div class="tile-text">Schema drift detection and lineage tagging for auditability.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3">
+                <div class="tile h-100">
+                    <div class="tile-title">Serve</div>
+                    <div class="tile-text">Semantic models in Power BI backed by certified datasets and RLS.</div>
+                    <div class="tile-text">Custom Blazor apps for workflows that require more than reporting.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3">
+                <div class="tile h-100">
+                    <div class="tile-title">Operate</div>
+                    <div class="tile-text">SLOs, alerting, and runbooks mapped to production ownership.</div>
+                    <div class="tile-text">IaC with Bicep/Terraform to eliminate environment drift.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Security & governance</h2>
+        <p class="section-subtitle">Controls are embedded into the platform, not bolted on after delivery.</p>
+        <div class="row g-3">
+            <div class="col-12 col-lg-4">
+                <div class="tile h-100">
+                    <div class="tile-title">Identity & access</div>
+                    <div class="tile-text">Entra ID, managed identities, and scoped RBAC across data and APIs.</div>
+                    <div class="tile-text">Conditional access aligned to mission roles and data sensitivity.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="tile h-100">
+                    <div class="tile-title">Network isolation</div>
+                    <div class="tile-text">Private endpoints for SQL, Storage, and Key Vault; no public ingress.</div>
+                    <div class="tile-text">Traffic inspection with WAF, Front Door, and API gateways.</div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="tile h-100">
+                    <div class="tile-title">Data governance</div>
+                    <div class="tile-text">Row-level security, classification tagging, and immutable audit logs.</div>
+                    <div class="tile-text">Dataset certification workflows for high-impact business domains.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Operational playbooks by domain</h2>
+        <p class="section-subtitle">Repeatable runbooks that translate requirements into automation.</p>
+        <div class="row g-3">
+            <div class="col-12 col-lg-4">
+                <div class="card compact p-3 h-100">
+                    <h3 class="h6 fw-bold">HR & Workforce</h3>
+                    <ul class="small mb-0 ps-3">
+                        <li>Daily payroll deltas, workforce snapshots, and hierarchy validation.</li>
+                        <li>RLS applied by org, cost center, and role-based entitlements.</li>
+                        <li>Blazor admin tools for audit requests and access review.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="card compact p-3 h-100">
+                    <h3 class="h6 fw-bold">Budget & Procurement</h3>
+                    <ul class="small mb-0 ps-3">
+                        <li>Appropriation rollups with reconciliation checkpoints per period.</li>
+                        <li>Spend analytics tied to vendor lifecycle and contract compliance.</li>
+                        <li>API-first pipelines for downstream finance systems.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="card compact p-3 h-100">
+                    <h3 class="h6 fw-bold">Cyber & Compliance</h3>
+                    <ul class="small mb-0 ps-3">
+                        <li>Vulnerability feeds normalized and enriched with asset context.</li>
+                        <li>Automated quarantine workflows driven by alert severity.</li>
+                        <li>Immutable audit trails and evidence packets for inspections.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="card p-4 reveal">
+            <h3 class="h5">Need a platform leader who can execute?</h3>
+            <p class="mb-2">I bring enterprise-scale delivery with a focus on secure APIs, governed data, and cloud-ready applications.</p>
+            <a class="btn btn-primary" href="mailto:justinraypalmer@gmail.com">Contact Me</a>
+        </div>
+    </section>
+</div>

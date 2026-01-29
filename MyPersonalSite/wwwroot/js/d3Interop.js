@@ -40,6 +40,45 @@
             document.body.appendChild(tipEl);
         }
     }
+    // ---- palette + highlight helpers ----
+    function getPalette(name, n = 10) {
+        const d3 = window.d3;
+        const seq = (scale, n) => Array.from({ length: n }, (_, i) => scale(n === 1 ? 1 : i / (n - 1)));
+        switch ((name || '').toLowerCase()) {
+            case 'purples': return seq(d3.interpolatePurples, n);
+            case 'greens': return seq(d3.interpolateGreens, n);
+            case 'oranges': return seq(d3.interpolateOranges, n);
+            case 'magma': return seq(d3.interpolateMagma, n);
+            case 'plasma': return seq(d3.interpolatePlasma, n);
+            case 'viridis': return seq(d3.interpolateViridis, n);
+            case 'blues':
+            /* falls through */
+            default: return seq(d3.interpolateBlues, n);
+        }
+    }
+    function getCategorical(name) {
+        const d3 = window.d3;
+        switch ((name || '').toLowerCase()) {
+            case 'tableau': return d3.schemeTableau10;
+            case 'set2': return d3.schemeSet2;
+            case 'set3': return d3.schemeSet3;
+            case 'brand':
+            default: return ["#5b8def", "#3fbf9b", "#f59e0b", "#a78bfa", "#ef4444", "#22c55e", "#0ea5e9", "#fb7185", "#94a3b8", "#eab308"];
+        }
+    }
+    // global, lightweight highlighter (mirrors visuals-extra behavior)
+    function hlApply(type, value) {
+        document.querySelectorAll('[data-viz-type]').forEach(el => {
+            el.classList.add('muted'); el.classList.remove('em');
+        });
+        document.querySelectorAll(`[data-viz-type="${type}"][data-viz-key="${value}"]`)
+            .forEach(el => { el.classList.remove('muted'); el.classList.add('em'); });
+    }
+    function hlClear() {
+        document.querySelectorAll('[data-viz-type]').forEach(el => el.classList.remove('muted', 'em'));
+    }
+
+
     function showTip(event, html) {
         if (!tipEl) return;
         tipEl.innerHTML = html;
@@ -135,37 +174,27 @@
         g.append("g").attr("class", "d3-axis-y").call(d3.axisLeft(y).ticks(5));
 
         // colors
-        const colorByKey = opts?.colorBy || xKey;
-        const domain = data.map(d => d[colorByKey]);
-        const colorer = colorerFrom(opts, domain);
+        const cats = data.map(d => d[xKey]);
+        const color = d3.scaleOrdinal(getCategorical((opts && opts.palette) || "tableau")).domain(cats);
 
         const bars = g.selectAll("rect")
-            .data(data)
-            .enter()
-            .append("rect")
+            .data(data).enter().append("rect")
             .attr("class", "d3-bar")
-            .attr("x", d => x(d[xKey]))
-            .attr("y", ih)              // animate from bottom
-            .attr("width", x.bandwidth())
-            .attr("height", 0)
+            .attr("x", d => x(d[xKey])).attr("y", ih)
+            .attr("width", x.bandwidth()).attr("height", 0)
             .attr("rx", 6).attr("ry", 6)
-            .style("fill", d => colorer ? colorer(d[colorByKey], domain.indexOf(d[colorByKey])) : null)
-            .on("mousemove", function (event, d) {
-                // hover dim
-                bars.attr("opacity", p => p === d ? 1 : 0.35);
-                const label = `${xKey}: <strong>${d[xKey]}</strong><br/>${yKey}: <strong>${d[yKey]}</strong>`;
-                showTip(event, label);
+            .style("fill", d => color(d[colorByKey]))
+            .attr("data-viz-type", (opts && opts.colorBy) || xKey)
+            .attr("data-viz-key", d => String(d[colorByKey]))
+            .on("mousemove", (event, d) => {
+                hlApply((opts && opts.colorBy) || xKey, String(d[colorByKey]));
+                showTip(event, `${xKey}: <strong>${d[xKey]}</strong><br/>${yKey}: <strong>${d[yKey]}</strong>`);
             })
-            .on("mouseleave", function () {
-                bars.attr("opacity", 0.95);
-                hideTip();
-            })
-            .on("click", function (event, d) {
-                // toggle selection highlight
-                const isSel = this.classList.toggle("viz-selected");
-                if (!event.ctrlKey) {
-                    bars.filter(function () { return this !== event.currentTarget; }).classed("viz-selected", false);
-                }
+            .on("mouseleave", () => { hlClear(); hideTip(); })
+            .on("click", function (event) {
+                const me = this;
+                if (!event.ctrlKey) g.selectAll(".d3-bar").classed("selected", false);
+                me.classList.toggle("selected");
             });
 
         // animate in
@@ -176,6 +205,7 @@
 
     // ---------------- horizontal bar chart ----------------
     // data: [{label,count}] or [{org,count}]
+    // REPLACE your existing renderHorizontalBarChart function in d3Interop.js with this one.
     api.renderHorizontalBarChart = function (selector, data, opts) {
         if (!window.d3 || !data?.length) return;
         const d3 = window.d3;
@@ -184,9 +214,11 @@
         const labelKey = data[0]?.label ? "label" : (data[0]?.org ? "org" : "label");
         const valKey = "count";
 
+        const m = { top: 8, right: 16, bottom: 28, left: 160 }; // Generous left margin
+
         const width = Math.max(360, el.clientWidth || 640);
-        const height = Math.max(140, (opts?.height ?? (28 * data.length + 32)));
-        const m = { top: 8, right: 16, bottom: 28, left: 160 };
+        const height = (opts?.barHeight || 45) * data.length + m.top + m.bottom; // Taller bars for wrapped text
+
         const iw = width - m.left - m.right;
         const ih = height - m.top - m.bottom;
 
@@ -196,38 +228,33 @@
         const y = d3.scaleBand().domain(data.map(d => d[labelKey])).range([0, ih]).padding(0.18);
         const x = d3.scaleLinear().domain([0, d3.max(data, d => +d[valKey]) || 1]).nice().range([0, iw]);
 
-        axisGridY(g.append("g"), d3.scaleLinear().domain([0, 5]).range([0, ih]), iw); // faint horizontal grid
-        g.append("g").attr("class", "d3-axis-y").call(d3.axisLeft(y).tickSizeOuter(0));
+        // --- AXIS FIX ---
+        const yAxis = g.append("g")
+            .attr("class", "d3-axis-y")
+            .call(d3.axisLeft(y).tickSize(0));
+
+        yAxis.select(".domain").remove(); // Remove vertical axis line
+
+        yAxis.selectAll(".tick text")
+            .call(wrap, m.left - 10); // Call the wrap function!
+
         g.append("g").attr("class", "d3-axis-x").attr("transform", `translate(0,${ih})`).call(d3.axisBottom(x).ticks(5));
 
-        const colorer = colorerFrom(opts, data.map(d => d[labelKey]));
+        const color = d3.scaleOrdinal(getCategorical((opts && opts.palette) || "tableau"))
+            .domain(data.map(d => d[labelKey]));
 
         const bars = g.selectAll("rect")
-            .data(data)
-            .enter()
-            .append("rect")
+            .data(data).enter().append("rect")
             .attr("class", "d3-hbar")
-            .attr("y", d => y(d[labelKey]))
-            .attr("x", 0)
-            .attr("height", y.bandwidth())
-            .attr("width", 0)
+            .attr("y", d => y(d[labelKey])).attr("x", 0)
+            .attr("height", y.bandwidth()).attr("width", 0)
             .attr("rx", 6).attr("ry", 6)
-            .style("fill", d => colorer ? colorer(d[labelKey]) : null)
-            .on("mousemove", (event, d) => {
-                bars.attr("opacity", p => p === d ? 1 : 0.35);
-                showTip(event, `${d[labelKey]}<br/>Count: <strong>${d[valKey]}</strong>`);
-            })
-            .on("mouseleave", () => { bars.attr("opacity", 0.95); hideTip(); })
-            .on("click", function (event, d) {
-                const isSel = this.classList.toggle("viz-selected");
-                if (!event.ctrlKey) {
-                    bars.filter(function () { return this !== event.currentTarget; }).classed("viz-selected", false);
-                }
-            });
+            .style("fill", d => color(d[labelKey]))
+            .on("mousemove", (event, d) => { /* ... your tooltip code ... */ })
+            .on("mouseleave", () => { /* ... your tooltip code ... */ });
 
         bars.transition().duration(450).attr("width", d => x(d[valKey]));
     };
-
     // ---------------- sparkline (tiny trend) ----------------
     api.renderSparkline = function (selector, data, opts) {
         if (!window.d3 || !data?.length) return;
@@ -247,13 +274,16 @@
 
         const line = d3.line().x((d, i) => x(i)).y(d => y(d)).curve(d3.curveMonotoneX);
 
+        const pal = getPalette((opts && opts.palette) || 'blues', Math.max(3, data.length));
+        const stroke = pal[Math.min(pal.length - 1, pal.length - 2)]; // nice mid-dark blue
+
         svg.append("path")
             .datum(data)
             .attr("d", line)
             .attr("fill", "none")
-            .attr("stroke", "#5b8def")
+            .attr("stroke", stroke)
             .attr("stroke-width", 1.8)
-            .attr("opacity", 0.95);
+            .attr("opacity", 0.95)
     };
 
     // ---------------- monthly bars (last 48 months) ----------------
@@ -287,31 +317,67 @@
         g.append("g").attr("class", "d3-axis-y").call(d3.axisLeft(y).ticks(5));
 
         // sequential color across time
-        const seq = sequential((opts?.palette || "blues"));
+        const seq = getPalette((opts && opts.palette) || "blues", series.length);
         const c = d3.scaleLinear().domain([0, series.length - 1]).range([0, 1]);
+        const fmtKey = d3.timeFormat("%Y-%m");
 
         const rects = g.selectAll("rect")
             .data(series)
             .enter()
             .append("rect")
             .attr("class", "d3-bar")
-            .attr("x", d => x(d.date))
-            .attr("y", ih)
-            .attr("width", x.bandwidth())
-            .attr("height", 0)
+            .attr("x", d => x(d.date)).attr("y", ih)
+            .attr("width", x.bandwidth()).attr("height", 0)
             .attr("rx", 5).attr("ry", 5)
-            .style("fill", (_, i) => seq(c(i)))
+            .attr("data-viz-type", "month")
+            .attr("data-viz-key", d => fmtKey(d.date))
+            .style("fill", (_, i) => seq[i])
             .on("mousemove", (event, d) => {
                 const label = `${d3.timeFormat("%b %Y")(d.date)}<br/>Count: <strong>${d.value}</strong>`;
-                rects.attr("opacity", p => p === d ? 1 : 0.35);
+                hlApply("month", fmtKey(d.date));        // NEW: global highlight
                 showTip(event, label);
             })
-            .on("mouseleave", () => { rects.attr("opacity", 0.95); hideTip(); });
+            .on("mouseleave", () => { hlClear(); hideTip(); });
 
         rects.transition().duration(450)
             .attr("y", d => y(d.value))
             .attr("height", d => ih - y(d.value));
     };
+
+    // Add this entire function to your D3 javascript file.
+    function wrap(text, width) {
+        text.each(function () {
+            var text = d3.select(this),
+                words = text.text().split(/\s+/).reverse(),
+                word,
+                line = [],
+                lineNumber = 0,
+                lineHeight = 1.1, // ems
+                x = text.attr("x"),
+                y = text.attr("y"),
+                dy = parseFloat(text.attr("dy")) || 0,
+                tspan = text.text(null)
+                    .append("tspan")
+                    .attr("x", x)
+                    .attr("y", y)
+                    .attr("dy", dy + "em");
+
+            while (word = words.pop()) {
+                line.push(word);
+                tspan.text(line.join(" "));
+                if (tspan.node().getComputedTextLength() > width) {
+                    line.pop();
+                    tspan.text(line.join(" "));
+                    line = [word];
+                    tspan = text.append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                        .text(word);
+                }
+            }
+        });
+    }
 
     // ---------------- bullet chart (goal vs actual) ----------------
     // model: {value, target?, max?}
@@ -332,17 +398,21 @@
         const g = svg.append("g").attr("transform", `translate(${m.left},${m.top})`);
         const x = d3.scaleLinear().domain([0, max]).range([0, iw]);
 
+        const pal = getPalette((opts && opts.palette) || "blues", 5);
+        const barColor = pal[pal.length - 2];
+        const targetFill = "#eef3ff"; // matches your chip/bg
+
         if (model.target != null) {
             g.append("rect")
                 .attr("x", 0).attr("y", ih / 3)
                 .attr("width", x(model.target)).attr("height", ih / 3)
-                .attr("fill", "#eef3ff");
+                .attr("fill", targetFill);
         }
-
         g.append("rect")
             .attr("x", 0).attr("y", ih / 2 - 6)
             .attr("width", x(model.value)).attr("height", 12)
-            .attr("fill", "#5b8def").attr("rx", 6).attr("ry", 6);
+            .attr("fill", barColor)
+            .attr("rx", 6).attr("ry", 6);
 
         g.append("g").attr("transform", `translate(0,${ih})`).attr("class", "d3-axis-x")
             .call(d3.axisBottom(x).ticks(4).tickSizeOuter(0));
