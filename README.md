@@ -62,6 +62,11 @@ dotnet run --project MyPersonalSite
 ```
 The app will print the local URL in the console (typically https://localhost:xxxx).
 
+Optional (hot reload):
+```bash
+dotnet watch --project MyPersonalSite
+```
+
 ## Data & confidentiality
 - Resume and site data is seeded into a local SQLite database on startup.
 - Visuals use seeded/mock telemetry to mimic real-world signals.
