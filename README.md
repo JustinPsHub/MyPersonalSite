@@ -86,12 +86,12 @@ flowchart LR
 ## Data inputs & outputs
 ```mermaid
 flowchart TB
-    Seed[Seeded Data (DbInitializer)] --> Db[(SQLite)]
-    Db --> Resume[Resume Page]
-    Db --> Visuals[Visuals Page]
-    Visuals --> D3[D3 Charts]
-    Resume --> Export[Export (Word/PDF if present)]
-    UI[Blazor UI] --> User[Hiring Manager / Bot]
+    Seed["Seeded data (DbInitializer)"] --> Db["SQLite (local)"]
+    Db --> Resume["Resume page"]
+    Db --> Visuals["Visuals page"]
+    Visuals --> D3["D3 charts"]
+    Resume --> Export["Export (Word/PDF if present)"]
+    UI["Blazor UI"] --> User["Hiring manager / bot"]
 ```
 
 ## Project structure
