@@ -1,49 +1,47 @@
-﻿@* Drawer-aware sidebar *@
-<aside id="appSidebar"
-       class="app-sidebar @(IsOpen ? "open" : null)"
-       role="navigation"
-       aria-label="Main">
-    <div class="sidebar-header">
-        <div>
-            <div class="sidebar-name">Justin Palmer</div>
-            <div class="sidebar-role">Software Engineer & Data/Cloud Platform Engineer</div>
-        </div>
-        <button type="button"
-                class="btn btn-sm btn-outline-light d-lg-none"
-                aria-label="Close menu"
-                data-nav-close>
-            Close
-        </button>
-    </div>
+@implements IDisposable
+@inject NavigationManager NavManager
 
-    <nav class="nav flex-column gap-1 sidebar-links">
-        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link" data-nav-close>Overview</NavLink>
-        <NavLink href="/resume" class="nav-link" data-nav-close>Resume</NavLink>
-        <NavLink href="/visuals" class="nav-link" data-nav-close>Visuals</NavLink>
-        <NavLink href="/platform" class="nav-link" data-nav-close>Platform + Approach</NavLink>
-    </nav>
-
-    <div class="sidebar-actions">
-        <a class="btn btn-sm btn-light"
-           href="mailto:justinraypalmer@gmail.com"
-           data-nav-close>
-            Email
-        </a>
-        <a class="btn btn-sm btn-outline-light"
-           href="https://github.com/JustinPsHub/MyPersonalSite"
-           target="_blank"
-           rel="noopener"
-           data-nav-close>
-            GitHub
-        </a>
-    </div>
-
-    <div class="sidebar-footer small">
-        Hillsboro, Ohio · Open to remote and hybrid work
-    </div>
-</aside>
+<nav class="menu-nav" aria-label="Site navigation">
+    @if (!_isOnHome)
+    {
+        <NavLink href="/" Match="NavLinkMatch.All" class="nav-link menu-link" data-bs-dismiss="offcanvas">Home</NavLink>
+    }
+    <NavLink href="/resume" class="nav-link menu-link" data-bs-dismiss="offcanvas">Resume</NavLink>
+    <NavLink href="/visuals" class="nav-link menu-link" data-bs-dismiss="offcanvas">Visuals</NavLink>
+</nav>
 
 @code {
-    [Parameter] public bool IsOpen { get; set; }
-    [Parameter] public EventCallback OnClose { get; set; }
+    private bool _isOnHome;
+
+    protected override void OnInitialized()
+    {
+        _isOnHome = IsHome(NavManager.Uri);
+        NavManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs args)
+    {
+        var isHome = IsHome(args.Location);
+        if (isHome != _isOnHome)
+        {
+            _isOnHome = isHome;
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private bool IsHome(string uri)
+    {
+        var relative = NavManager.ToBaseRelativePath(uri);
+        if (string.IsNullOrEmpty(relative))
+        {
+            return true;
+        }
+
+        return string.IsNullOrEmpty(relative.Trim('/'));
+    }
+
+    public void Dispose()
+    {
+        NavManager.LocationChanged -= HandleLocationChanged;
+    }
 }
