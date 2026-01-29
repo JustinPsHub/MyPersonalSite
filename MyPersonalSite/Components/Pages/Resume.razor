@@ -9,7 +9,7 @@
 @inject IJSRuntime JS
 @using MyPersonalSite.Components.Shared
 
-<PageTitle>Resume - Justin Palmer - Senior Cloud Engineer & Data Architect</PageTitle>
+<PageTitle>Resume - Justin Palmer - Software Engineer & Data/Cloud Platform Engineer</PageTitle>
 
 <!-- Quiet heading for a11y -->
 <div class="container-fluid page-shell-wide pt-3">
@@ -25,14 +25,14 @@
             <div>
                 <h2 class="h3 mb-1" itemprop="name">Justin Palmer</h2>
                 <div class="d-flex flex-wrap gap-2 mb-1">
-                    <span class="chip" itemprop="jobTitle">Senior Cloud Engineer &amp; Data Architect</span>
+                    <span class="chip" itemprop="jobTitle">Software Engineer &amp; Data/Cloud Platform Engineer</span>
                     <span class="chip">Azure Synapse / Data Factory</span>
                     <span class="chip">Azure OpenAI / RAG</span>
                     <link itemprop="url" href="@Nav.BaseUri" />
                 </div>
                 <p class="mb-0 text-muted small">
-                    Senior Cloud Engineer &amp; Data Architect with 16+ years delivering enterprise data solutions
-                    and 8+ years building Azure cloud platforms, governed analytics, and GenAI solutions with secure
+                    Software Engineer &amp; Data/Cloud Platform Engineer with 16+ years delivering enterprise data solutions
+                    and 4+ years building Azure cloud platforms (after on-prem roots), governed analytics, and GenAI solutions with secure
                     networking, scalable APIs, and full-stack apps.
                 </p>
             </div>
@@ -50,6 +50,22 @@
                                data-close>
                                 Word
                             </a>
+                            <a class="dropdown-item"
+                               href="/resume/Justin_Palmer_Resume_OnePage_Tighter.pdf"
+                               download
+                               target="_blank"
+                               rel="noopener"
+                               data-close>
+                                PDF (One Page)
+                            </a>
+                            <a class="dropdown-item"
+                               href="/resume/Justin_Palmer_Resume_Full.pdf"
+                               download
+                               target="_blank"
+                               rel="noopener"
+                               data-close>
+                                PDF (Full)
+                            </a>
                         </div>
                     </details>
                 </div>
@@ -59,6 +75,7 @@
                     <a class="chip" href="mailto:justinraypalmer@gmail.com" rel="noopener">justinraypalmer@gmail.com</a>
                     <a class="chip" href="tel:[redacted]">[redacted]</a>
                     <a class="chip" href="https://justinpalmer.com" target="_blank" rel="noopener">justinpalmer.com</a>
+                    <a class="chip" href="https://github.com/JustinPsHub/MyPersonalSite" target="_blank" rel="noopener">github.com/JustinPsHub/MyPersonalSite</a>
                 </div>
             </div>
         </header>
@@ -81,14 +98,14 @@
                 <header class="rs-header">
                     <div class="rs-nameblock">
                         <h1 class="rs-name">Justin Palmer</h1>
-                        <div class="rs-role">Senior Cloud Engineer &amp; Data Architect</div>
+                        <div class="rs-role">Software Engineer &amp; Data/Cloud Platform Engineer</div>
                         <p class="rs-tag">
-                            16+ years delivering Azure-native data platforms, Synapse + ADF pipelines, GenAI (Azure OpenAI RAG),
-                            and secure API ecosystems with Blazor/MVC/React.
+                            16+ years delivering software products and Azure-native data platforms, Synapse + ADF pipelines,
+                            GenAI (Azure OpenAI RAG), and secure API ecosystems with Blazor/MVC/React.
                         </p>
                     </div>
                     <div class="rs-contact">
-                        Hillsboro, OH - <a href="mailto:justinraypalmer@gmail.com">justinraypalmer@gmail.com</a> - [redacted] - justinpalmer.com
+                        Hillsboro, OH - <a href="mailto:justinraypalmer@gmail.com">justinraypalmer@gmail.com</a> - [redacted] - justinpalmer.com - github.com/JustinPsHub/MyPersonalSite
                     </div>
                 </header>
 
@@ -99,7 +116,7 @@
                             <h3 class="rs-label">Skills</h3>
                             <ul class="rs-list">
                                 <li><strong>Cloud Data Architecture:</strong> Synapse Dedicated Pools, ADF, Azure SQL, Data Lake Gen2, Event Grid, Blob</li>
-                                <li><strong>Full Stack:</strong> C#, ASP.NET Core, Blazor, MVC, React, Node.js, Python, REST, Swagger</li>
+                                <li><strong>Full Stack:</strong> C#, ASP.NET Core, Blazor, MVC, React, Node.js, Python, REST, Swagger, Testing, Observability</li>
                                 <li><strong>AI &amp; Automation:</strong> Azure OpenAI, RAG, Windsurf, Codex, ChatGPT Pro, PowerShell</li>
                                 <li><strong>Security &amp; Networking:</strong> VNETs, Private Endpoints, inbound/outbound controls, Nexus</li>
                                 <li><strong>DevOps &amp; Governance:</strong> Azure DevOps, IaC, RLS, Data Governance</li>
@@ -186,12 +203,15 @@
                 <h2 class="sect">Professional Profile</h2>
                 <div class="exp">
                     <p class="mb-2">
-                        Senior Cloud Engineer and Data Architect with over 16 years of experience delivering secure,
-                        enterprise-scale data solutions. Specialized in architecting Azure-native Big Data pipelines,
-                        governed analytics, and Generative AI solutions that democratize data access across complex
-                        enterprise domains. Expert in AI-accelerated delivery with advanced agentic workflows
+                        Software Engineer and Data/Cloud Platform Engineer with over 16 years of experience delivering secure,
+                        enterprise-scale data solutions and production-ready software. Specialized in architecting Azure-native
+                        pipelines, governed analytics, and Generative AI solutions that democratize data access across complex
+                        enterprise domains. Strong in API design, CI/CD, observability, and performance tuning. Expert in AI-accelerated delivery with advanced agentic workflows
                         (Windsurf, Codex, ChatGPT Pro). Proven track record of designing secure network architectures
                         and API ecosystems in high-compliance federal sectors.
+                    </p>
+                    <p class="text-muted small mb-0">
+                        Confidentiality note: Metrics and examples are anonymized/aggregated due to federal restrictions. Scale and responsibilities are accurate.
                     </p>
                 </div>
             </section>
@@ -289,15 +309,16 @@
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Full-Stack Engineering</div>
-                            <div class="chips">
-                                @Chip("C#") @Chip("ASP.NET Core")
-                                @Chip("Blazor") @Chip("React") @Chip("MVC")
-                                @Chip("Node.js") @Chip("Python")
-                                @Chip("REST API Design") @Chip("Swagger/OpenAPI")
-                            </div>
+                        <div class="tile-title mb-1">Full-Stack Engineering</div>
+                        <div class="chips">
+                            @Chip("C#") @Chip("ASP.NET Core")
+                            @Chip("Blazor") @Chip("React") @Chip("MVC")
+                            @Chip("Node.js") @Chip("Python")
+                            @Chip("REST API Design") @Chip("Swagger/OpenAPI")
+                            @Chip("Testing") @Chip("Observability")
                         </div>
                     </div>
+                </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
                             <div class="tile-title mb-1">AI &amp; Automation</div>

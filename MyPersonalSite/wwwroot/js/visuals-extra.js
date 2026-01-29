@@ -1,7 +1,7 @@
 ﻿// wwwroot/js/visuals-extra.js
 (function () {
     // ----------- Theme -----------
-    const COLORS = {
+    const BASE_COLORS = {
         brand: "#0ea5e9",
         brandDark: "#0284c7",
         accent1: "#22c55e",
@@ -13,7 +13,23 @@
         muted: "#64748b",
         chip: "#e0f2fe"
     };
+    const COLORS = { ...BASE_COLORS };
     const PALETTE = [COLORS.brand, COLORS.accent1, COLORS.accent2, COLORS.accent3, "#38bdf8", "#f59e0b"];
+
+    function syncThemeColors(el) {
+        if (typeof window === "undefined" || !window.getComputedStyle) return;
+        const node = typeof el === "string" ? document.querySelector(el) : el;
+        const styles = getComputedStyle(node || document.documentElement);
+        const pick = (name, fallback) => {
+            const value = styles.getPropertyValue(name);
+            return value && value.trim() ? value.trim() : fallback;
+        };
+        COLORS.text = pick("--viz-ink", BASE_COLORS.text);
+        COLORS.muted = pick("--viz-muted", BASE_COLORS.muted);
+        COLORS.axis = pick("--viz-axis", BASE_COLORS.axis);
+        COLORS.grid = pick("--viz-grid", BASE_COLORS.grid);
+        COLORS.isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    }
 
     const fmt = (v) => {
         const n = +v;
@@ -54,6 +70,7 @@
     }
     function makeSvg(el, opts) {
         const node = clear(el); if (!node) return {};
+        syncThemeColors(node);
         const width = Math.max(340, node.clientWidth || 700);
         const height = Math.max(160, opts?.height ?? 280);
         const margin = { top: 10, right: 16, bottom: 34, left: 44 };
@@ -144,6 +161,7 @@
         const w = Math.max(120, opts?.width ?? 140);
         const h = Math.max(24, opts?.height ?? 28);
         const el = clear(selector); if (!el) return;
+        syncThemeColors(el);
 
         const svg = d3.select(el).append("svg").attr("width", w).attr("height", h);
         const x = d3.scaleLinear().domain([0, data.length - 1]).range([4, w - 4]);
@@ -614,7 +632,7 @@
             .attr("height", y.bandwidth())
             .attr("rx", 6).attr("ry", 6)
             .attr("fill", d => color(d.value))
-            .attr("stroke", "rgba(15,23,42,0.05)")
+            .attr("stroke", COLORS.grid)
             .on("mouseenter", (ev, d) => {
                 const label = `${d3.timeFormat("%b")(new Date(d.year, d.month, 1))} ${d.year}`;
                 tip.show(`<div style="font-weight:700">${label}</div>
@@ -647,7 +665,7 @@
         g.append("path")
             .attr("d", bg)
             .attr("transform", `translate(${cx},${cy})`)
-            .attr("fill", "#e2e8f0");
+            .attr("fill", COLORS.axis);
 
         const progress = arc({ startAngle: scale(0), endAngle: scale(val) });
         g.append("path")
@@ -732,7 +750,7 @@
                 .attr("cx", centerX).attr("cy", centerY)
                 .attr("r", (radius / gridLevels) * i)
                 .attr("fill", "none")
-                .attr("stroke", "rgba(15,23,42,0.12)");
+                .attr("stroke", COLORS.grid);
         }
 
         avg.forEach((d, i) => {
@@ -742,7 +760,7 @@
             g.append("line")
                 .attr("x1", centerX).attr("y1", centerY)
                 .attr("x2", x).attr("y2", y)
-                .attr("stroke", "rgba(15,23,42,0.18)");
+                .attr("stroke", COLORS.axis);
 
             g.append("text")
                 .attr("x", centerX + Math.cos(a) * (radius + 16))
@@ -801,7 +819,8 @@
             .domain(rows.map(r => r.label));
 
         const group = g.append("g").attr("transform", `translate(${innerW / 2},${innerH / 2})`);
-        group.selectAll("path").data(pie(rows)).enter().append("path")
+        const arcs = pie(rows);
+        group.selectAll("path").data(arcs).enter().append("path")
             .attr("d", arc)
             .attr("fill", d => color(d.data.label))
             .attr("data-viz-type", "year")
@@ -815,6 +834,24 @@
             })
             .on("mousemove", ev => tip.move(ev.clientX, ev.clientY))
             .on("mouseleave", () => tip.hide());
+
+        const labelArc = d3.arc().innerRadius(radius * 0.72).outerRadius(radius * 0.9);
+        const labelStroke = COLORS.isDark ? "rgba(11,18,32,0.6)" : "rgba(255,255,255,0.7)";
+        group.selectAll("text.year-label").data(arcs).enter().append("text")
+            .attr("class", "year-label")
+            .attr("text-anchor", "middle")
+            .attr("dy", "0.35em")
+            .attr("fill", COLORS.text)
+            .style("font-size", "12px")
+            .style("font-weight", 600)
+            .style("paint-order", "stroke")
+            .style("stroke", labelStroke)
+            .style("stroke-width", 2)
+            .style("pointer-events", "none")
+            .attr("data-viz-type", "year")
+            .attr("data-viz-key", d => d.data.label)
+            .attr("transform", d => `translate(${labelArc.centroid(d)})`)
+            .text(d => d.data.label);
 
         group.append("text")
             .attr("text-anchor", "middle")
