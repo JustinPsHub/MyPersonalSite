@@ -70,7 +70,7 @@
                             <span class="pill">Seeded data</span>
                         </div>
                         <div class="pulse-grid">
-                            @foreach (var k in _kpis.Take(3))
+                            @foreach (var k in (_kpisView ?? _kpis)?.Take(3) ?? Enumerable.Empty<KpiItem>())
                             {
                                 <div class="pulse-item">
                                     <div class="label">@k.label</div>
@@ -80,18 +80,18 @@
                             }
                             <div class="pulse-item">
                                 <div class="label">Incident response</div>
-                                <div class="value">@MeanTimeToRestore.ToString("N0") min</div>
+                                <div class="value">@_mttrView.ToString("N0") min</div>
                                 <div class="meta">Median MTTR</div>
                             </div>
                         </div>
                         <div class="pulse-footer">
                             <div class="pulse-note">
                                 <span>Next change window</span>
-                                <strong>@NextChangeWindow</strong>
+                                <strong>@_nextChangeWindowView</strong>
                             </div>
                             <div class="pulse-note">
                                 <span>Policy drift alerts</span>
-                                <strong>@PolicyDriftAlerts</strong>
+                                <strong>@_policyAlertsView</strong>
                             </div>
                         </div>
                     </div>
@@ -182,6 +182,34 @@
                                         <div class="small text-muted">Sustained throughput</div>
                                     </div>
                                 </div>
+                                <div class="col-12 col-md-6 col-xl-3">
+                                <div class="tile h-100">
+                                    <div class="text-muted small">Median MTTR</div>
+                                    <div class="fs-3 fw-bold text-primary">@_mttrView min</div>
+                                    <div class="small text-muted">Incident response speed</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-3">
+                                <div class="tile h-100">
+                                    <div class="text-muted small">Policy drift alerts</div>
+                                    <div class="fs-3 fw-bold text-primary">@_policyAlertsView</div>
+                                    <div class="small text-muted">Last 30 days</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-3">
+                                <div class="tile h-100">
+                                    <div class="text-muted small">Tracked services</div>
+                                    <div class="fs-3 fw-bold text-primary">@_serviceCountView</div>
+                                    <div class="small text-muted">Active portfolio</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-3">
+                                <div class="tile h-100">
+                                    <div class="text-muted small">Next change window</div>
+                                    <div class="fs-6 fw-bold text-primary">@_nextChangeWindowView</div>
+                                    <div class="small text-muted">Change management</div>
+                                </div>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -192,9 +220,9 @@
                 <div class="card-body">
                     <h5 class="card-title">Signals at a glance</h5>
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 viz-kpi">
-                        @for (var i = 0; i < _kpis.Count; i++)
+                        @for (var i = 0; i < ((_kpisView ?? _kpis)?.Count ?? 0); i++)
                         {
-                            var k = _kpis[i];
+                            var k = (_kpisView ?? _kpis)![i];
                             <div class="col">
                                 <div class="tile d-flex justify-content-between align-items-center h-100">
                                     <div>
@@ -342,10 +370,12 @@
 
     // --- new data ---
     private List<KpiItem>? _kpis;
+    private List<KpiItem>? _kpisView;
     private List<MonthCount>? _velocity;
     private List<VelocityQuarter>? _velocityMix;
     private List<ReliabilityPoint>? _reliability;
     private BulletModel? _ado;
+    private BulletModel? _adoView;
 
     // UI state
     private string _sort = "countDesc";
@@ -388,6 +418,10 @@
     private const int MeanTimeToRestore = 38;
     private const int PolicyDriftAlerts = 6;
     private const string NextChangeWindow = "Thu 09:00-13:00 PT";
+    private int _mttrView = MeanTimeToRestore;
+    private int _policyAlertsView = PolicyDriftAlerts;
+    private string _nextChangeWindowView = NextChangeWindow;
+    private int _serviceCountView;
 
     protected override async Task OnInitializedAsync()
     {
@@ -411,7 +445,9 @@
             _velocityView = _velocity;
             _velocityMixView = _velocityMix;
             _reliabilityView = _reliability;
-            ApplyOrgView();
+            _kpisView = _kpis;
+            _adoView = _ado;
+            ApplyFilters();
         }
         catch (Exception ex) { _error = ex.Message; }
     }
@@ -419,7 +455,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var dataReady = _yearsView is not null && _orgsView is not null && _velocityView is not null
-            && _kpis is not null && _ado is not null && _velocityMixView is not null && _reliabilityView is not null;
+            && _kpisView is not null && _adoView is not null && _velocityMixView is not null && _reliabilityView is not null;
 
         if (dataReady && !_revealReady)
         {
@@ -442,13 +478,13 @@
         }
 
         // KPI sparklines
-        if (!_kpiDrawn && _kpis is not null)
+        if (!_kpiDrawn && _kpisView is not null)
         {
             try
             {
-                for (var i = 0; i < _kpis.Count; i++)
+                for (var i = 0; i < _kpisView.Count; i++)
                 {
-                    await JS.InvokeVoidAsync("d3Interop.renderSparkline", $"#kpi-spark-{i}", _kpis[i].spark,
+                    await JS.InvokeVoidAsync("d3Interop.renderSparkline", $"#kpi-spark-{i}", _kpisView[i].spark,
               new { width = 140, height = 28, palette = "blues" });
 
                 }
@@ -472,12 +508,12 @@
         }
 
         // ADO gauge
-        if (!_adoDrawn && _ado is not null)
+        if (!_adoDrawn && _adoView is not null)
         {
             try
             {
                 await JS.InvokeVoidAsync("d3Interop.renderAdoGauge",
-     "#ado-gauge", _ado,
+     "#ado-gauge", _adoView,
      new { height = 220 });
 
                 _adoDrawn = true;
@@ -534,12 +570,14 @@
     {
         ApplyOrgView();
         ApplyTimeFilters();
+        ApplySignalAdjustments();
+        _kpiDrawn = false;
+        _adoDrawn = false;
         _heatDrawn = false;
         _donutDrawn = false;
+        _treemapDrawn = false;
         _radarDrawn = false;
         _reliabilityDrawn = false;
-        // No need for StateHasChanged() here, as the framework handles it
-        // when an event handler is invoked.
     }
 
     private static string FormatKpiValue(KpiItem k)
@@ -613,6 +651,187 @@
         _velocityView = _velocity.Where(v => ParseYear(v.month) == _yearFilter.Value).ToList();
         _velocityMixView = _velocityMix.Where(v => ParseYear(v.period) == _yearFilter.Value).ToList();
         _reliabilityView = _reliability.Where(r => r.date.Year == _yearFilter.Value).ToList();
+    }
+
+    private void ApplySignalAdjustments()
+    {
+        if (_yearsView is null || _velocityView is null || _velocityMixView is null || _reliabilityView is null || _orgsView is null)
+            return;
+
+        _kpisView = AdjustKpis(_kpis);
+        _adoView = AdjustAdo(_ado);
+        _yearsView = AdjustYears(_yearsView);
+        _velocityView = AdjustVelocity(_velocityView);
+        _velocityMixView = AdjustVelocityMix(_velocityMixView);
+        _reliabilityView = AdjustReliability(_reliabilityView);
+        _orgsView = AdjustOrgs(_orgsView);
+
+        _serviceCountView = AdjustServiceCount(_orgsView);
+        _mttrView = AdjustScalar(MeanTimeToRestore, "mttr", 0.9, 1.1, 5);
+        _policyAlertsView = AdjustScalar(PolicyDriftAlerts, "alerts", 0.8, 1.2, 0);
+        _nextChangeWindowView = AdjustChangeWindow(NextChangeWindow);
+    }
+
+    private bool IsDefaultFilters =>
+        _yearFilter is null &&
+        string.IsNullOrWhiteSpace(_orgFilter) &&
+        string.Equals(_sort, "countDesc", StringComparison.OrdinalIgnoreCase) &&
+        _topN == 10;
+
+    private int MakeSeed(string channel)
+    {
+        var key = $"{channel}|{_yearFilter?.ToString() ?? "all"}|{_orgFilter ?? "all"}|{_sort}|{_topN}";
+        unchecked
+        {
+            var hash = 23;
+            foreach (var ch in key)
+                hash = hash * 31 + ch;
+            return hash;
+        }
+    }
+
+    private double Factor(string channel, double min, double max)
+    {
+        if (IsDefaultFilters) return 1;
+        var rng = new Random(MakeSeed(channel));
+        return min + rng.NextDouble() * (max - min);
+    }
+
+    private static int ScaleInt(int value, double factor, int min = 0)
+        => Math.Max(min, (int)Math.Round(value * factor));
+
+    private int AdjustScalar(int value, string channel, double min, double max, int minValue)
+        => ScaleInt(value, Factor(channel, min, max), minValue);
+
+    private int AdjustServiceCount(List<OrgCount> baseList)
+    {
+        if (IsDefaultFilters) return baseList.Count;
+        return ScaleInt(baseList.Count, Factor("service-count", 0.9, 1.1), 1);
+    }
+
+    private List<KpiItem>? AdjustKpis(List<KpiItem>? baseList)
+    {
+        if (baseList is null) return null;
+        if (IsDefaultFilters) return baseList;
+        var rng = new Random(MakeSeed("kpi"));
+        var factor = Factor("kpi", 0.94, 1.06);
+
+        return baseList.Select(k =>
+        {
+            var bump = (rng.NextDouble() - 0.5) * 0.04;
+            var f = factor + bump;
+            var spark = k.spark.Select(v => ScaleInt(v, f, 1)).ToArray();
+            var value = ScaleInt(k.value, f, 1);
+            return new KpiItem
+            {
+                label = k.label,
+                value = value,
+                prefix = k.prefix,
+                suffix = k.suffix,
+                target = k.target,
+                spark = spark
+            };
+        }).ToList();
+    }
+
+    private BulletModel? AdjustAdo(BulletModel? baseModel)
+    {
+        if (baseModel is null) return null;
+        if (IsDefaultFilters) return baseModel;
+        var factor = Factor("ado", 0.93, 1.07);
+        return new BulletModel
+        {
+            value = Math.Max(0, baseModel.value * factor),
+            target = baseModel.target,
+            max = baseModel.max
+        };
+    }
+
+    private List<YearCount> AdjustYears(List<YearCount> baseList)
+    {
+        if (IsDefaultFilters) return baseList;
+        var factor = Factor("years", 0.93, 1.07);
+        return baseList.Select(y => new YearCount { year = y.year, count = ScaleInt(y.count, factor, 1) }).ToList();
+    }
+
+    private List<MonthCount> AdjustVelocity(List<MonthCount> baseList)
+    {
+        if (IsDefaultFilters) return baseList;
+        var factor = Factor("velocity", 0.93, 1.07);
+        var rng = new Random(MakeSeed("velocity-jitter"));
+        return baseList.Select(v =>
+        {
+            var jitter = (rng.NextDouble() - 0.5) * 0.06;
+            var f = factor + jitter;
+            return new MonthCount { month = v.month, count = ScaleInt(v.count, f, 1) };
+        }).ToList();
+    }
+
+    private List<VelocityQuarter> AdjustVelocityMix(List<VelocityQuarter> baseList)
+    {
+        if (IsDefaultFilters) return baseList;
+        var factor = Factor("mix", 0.94, 1.06);
+        var rng = new Random(MakeSeed("mix-jitter"));
+        return baseList.Select(v =>
+        {
+            var bump = (rng.NextDouble() - 0.5) * 0.05;
+            var f = factor + bump;
+            return new VelocityQuarter
+            {
+                period = v.period,
+                apps = ScaleInt(v.apps, f, 1),
+                funcs = ScaleInt(v.funcs, f, 1),
+                adf = ScaleInt(v.adf, f, 1),
+                pbi = ScaleInt(v.pbi, f, 1)
+            };
+        }).ToList();
+    }
+
+    private List<ReliabilityPoint> AdjustReliability(List<ReliabilityPoint> baseList)
+    {
+        if (IsDefaultFilters) return baseList;
+        var okFactor = Factor("rel-ok", 0.94, 1.06);
+        var failFactor = Factor("rel-fail", 0.9, 1.12);
+        var rng = new Random(MakeSeed("rel-jitter"));
+
+        return baseList.Select(p =>
+        {
+            var okJitter = (rng.NextDouble() - 0.5) * 0.05;
+            var failJitter = (rng.NextDouble() - 0.5) * 0.2;
+            return new ReliabilityPoint
+            {
+                date = p.date,
+                ok = ScaleInt(p.ok, okFactor + okJitter, 1),
+                fail = ScaleInt(p.fail, failFactor + failJitter, 0)
+            };
+        }).ToList();
+    }
+
+    private List<OrgCount> AdjustOrgs(List<OrgCount> baseList)
+    {
+        if (IsDefaultFilters) return baseList;
+        var factor = Factor("orgs", 0.94, 1.06);
+        var rng = new Random(MakeSeed("orgs-jitter"));
+        return baseList.Select(o =>
+        {
+            var bump = (rng.NextDouble() - 0.5) * 0.06;
+            return new OrgCount { org = o.org, count = ScaleInt(o.count, factor + bump, 1) };
+        }).ToList();
+    }
+
+    private string AdjustChangeWindow(string baseValue)
+    {
+        if (IsDefaultFilters) return baseValue;
+        var variants = new[]
+        {
+            baseValue,
+            "Thu 10:00-14:00 PT",
+            "Wed 13:00-17:00 PT",
+            "Fri 08:00-12:00 PT",
+            "Tue 09:00-13:00 PT"
+        };
+        var rng = new Random(MakeSeed("change-window"));
+        return variants[rng.Next(variants.Length)];
     }
 
     private static int ParseYear(string? value)
