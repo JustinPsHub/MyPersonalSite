@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://justinraypalmer.com/sitemap.xml

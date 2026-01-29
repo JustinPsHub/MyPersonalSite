@@ -5,122 +5,439 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
+<PageTitle>Visuals - Cloud Ops Command Center</PageTitle>
+
 <HeadContent>
-    <!-- Keep your extras; d3Interop is loaded globally or in App.razor -->
-    <script src='@Assets["js/visuals-extra.js"]' defer></script>
+    <meta name="description" content="Interactive cloud operations dashboard with seeded telemetry across reliability, delivery, and FinOps." />
+    <link rel="canonical" href="@CanonicalUrl" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Visuals - Cloud Ops Command Center" />
+    <meta property="og:description" content="Interactive cloud ops dashboard with reliability, delivery, and FinOps telemetry." />
+    <meta property="og:url" content="@CanonicalUrl" />
+    <meta property="og:image" content="@OgImageUrl" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Visuals - Cloud Ops Command Center" />
+    <meta name="twitter:description" content="Interactive cloud ops dashboard with reliability, delivery, and FinOps telemetry." />
+    <meta name="twitter:image" content="@OgImageUrl" />
 </HeadContent>
 
-<h1 class="display-5 mb-3">Visuals</h1>
-<p class="text-muted">Interactive charts powered by EF Core + minimal APIs + D3.</p>
-
-@if (!string.IsNullOrWhiteSpace(_error))
-{
-    <div class="alert alert-danger"><strong>Error:</strong> @_error</div>
-}
-else if (_years is null || _orgsRaw is null || _kpis is null || _velocity is null || _ado is null)
-{
-    <p>Loading…</p>
-}
-else
-{
-    <!-- KPI strip -->
-    <div class="card shadow-sm mb-3 viz-card">
-        <div class="card-body">
-            <h5 class="card-title">Impact at a glance</h5>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 viz-kpi">
-                @for (var i = 0; i < _kpis.Count; i++)
-                {
-                    var k = _kpis[i];
-                    <div class="col">
-                        <div class="tile d-flex justify-content-between align-items-center h-100">
-                            <div>
-                                <div class="text-muted small">@k.label</div>
-                                <div id="@($"kpi-spark-{i}")" style="width:140px;height:28px"></div>
+<div class="container-fluid page-shell-wide">
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <div class="alert alert-danger"><strong>Error:</strong> @_error</div>
+    }
+    else if (_years is null || _orgsRaw is null || _kpis is null || _velocity is null || _ado is null
+             || _velocityMix is null || _reliability is null)
+    {
+        <div class="viz-shell">
+            <div class="card p-4 viz-card">
+                <div class="viz-loading">Loading cloud telemetry...</div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="viz-shell">
+            <section class="viz-hero">
+                <div class="viz-hero-grid">
+                    <div class="viz-hero-card reveal">
+                        <span class="tag">Mock telemetry - Cloud engineering</span>
+                        <h1 class="viz-hero-title">Cloud Ops Command Center</h1>
+                        <p class="viz-hero-copy">
+                            Dashboard-grade signals across reliability, security, delivery, and FinOps. Seeded data is
+                            shaped to mirror a mature cloud platform with multi-region workloads.
+                        </p>
+                        <div class="viz-hero-chips">
+                            <span class="chip">Azure</span>
+                            <span class="chip">Kubernetes</span>
+                            <span class="chip">Terraform</span>
+                            <span class="chip">GitHub Actions</span>
+                            <span class="chip">FinOps</span>
+                            <span class="chip">Zero Trust</span>
+                        </div>
+                        <div class="viz-hero-metrics">
+                            <div class="hero-stat">
+                                <div class="label">SLO compliance</div>
+                                <div class="value">@ReliabilityRate.ToString("P2")</div>
+                                <div class="meta">90-day window</div>
                             </div>
-                            <div class="fs-4 fw-bold text-primary">@k.value</div>
+                            <div class="hero-stat">
+                                <div class="label">Incident rate</div>
+                                <div class="value">@FailureRate.ToString("P2")</div>
+                                <div class="meta">@ReliabilityFail incidents</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="label">Avg daily requests</div>
+                                <div class="value">@AvgDailyOps.ToString("N0")</div>
+                                <div class="meta">API and service traffic</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="label">Peak daily requests</div>
+                                <div class="value">@PeakDailyOps.ToString("N0")</div>
+                                <div class="meta">24-hour max</div>
+                            </div>
                         </div>
                     </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="row gy-4 viz-row">
-        <!-- Delivery velocity -->
-        <div class="col-12 col-xl-6">
-            <div class="card shadow-sm viz-card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Delivery velocity (last 4 years)</h5>
-                    <div id="velocity-chart" data-viz-type="velocity" style="width:100%; max-width:900px; min-height:240px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ADO bullet -->
-        <div class="col-12 col-xl-6">
-            <div class="card shadow-sm viz-card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">ADO migrations vs goal</h5>
-                    <div id="ado-bullet" data-viz-type="ado" style="width:100%; max-width:900px; min-height:56px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Entries per Year -->
-        <div class="col-12 col-xl-6">
-            <div class="card shadow-sm viz-card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Entries per Year</h5>
-                    <small class="text-muted">Data points: @_years.Count</small>
-                    <div id="entries-per-year-chart" data-viz-type="year" style="width:100%; max-width:900px; min-height:420px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Entries by Organization -->
-        <div class="col-12 col-xl-6">
-            <div class="card shadow-sm viz-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="card-title mb-0">Entries by Organization</h5>
-                        <div class="d-flex gap-2">
-                            <select class="form-select form-select-sm" style="width:auto" @onchange="OnSortChanged">
-                                <option value="countDesc" selected>Count ↓</option>
-                                <option value="countAsc">Count ↑</option>
-                                <option value="labelAsc">A–Z</option>
-                                <option value="labelDesc">Z–A</option>
-                            </select>
-                            <input class="form-control form-control-sm" style="width:90px" type="number" min="3" max="25" step="1"
-                                   @bind="_topN" @bind:event="oninput" />
+                    <div class="card viz-hero-aside reveal">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="eyebrow">Ops pulse</div>
+                            <span class="pill">Seeded data</span>
+                        </div>
+                        <div class="pulse-grid">
+                            @foreach (var k in (_kpisView ?? _kpis)?.Take(3) ?? Enumerable.Empty<KpiItem>())
+                            {
+                                <div class="pulse-item">
+                                    <div class="label">@k.label</div>
+                                    <div class="value">@FormatKpiValue(k)</div>
+                                    <div class="meta">Rolling 30 days</div>
+                                </div>
+                            }
+                            <div class="pulse-item">
+                                <div class="label">Incident response</div>
+                                <div class="value">@_mttrView.ToString("N0") min</div>
+                                <div class="meta">Median MTTR</div>
+                            </div>
+                        </div>
+                        <div class="pulse-footer">
+                            <div class="pulse-note">
+                                <span>Next change window</span>
+                                <strong>@_nextChangeWindowView</strong>
+                            </div>
+                            <div class="pulse-note">
+                                <span>Policy drift alerts</span>
+                                <strong>@_policyAlertsView</strong>
+                            </div>
                         </div>
                     </div>
-                    <small class="text-muted">Showing @((_orgsView?.Count ?? 0)) of @((_orgsRaw?.Count ?? 0))</small>
-                    <div id="entries-by-org-chart" data-viz-type="org" style="width:100%; max-width:900px; min-height:300px;"></div>
+                </div>
+            </section>
+
+            <div class="row gy-3 mb-3 viz-top-row">
+                <div class="col-12 col-xl-4 reveal">
+                    <div class="card shadow-sm viz-card h-100 viz-control">
+                        <div class="card-body">
+                            <h5 class="card-title">Control center</h5>
+                            <p class="text-muted small mb-3">
+                                Slice the view by service portfolio and year to explore delivery, reliability, and platform signals.
+                            </p>
+                            <div class="d-grid gap-2">
+                                <label class="small text-muted">Service ranking</label>
+                                <select class="form-select form-select-sm" @onchange="OnSortChanged">
+                                    <option value="countDesc" selected>Most active</option>
+                                    <option value="countAsc">Least active</option>
+                                    <option value="labelAsc">A-Z</option>
+                                    <option value="labelDesc">Z-A</option>
+                                </select>
+
+                                <label class="small text-muted mt-2">Top N services</label>
+                                <select class="form-select form-select-sm" @bind="TopN">
+                                    <option value="5">Top 5</option>
+                                    <option value="10">Top 10</option>
+                                    <option value="15">Top 15</option>
+                                    <option value="20">Top 20</option>
+                                </select>
+
+                                <label class="small text-muted mt-2">Filter by change year</label>
+                                <select class="form-select form-select-sm" @onchange="OnYearChanged">
+                                    <option value="">All years</option>
+                                    @foreach (var y in _years?.OrderByDescending(x => x.year) ?? Enumerable.Empty<YearCount>())
+                                    {
+                                        <option value="@y.year">@y.year</option>
+                                    }
+                                </select>
+
+                                <label class="small text-muted mt-2">Focus service</label>
+                                <select class="form-select form-select-sm" @onchange="OnOrgChanged">
+                                    <option value="">All services</option>
+                                    @foreach (var org in _orgsRaw?.OrderByDescending(x => x.count).Take(20) ?? Enumerable.Empty<OrgCount>())
+                                    {
+                                        <option value="@org.org">@org.org</option>
+                                    }
+                                </select>
+
+                                <div class="mt-2 small text-muted">
+                                    SLO window: <strong>@ReliabilityWindow</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-8 reveal">
+                    <div class="card shadow-sm viz-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Operational summary</h5>
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6 col-xl-3">
+                                    <div class="tile h-100">
+                                        <div class="text-muted small">SLO compliance</div>
+                                        <div class="fs-3 fw-bold text-primary">@ReliabilityRate.ToString("P2")</div>
+                                        <div class="small text-muted">Ok: @ReliabilityOk | Incidents: @ReliabilityFail</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-xl-3">
+                                    <div class="tile h-100">
+                                        <div class="text-muted small">Incident count (90d)</div>
+                                        <div class="fs-3 fw-bold text-primary">@ReliabilityFail</div>
+                                        <div class="small text-muted">Critical incidents</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-xl-3">
+                                    <div class="tile h-100">
+                                        <div class="text-muted small">Request volume (90d)</div>
+                                        <div class="fs-3 fw-bold text-primary">@TotalDeliveryEvents</div>
+                                        <div class="small text-muted">Across monitored services</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-xl-3">
+                                    <div class="tile h-100">
+                                        <div class="text-muted small">Avg daily requests</div>
+                                        <div class="fs-3 fw-bold text-primary">@AvgDailyOps.ToString("N0")</div>
+                                        <div class="small text-muted">Sustained throughput</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-xl-3">
+                                <div class="tile h-100">
+                                    <div class="text-muted small">Median MTTR</div>
+                                    <div class="fs-3 fw-bold text-primary">@_mttrView min</div>
+                                    <div class="small text-muted">Incident response speed</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-3">
+                                <div class="tile h-100">
+                                    <div class="text-muted small">Policy drift alerts</div>
+                                    <div class="fs-3 fw-bold text-primary">@_policyAlertsView</div>
+                                    <div class="small text-muted">Last 30 days</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-3">
+                                <div class="tile h-100">
+                                    <div class="text-muted small">Tracked services</div>
+                                    <div class="fs-3 fw-bold text-primary">@_serviceCountView</div>
+                                    <div class="small text-muted">Active portfolio</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-3">
+                                <div class="tile h-100">
+                                    <div class="text-muted small">Next change window</div>
+                                    <div class="fs-6 fw-bold text-primary">@_nextChangeWindowView</div>
+                                    <div class="small text-muted">Change management</div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3 viz-card reveal">
+                <div class="card-body">
+                    <h5 class="card-title">Signals at a glance</h5>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 viz-kpi">
+                        @for (var i = 0; i < ((_kpisView ?? _kpis)?.Count ?? 0); i++)
+                        {
+                            var k = (_kpisView ?? _kpis)![i];
+                            <div class="col">
+                                <div class="tile d-flex justify-content-between align-items-center h-100">
+                                    <div>
+                                        <div class="text-muted small">@k.label</div>
+                                        <div id="@($"kpi-spark-{i}")" style="width:140px;height:28px"></div>
+                                    </div>
+                                    <div class="fs-4 fw-bold text-primary">@FormatKpiValue(k)</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row gy-4 viz-row">
+                <div class="col-12 col-xl-6 reveal">
+                    <div class="card shadow-sm viz-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Monthly deployment cadence</h5>
+                            <small class="text-muted">Deployment density across months and years.</small>
+                            <div id="velocity-heatmap" data-viz-type="heatmap" style="width:100%; min-height:260px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-6 reveal">
+                    <div class="card shadow-sm viz-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">IaC adoption gauge</h5>
+                            <small class="text-muted">Modules and pipelines under infrastructure as code.</small>
+                            <div id="ado-gauge" data-viz-type="ado" style="width:100%; min-height:220px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-6 reveal">
+                    <div class="card shadow-sm viz-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Platform capability mix</h5>
+                            <small class="text-muted">Weighted footprint across core cloud capabilities.</small>
+                            <div id="capability-radar" data-viz-type="radar" style="width:100%; min-height:360px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-6 reveal">
+                    <div class="card shadow-sm viz-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Change volume by year</h5>
+                            <small class="text-muted">Share of change events across recent years.</small>
+                            <div id="year-donut" data-viz-type="year" style="width:100%; min-height:320px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-6 reveal">
+                    <div class="card shadow-sm viz-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Service portfolio mix</h5>
+                            <small class="text-muted">Where operational activity concentrates.</small>
+                            <div id="org-treemap" data-viz-type="org" style="width:100%; min-height:320px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-6 reveal">
+                    <div class="card shadow-sm viz-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">SLO attainment (90 days)</h5>
+                            <small class="text-muted">Success rate with surfaced incidents.</small>
+                            <div id="reliability-chart" style="width:100%; min-height:320px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-6 reveal">
+                    <div class="card shadow-sm viz-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Top services</h5>
+                            <small class="text-muted">Ranked by activity based on filtered selection.</small>
+                            <div class="table-responsive mt-2">
+                                <table class="table table-sm align-middle mb-0">
+                                    <thead>
+                                        <tr class="text-muted small">
+                                            <th>Service</th>
+                                            <th class="text-end">Changes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var org in _orgsView?.Take(8) ?? Enumerable.Empty<OrgCount>())
+                                        {
+                                            <tr>
+                                                <td>@org.org</td>
+                                                <td class="text-end fw-semibold">@org.count</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-6 reveal">
+                    <div class="card shadow-sm viz-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Yearly change summary</h5>
+                            <small class="text-muted">Total change events by year.</small>
+                            <div class="table-responsive mt-2">
+                                <table class="table table-sm align-middle mb-0">
+                                    <thead>
+                                        <tr class="text-muted small">
+                                            <th>Year</th>
+                                            <th class="text-end">Changes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var year in _yearsView?.OrderByDescending(y => y.year).Take(6) ?? Enumerable.Empty<YearCount>())
+                                        {
+                                            <tr>
+                                                <td>@year.year</td>
+                                                <td class="text-end fw-semibold">@year.count</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-}
+    }
+</div>
 
 @code {
     // --- data for existing charts ---
     private List<YearCount>? _years;
     private List<OrgCount>? _orgsRaw;
     private List<OrgCount>? _orgsView;
+    private List<YearCount>? _yearsView;
+    private List<MonthCount>? _velocityView;
+    private List<VelocityQuarter>? _velocityMixView;
+    private List<ReliabilityPoint>? _reliabilityView;
 
     // --- new data ---
     private List<KpiItem>? _kpis;
+    private List<KpiItem>? _kpisView;
     private List<MonthCount>? _velocity;
+    private List<VelocityQuarter>? _velocityMix;
+    private List<ReliabilityPoint>? _reliability;
     private BulletModel? _ado;
+    private BulletModel? _adoView;
 
     // UI state
     private string _sort = "countDesc";
     private int _topN = 10;
     private string? _error;
+    private int? _yearFilter;
+    private string? _orgFilter;
 
     // Render state
     private bool _d3Ready;
-    private bool _yearDrawn, _orgDrawn, _kpiDrawn, _velDrawn, _adoDrawn;
+    private bool _kpiDrawn, _adoDrawn, _reliabilityDrawn;
+    private bool _heatDrawn, _treemapDrawn, _radarDrawn, _donutDrawn;
+    private bool _revealReady;
+
+    private int TopN
+    {
+        get => _topN;
+        set
+        {
+            _topN = value;
+            ApplyFilters(); // Call your filter logic here!
+        }
+    }
+
+    private int ReliabilityOk => _reliabilityView?.Sum(r => r.ok) ?? 0;
+    private int ReliabilityFail => _reliabilityView?.Sum(r => r.fail) ?? 0;
+    private int TotalDeliveryEvents => ReliabilityOk + ReliabilityFail;
+    private double ReliabilityRate => TotalDeliveryEvents == 0 ? 0 : (double)ReliabilityOk / TotalDeliveryEvents;
+    private double FailureRate => TotalDeliveryEvents == 0 ? 0 : (double)ReliabilityFail / TotalDeliveryEvents;
+    private int PeakDailyOps => _reliabilityView is { Count: > 0 }
+        ? _reliabilityView.Max(r => r.ok + r.fail)
+        : 0;
+    private int AvgDailyOps => _reliabilityView is { Count: > 0 }
+        ? (int)Math.Round(_reliabilityView.Average(r => r.ok + r.fail))
+        : 0;
+    private string ReliabilityWindow => _reliabilityView is null || _reliabilityView.Count == 0
+        ? "No data"
+        : $"{_reliabilityView.Min(r => r.date):MMM d, yyyy} - {_reliabilityView.Max(r => r.date):MMM d, yyyy}";
+
+    private const int MeanTimeToRestore = 38;
+    private const int PolicyDriftAlerts = 6;
+    private const string NextChangeWindow = "Thu 09:00-13:00 PT";
+    private int _mttrView = MeanTimeToRestore;
+    private int _policyAlertsView = PolicyDriftAlerts;
+    private string _nextChangeWindowView = NextChangeWindow;
+    private int _serviceCountView;
 
     protected override async Task OnInitializedAsync()
     {
@@ -136,17 +453,37 @@ else
             // new
             _kpis = await http.GetFromJsonAsync<List<KpiItem>>(new Uri(baseUri, "api/metrics/kpis"));
             _velocity = await http.GetFromJsonAsync<List<MonthCount>>(new Uri(baseUri, "api/metrics/velocity-monthly"));
+            _velocityMix = await http.GetFromJsonAsync<List<VelocityQuarter>>(new Uri(baseUri, "api/metrics/velocity"));
+            _reliability = await http.GetFromJsonAsync<List<ReliabilityPoint>>(new Uri(baseUri, "api/metrics/reliability-90d"));
             _ado = await http.GetFromJsonAsync<BulletModel>(new Uri(baseUri, "api/metrics/ado-migrations"));
 
-            ApplyOrgView();
+            _yearsView = _years;
+            _velocityView = _velocity;
+            _velocityMixView = _velocityMix;
+            _reliabilityView = _reliability;
+            _kpisView = _kpis;
+            _adoView = _ado;
+            ApplyFilters();
         }
         catch (Exception ex) { _error = ex.Message; }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        var dataReady = _yearsView is not null && _orgsView is not null && _velocityView is not null
+            && _kpisView is not null && _adoView is not null && _velocityMixView is not null && _reliabilityView is not null;
+
+        if (dataReady && !_revealReady)
+        {
+            try { await JS.InvokeVoidAsync("site.revealOnScroll"); _revealReady = true; }
+            catch { }
+        }
+
         // Return if no data or all done
-        if ((_years is null && _orgsView is null) || (_yearDrawn && _orgDrawn && _kpiDrawn && _velDrawn && _adoDrawn)) return;
+        if (!dataReady || (_kpiDrawn && _adoDrawn && _reliabilityDrawn && _heatDrawn && _treemapDrawn && _radarDrawn && _donutDrawn))
+        {
+            return;
+        }
 
         // Wait for D3 + interop
         if (!_d3Ready)
@@ -157,80 +494,131 @@ else
         }
 
         // KPI sparklines
-        if (!_kpiDrawn && _kpis is not null)
+        if (!_kpiDrawn && _kpisView is not null)
         {
             try
             {
-                for (var i = 0; i < _kpis.Count; i++)
+                for (var i = 0; i < _kpisView.Count; i++)
                 {
-                    await JS.InvokeVoidAsync("d3Interop.renderSparkline", $"#kpi-spark-{i}", _kpis[i].spark, new { width = 140, height = 28 });
+                    await JS.InvokeVoidAsync("d3Interop.renderSparkline", $"#kpi-spark-{i}", _kpisView[i].spark,
+              new { width = 140, height = 28, palette = "blues" });
+
                 }
                 _kpiDrawn = true;
             }
             catch { await Task.Delay(50); StateHasChanged(); return; }
         }
 
-        // Delivery velocity (sequential palette over time)
-        if (!_velDrawn && _velocity is not null)
+        // Monthly heatmap
+        if (!_heatDrawn && _velocityView is not null)
         {
             try
             {
-                await JS.InvokeVoidAsync("d3Interop.renderMonthlyBars",
-                    "#velocity-chart", _velocity,
-                    new { height = 240, palette = "blues" } // try "magma" / "plasma" too
+                await JS.InvokeVoidAsync("d3Interop.renderMonthlyHeatmap",
+                    "#velocity-heatmap", _velocityView,
+                    new { height = 260 }
                 );
-                _velDrawn = true;
+                _heatDrawn = true;
             }
             catch { await Task.Delay(50); StateHasChanged(); return; }
         }
 
-        // ADO bullet
-        if (!_adoDrawn && _ado is not null)
+        // ADO gauge
+        if (!_adoDrawn && _adoView is not null)
         {
             try
             {
-                await JS.InvokeVoidAsync("d3Interop.renderBulletChart",
-                    "#ado-bullet", _ado,
-                    new { height = 56 }
-                );
+                await JS.InvokeVoidAsync("d3Interop.renderAdoGauge",
+     "#ado-gauge", _adoView,
+     new { height = 220 });
+
                 _adoDrawn = true;
             }
             catch { await Task.Delay(50); StateHasChanged(); return; }
         }
 
-        // Entries per Year (sequential palette, colored by year)
-        if (!_yearDrawn && _years is not null)
+        // Year distribution donut
+        if (!_donutDrawn && _yearsView is not null)
         {
             try
             {
-                await JS.InvokeVoidAsync("d3Interop.renderBarChart",
-                    "#entries-per-year-chart", _years,
-                    new { height = 420, palette = "purples", colorBy = "year" }
-                );
-                _yearDrawn = true;
+                await JS.InvokeVoidAsync("d3Interop.renderYearDonut", "#year-donut", _yearsView, new { height = 320 });
+                _donutDrawn = true;
             }
             catch { await Task.Delay(100); StateHasChanged(); return; }
         }
 
-        // Entries by Org (categorical palette per org label)
-        if (!_orgDrawn && _orgsView is not null)
+        // Org treemap
+        if (!_treemapDrawn && _orgsView is not null)
         {
             try
             {
-                await JS.InvokeVoidAsync("d3Interop.renderHorizontalBarChart",
-                    "#entries-by-org-chart", _orgsView,
-                    new { barHeight = 28, sort = _sort, palette = "tableau", colorBy = "org" }
-                );
-                _orgDrawn = true;
+                await JS.InvokeVoidAsync("d3Interop.renderOrgTreemap", "#org-treemap", _orgsView, new { height = 320 });
+                _treemapDrawn = true;
+            }
+            catch { await Task.Delay(80); StateHasChanged(); return; }
+        }
+
+        // Capability radar
+        if (!_radarDrawn && _velocityMixView is not null)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("d3Interop.renderCapabilityRadar", "#capability-radar", _velocityMixView, new { height = 360 });
+                _radarDrawn = true;
             }
             catch { await Task.Delay(100); StateHasChanged(); return; }
         }
+
+        // Reliability success rate
+        if (!_reliabilityDrawn && _reliabilityView is not null)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("d3Interop.renderReliabilityArea", "#reliability-chart", _reliabilityView, new { height = 320 });
+                _reliabilityDrawn = true;
+            }
+            catch { await Task.Delay(100); StateHasChanged(); return; }
+        }
+    }
+
+    private void ApplyFilters()
+    {
+        ApplyOrgView();
+        ApplyTimeFilters();
+        ApplySignalAdjustments();
+        _kpiDrawn = false;
+        _adoDrawn = false;
+        _heatDrawn = false;
+        _donutDrawn = false;
+        _treemapDrawn = false;
+        _radarDrawn = false;
+        _reliabilityDrawn = false;
+    }
+
+    private static string FormatKpiValue(KpiItem k)
+    {
+        var valueText = k.value.ToString("N0");
+        if (!string.IsNullOrWhiteSpace(k.prefix))
+        {
+            valueText = $"{k.prefix}{valueText}";
+        }
+        if (!string.IsNullOrWhiteSpace(k.suffix))
+        {
+            valueText = $"{valueText}{k.suffix}";
+        }
+        return valueText;
     }
 
     private void ApplyOrgView()
     {
         if (_orgsRaw is null) return;
         IEnumerable<OrgCount> q = _orgsRaw;
+
+        if (!string.IsNullOrWhiteSpace(_orgFilter))
+        {
+            q = q.Where(x => string.Equals(x.org, _orgFilter, StringComparison.OrdinalIgnoreCase));
+        }
 
         _orgsView = _sort switch
         {
@@ -239,21 +627,276 @@ else
             "labelDesc" => q.OrderByDescending(x => x.org).Take(_topN).ToList(),
             _ => q.OrderByDescending(x => x.count).Take(_topN).ToList(),
         };
-        _orgDrawn = false; // re-draw on next render
+        _treemapDrawn = false; // re-draw on next render
     }
 
     private void OnSortChanged(ChangeEventArgs e)
     {
         _sort = e.Value?.ToString() ?? "countDesc";
-        ApplyOrgView();
-        StateHasChanged();
+        ApplyFilters();
+    }
+
+    private void OnYearChanged(ChangeEventArgs e)
+    {
+        var raw = e.Value?.ToString();
+        _yearFilter = int.TryParse(raw, out var y) ? y : null;
+        ApplyFilters();
+    }
+
+    private void OnOrgChanged(ChangeEventArgs e)
+    {
+        _orgFilter = string.IsNullOrWhiteSpace(e.Value?.ToString()) ? null : e.Value?.ToString();
+        ApplyFilters();
+    }
+
+    private void ApplyTimeFilters()
+    {
+        if (_years is null || _velocity is null || _velocityMix is null || _reliability is null)
+            return;
+
+        if (_yearFilter is null)
+        {
+            _yearsView = _years;
+            _velocityView = _velocity;
+            _velocityMixView = _velocityMix;
+            _reliabilityView = _reliability;
+            return;
+        }
+
+        _yearsView = _years.Where(y => y.year == _yearFilter.Value).ToList();
+        _velocityView = _velocity.Where(v => ParseYear(v.month) == _yearFilter.Value).ToList();
+        _velocityMixView = _velocityMix.Where(v => ParseYear(v.period) == _yearFilter.Value).ToList();
+        _reliabilityView = _reliability.Where(r => r.date.Year == _yearFilter.Value).ToList();
+    }
+
+    private void ApplySignalAdjustments()
+    {
+        if (_yearsView is null || _velocityView is null || _velocityMixView is null || _reliabilityView is null || _orgsView is null)
+            return;
+
+        _kpisView = AdjustKpis(_kpis);
+        _adoView = AdjustAdo(_ado);
+        _yearsView = AdjustYears(_yearsView);
+        _velocityView = AdjustVelocity(_velocityView);
+        _velocityMixView = AdjustVelocityMix(_velocityMixView);
+        _reliabilityView = AdjustReliability(_reliabilityView);
+        _orgsView = AdjustOrgs(_orgsView);
+
+        _serviceCountView = AdjustServiceCount(_orgsView);
+        _mttrView = AdjustScalar(MeanTimeToRestore, "mttr", 0.9, 1.1, 5);
+        _policyAlertsView = AdjustScalar(PolicyDriftAlerts, "alerts", 0.8, 1.2, 0);
+        _nextChangeWindowView = AdjustChangeWindow(NextChangeWindow);
+    }
+
+    private bool IsDefaultFilters =>
+        _yearFilter is null &&
+        string.IsNullOrWhiteSpace(_orgFilter) &&
+        string.Equals(_sort, "countDesc", StringComparison.OrdinalIgnoreCase) &&
+        _topN == 10;
+
+    private int MakeSeed(string channel)
+    {
+        var key = $"{channel}|{_yearFilter?.ToString() ?? "all"}|{_orgFilter ?? "all"}|{_sort}|{_topN}";
+        unchecked
+        {
+            var hash = 23;
+            foreach (var ch in key)
+                hash = hash * 31 + ch;
+            return hash;
+        }
+    }
+
+    private double Factor(string channel, double min, double max)
+    {
+        if (IsDefaultFilters) return 1;
+        var rng = new Random(MakeSeed(channel));
+        return min + rng.NextDouble() * (max - min);
+    }
+
+    private static int ScaleInt(int value, double factor, int min = 0)
+        => Math.Max(min, (int)Math.Round(value * factor));
+
+    private int AdjustScalar(int value, string channel, double min, double max, int minValue)
+        => ScaleInt(value, Factor(channel, min, max), minValue);
+
+    private int AdjustServiceCount(List<OrgCount> baseList)
+    {
+        if (IsDefaultFilters) return baseList.Count;
+        return ScaleInt(baseList.Count, Factor("service-count", 0.9, 1.1), 1);
+    }
+
+    private List<KpiItem>? AdjustKpis(List<KpiItem>? baseList)
+    {
+        if (baseList is null) return null;
+        if (IsDefaultFilters) return baseList;
+        var rng = new Random(MakeSeed("kpi"));
+        var factor = Factor("kpi", 0.94, 1.06);
+
+        return baseList.Select(k =>
+        {
+            var bump = (rng.NextDouble() - 0.5) * 0.04;
+            var f = factor + bump;
+            var spark = k.spark.Select(v => ScaleInt(v, f, 1)).ToArray();
+            var value = ScaleInt(k.value, f, 1);
+            return new KpiItem
+            {
+                label = k.label,
+                value = value,
+                prefix = k.prefix,
+                suffix = k.suffix,
+                target = k.target,
+                spark = spark
+            };
+        }).ToList();
+    }
+
+    private BulletModel? AdjustAdo(BulletModel? baseModel)
+    {
+        if (baseModel is null) return null;
+        if (IsDefaultFilters) return baseModel;
+        var factor = Factor("ado", 0.93, 1.07);
+        return new BulletModel
+        {
+            value = Math.Max(0, baseModel.value * factor),
+            target = baseModel.target,
+            max = baseModel.max
+        };
+    }
+
+    private List<YearCount> AdjustYears(List<YearCount> baseList)
+    {
+        if (IsDefaultFilters) return baseList;
+        var factor = Factor("years", 0.93, 1.07);
+        return baseList.Select(y => new YearCount { year = y.year, count = ScaleInt(y.count, factor, 1) }).ToList();
+    }
+
+    private List<MonthCount> AdjustVelocity(List<MonthCount> baseList)
+    {
+        if (IsDefaultFilters) return baseList;
+        var factor = Factor("velocity", 0.93, 1.07);
+        var rng = new Random(MakeSeed("velocity-jitter"));
+        return baseList.Select(v =>
+        {
+            var jitter = (rng.NextDouble() - 0.5) * 0.06;
+            var f = factor + jitter;
+            return new MonthCount { month = v.month, count = ScaleInt(v.count, f, 1) };
+        }).ToList();
+    }
+
+    private List<VelocityQuarter> AdjustVelocityMix(List<VelocityQuarter> baseList)
+    {
+        if (IsDefaultFilters) return baseList;
+        var factor = Factor("mix", 0.94, 1.06);
+        var rng = new Random(MakeSeed("mix-jitter"));
+        return baseList.Select(v =>
+        {
+            var bump = (rng.NextDouble() - 0.5) * 0.05;
+            var f = factor + bump;
+            return new VelocityQuarter
+            {
+                period = v.period,
+                apps = ScaleInt(v.apps, f, 1),
+                funcs = ScaleInt(v.funcs, f, 1),
+                adf = ScaleInt(v.adf, f, 1),
+                pbi = ScaleInt(v.pbi, f, 1)
+            };
+        }).ToList();
+    }
+
+    private List<ReliabilityPoint> AdjustReliability(List<ReliabilityPoint> baseList)
+    {
+        if (IsDefaultFilters) return baseList;
+        var okFactor = Factor("rel-ok", 0.94, 1.06);
+        var failFactor = Factor("rel-fail", 0.9, 1.12);
+        var rng = new Random(MakeSeed("rel-jitter"));
+
+        return baseList.Select(p =>
+        {
+            var okJitter = (rng.NextDouble() - 0.5) * 0.05;
+            var failJitter = (rng.NextDouble() - 0.5) * 0.2;
+            return new ReliabilityPoint
+            {
+                date = p.date,
+                ok = ScaleInt(p.ok, okFactor + okJitter, 1),
+                fail = ScaleInt(p.fail, failFactor + failJitter, 0)
+            };
+        }).ToList();
+    }
+
+    private List<OrgCount> AdjustOrgs(List<OrgCount> baseList)
+    {
+        if (IsDefaultFilters) return baseList;
+        var factor = Factor("orgs", 0.94, 1.06);
+        var rng = new Random(MakeSeed("orgs-jitter"));
+        return baseList.Select(o =>
+        {
+            var bump = (rng.NextDouble() - 0.5) * 0.06;
+            return new OrgCount { org = o.org, count = ScaleInt(o.count, factor + bump, 1) };
+        }).ToList();
+    }
+
+    private string AdjustChangeWindow(string baseValue)
+    {
+        if (IsDefaultFilters) return baseValue;
+        var variants = new[]
+        {
+            baseValue,
+            "Thu 10:00-14:00 PT",
+            "Wed 13:00-17:00 PT",
+            "Fri 08:00-12:00 PT",
+            "Tue 09:00-13:00 PT"
+        };
+        var rng = new Random(MakeSeed("change-window"));
+        return variants[rng.Next(variants.Length)];
+    }
+
+    private static int ParseYear(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return 0;
+        var match = System.Text.RegularExpressions.Regex.Match(value, "(19|20)\\d{2}");
+        if (match.Success && int.TryParse(match.Value, out var y)) return y;
+        if (DateTime.TryParse(value, out var dt)) return dt.Year;
+        return 0;
+    }
+
+    private string CanonicalUrl => ToAbsolute("/visuals");
+    private string OgImageUrl => ToAbsolute("/og-image.png");
+
+    private string ToAbsolute(string pathOrAbsolute)
+    {
+        if (string.IsNullOrWhiteSpace(pathOrAbsolute)) return Nav.BaseUri.TrimEnd('/');
+        if (Uri.TryCreate(pathOrAbsolute, UriKind.Absolute, out var abs)) return abs.ToString();
+        return $"{Nav.BaseUri.TrimEnd('/')}{(pathOrAbsolute.StartsWith("/") ? string.Empty : "/")}{pathOrAbsolute}";
     }
 
     // DTOs for this page
     private sealed class YearCount { public int year { get; set; } public int count { get; set; } }
     private sealed class OrgCount { public string org { get; set; } = ""; public int count { get; set; } }
-    private sealed class KpiItem { public string label { get; set; } = ""; public int value { get; set; } public int[] spark { get; set; } = Array.Empty<int>(); public double? target { get; set; } }
+    private sealed class KpiItem
+    {
+        public string label { get; set; } = "";
+        public int value { get; set; }
+        public string? prefix { get; set; }
+        public string? suffix { get; set; }
+        public int[] spark { get; set; } = Array.Empty<int>();
+        public double? target { get; set; }
+    }
     private sealed class MonthCount { public string month { get; set; } = ""; public int count { get; set; } }
+    private sealed class VelocityQuarter
+    {
+        public string period { get; set; } = "";
+        public int apps { get; set; }
+        public int funcs { get; set; }
+        public int adf { get; set; }
+        public int pbi { get; set; }
+    }
+    private sealed class ReliabilityPoint
+    {
+        public DateTime date { get; set; }
+        public int ok { get; set; }
+        public int fail { get; set; }
+    }
     private sealed class BulletModel { public double value { get; set; } public double? target { get; set; } public double? max { get; set; } }
 }
-s
+
+
