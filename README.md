@@ -2,7 +2,7 @@
 
 This repo is my public portfolio and the primary showcase of how I build software products and data/cloud platforms. It is intentionally production-minded: clean UI/UX, structured content, API-backed data, and interactive visuals.
 
-Live site: https://justinpalmer.com
+Live site: https://justinraypalmer.com
 
 ## Why this exists
 Most of my professional work is in federal environments behind a firewall, so I cannot share those projects publicly. This site is the open, end-to-end artifact that demonstrates how I design, build, and ship software in a real-world setting.
