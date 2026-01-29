@@ -9,43 +9,47 @@
 @inject IJSRuntime JS
 @using MyPersonalSite.Components.Shared
 
-<PageTitle>Resume • Justin — .NET / Blazor / Data</PageTitle>
+<PageTitle>Resume - Justin Palmer - Senior Cloud Engineer & Data Architect</PageTitle>
 
 <!-- Quiet heading for a11y -->
-<div class="container-fluid pt-3">
+<div class="container-fluid page-shell-wide pt-3">
     <h1 class="visually-hidden">Resume</h1>
     <meta itemprop="name" content="Justin Palmer" />
     <meta itemprop="email" content="justinraypalmer@gmail.com" />
 </div>
 
-<section class="resume-container">
+<section class="container-fluid page-shell-wide resume-container">
     <div class="resume-inner">
         <!-- HEADER -->
         <header class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3 resume-header">
             <div>
                 <h2 class="h3 mb-1" itemprop="name">Justin Palmer</h2>
                 <div class="d-flex flex-wrap gap-2 mb-1">
-                    <span class="chip" itemprop="jobTitle">.NET / Blazor Engineer</span>
-                    <span class="chip">Data Engineering</span>
-                    <span class="chip">EF Core • SQL Server</span>
+                    <span class="chip" itemprop="jobTitle">Senior Cloud Engineer &amp; Data Architect</span>
+                    <span class="chip">Azure Synapse / Data Factory</span>
+                    <span class="chip">Azure OpenAI / RAG</span>
                     <link itemprop="url" href="@Nav.BaseUri" />
                 </div>
                 <p class="mb-0 text-muted small">
-                    Builds secure ASP.NET Core/Blazor apps with EF/SQL; leads CI/CD in Azure DevOps; integrates analytics with
-                    Power BI (governed RLS, refresh &amp; access automation).
+                    Senior Cloud Engineer &amp; Data Architect with 16+ years delivering enterprise data solutions
+                    and 8+ years building Azure cloud platforms, governed analytics, and GenAI solutions with secure
+                    networking, scalable APIs, and full-stack apps.
                 </p>
             </div>
 
             <div class="d-flex flex-column align-items-stretch align-items-md-end gap-2">
                 <div class="d-flex gap-2 align-items-center">
                     <details class="export-dd d-print-none">
-                        <summary class="btn btn-outline-secondary btn-sm" aria-label="Export options">Export ▾</summary>
+                        <summary class="btn btn-outline-secondary btn-sm" aria-label="Export options">Export</summary>
                         <div class="menu">
-                            <button class="dropdown-item" @onclick="PrintFullAsync">PDF (full)</button>
-                            <button class="dropdown-item" @onclick="ExportWordFullAsync">Word (full)</button>
-                            <div class="dropdown-divider"></div>
-                            <button class="dropdown-item" @onclick="PrintShortAsync">PDF (1-page)</button>
-                            <button class="dropdown-item" @onclick="ExportWordShortAsync">Word (1-page)</button>
+                            <a class="dropdown-item"
+                               href="/resume/jrp_resume_20260128.docx"
+                               download
+                               target="_blank"
+                               rel="noopener"
+                               data-close>
+                                Word
+                            </a>
                         </div>
                     </details>
                 </div>
@@ -53,6 +57,8 @@
                 <div class="d-flex flex-wrap gap-2 small text-muted">
                     <span class="chip">Hillsboro, Ohio</span>
                     <a class="chip" href="mailto:justinraypalmer@gmail.com" rel="noopener">justinraypalmer@gmail.com</a>
+                    <a class="chip" href="tel:[redacted]">[redacted]</a>
+                    <a class="chip" href="https://justinpalmer.com" target="_blank" rel="noopener">justinpalmer.com</a>
                 </div>
             </div>
         </header>
@@ -65,7 +71,7 @@
         }
         else if (_sections is null)
         {
-            <p>Loading…</p>
+            <p>Loading...</p>
         }
         else
         {
@@ -75,13 +81,14 @@
                 <header class="rs-header">
                     <div class="rs-nameblock">
                         <h1 class="rs-name">Justin Palmer</h1>
-                        <div class="rs-role">Senior .NET / Blazor &amp; Data Engineering</div>
+                        <div class="rs-role">Senior Cloud Engineer &amp; Data Architect</div>
                         <p class="rs-tag">
-                            Secure ASP.NET Core delivery • Power BI Service admin (RLS, automation) • Azure Functions &amp; ADF ELT • EF Core/SQL • Python &amp; PowerShell.
+                            16+ years delivering Azure-native data platforms, Synapse + ADF pipelines, GenAI (Azure OpenAI RAG),
+                            and secure API ecosystems with Blazor/MVC/React.
                         </p>
                     </div>
                     <div class="rs-contact">
-                        Hillsboro, OH · <a href="mailto:justinraypalmer@gmail.com">justinraypalmer@gmail.com</a> · <span>@Nav.BaseUri</span>
+                        Hillsboro, OH - <a href="mailto:justinraypalmer@gmail.com">justinraypalmer@gmail.com</a> - [redacted] - justinpalmer.com
                     </div>
                 </header>
 
@@ -91,20 +98,20 @@
                         <section class="rs-block">
                             <h3 class="rs-label">Skills</h3>
                             <ul class="rs-list">
-                                <li><strong>.NET/Blazor:</strong> C#, Razor, APIs, LINQ</li>
-                                <li><strong>Data/BI:</strong> SQL Server, EF Core, DAX, Power BI (Service/RS, RLS)</li>
-                                <li><strong>Cloud/DevOps:</strong> Azure, ADO Pipelines, CI/CD, Git</li>
-                                <li><strong>Automation:</strong> Azure Functions, ADF, PowerShell, Graph</li>
-                                <li><strong>Security:</strong> CSP/headers, validation, antiforgery</li>
+                                <li><strong>Cloud Data Architecture:</strong> Synapse Dedicated Pools, ADF, Azure SQL, Data Lake Gen2, Event Grid, Blob</li>
+                                <li><strong>Full Stack:</strong> C#, ASP.NET Core, Blazor, MVC, React, Node.js, Python, REST, Swagger</li>
+                                <li><strong>AI &amp; Automation:</strong> Azure OpenAI, RAG, Windsurf, Codex, ChatGPT Pro, PowerShell</li>
+                                <li><strong>Security &amp; Networking:</strong> VNETs, Private Endpoints, inbound/outbound controls, Nexus</li>
+                                <li><strong>DevOps &amp; Governance:</strong> Azure DevOps, IaC, RLS, Data Governance</li>
                             </ul>
                         </section>
 
                         <section class="rs-block">
                             <h3 class="rs-label">Certifications</h3>
                             <ul class="rs-list">
-                                <li>Azure Fundamentals (AZ-900)</li>
-                                <li>Azure Data Fundamentals (DP-900)</li>
-                                <li>Azure AI Fundamentals (AI-900)</li>
+                                <li>Microsoft Certified: Azure AI Fundamentals (AI-900)</li>
+                                <li>Microsoft Certified: Azure Data Fundamentals (DP-900)</li>
+                                <li>Microsoft Certified: Azure Fundamentals (AZ-900)</li>
                             </ul>
                         </section>
 
@@ -145,7 +152,7 @@
 
                                     @if (!string.IsNullOrWhiteSpace(ex.Description))
                                     {
-                                        <div class="rs-job-desc">@Shorten(ex.Description, 160)</div>
+                                        <div class="rs-job-desc">@ex.Description</div>
                                     }
 
                                     @if (TakeBullets(ex, 3).Any())
@@ -162,33 +169,35 @@
                         </section>
 
                         <section class="rs-block">
-                            <h3 class="rs-label">Selected Projects</h3>
+                            <h3 class="rs-label">Selected Impact</h3>
                             <ul class="rs-bullets">
-                                <li>Azure <strong>Function Apps</strong> for user lifecycle &amp; governance; pipelines to capture <strong>Power BI activity</strong> for audit dashboards.</li>
-                                <li><strong>ADF ELT</strong> and orchestration integrating line-of-business sources into dimensional models; <strong>EF Core</strong> APIs.</li>
-                                <li>Enterprise <strong>RLS</strong> patterns with security tables; automated refresh/access flows; capacity hygiene and tuning.</li>
+                                <li>Azure OpenAI <strong>RAG</strong> observability agent for Power BI audit logs.</li>
+                                <li>Human Capital <strong>Tabular Model</strong> with 25 fact tables and 90 dimensions.</li>
+                                <li>Azure <strong>ADF</strong> pipelines and Functions with timer/HTTP triggers.</li>
+                                <li>Secure API ecosystem with <strong>Swagger/OpenAPI</strong> documentation.</li>
                             </ul>
                         </section>
                     </main>
                 </div>
             </section>
             <!-- =================== /1-PAGE SUMMARY =================== -->
-            <!-- ===== TOP-OF-PAGE: Highlights → Experience → Education ===== -->
+            <!-- ===== TOP-OF-PAGE: Highlights -> Experience -> Education ===== -->
             <section class="mb-3" id="highlights">
-                <h2 class="sect">Highlights</h2>
+                <h2 class="sect">Professional Profile</h2>
                 <div class="exp">
-                    <ul class="exp-bullets">
-                        <li>Lead engineer for Treasury’s shared analytics platform serving <strong>250+</strong> devs/analysts.</li>
-                        <li>Migrated <strong>600+</strong> projects to Azure DevOps; standardized Repos/Boards/Wikis/Pipelines.</li>
-                        <li>Admin for <strong>Power BI Service</strong> &amp; <strong>Report Server</strong> (upgrades, tuning, uptime).</li>
-                        <li>Built production <strong>ADF</strong> ELT &amp; <strong>.NET Azure Functions</strong> for automation/integration.</li>
-                        <li>Own enterprise <strong>RLS</strong> patterns and security tables; automate refresh/access.</li>
-                    </ul>
+                    <p class="mb-2">
+                        Senior Cloud Engineer and Data Architect with over 16 years of experience delivering secure,
+                        enterprise-scale data solutions. Specialized in architecting Azure-native Big Data pipelines,
+                        governed analytics, and Generative AI solutions that democratize data access across complex
+                        enterprise domains. Expert in AI-accelerated delivery with advanced agentic workflows
+                        (Windsurf, Codex, ChatGPT Pro). Proven track record of designing secure network architectures
+                        and API ecosystems in high-compliance federal sectors.
+                    </p>
                 </div>
             </section>
 
             <section class="mb-3" id="experience">
-                <h2 class="sect">Experience</h2>
+                <h2 class="sect">Professional Experience</h2>
 
                 @foreach (var e in GetExperienceAll())
                 {
@@ -215,7 +224,7 @@
 
                         @if (!string.IsNullOrWhiteSpace(e.Description))
                         {
-                            <p class="mb-2 small text-muted">@Shorten(e.Description, 160)</p>
+                            <p class="mb-2 small text-muted">@e.Description</p>
                         }
 
                         @if (bullets?.Any() == true)
@@ -258,7 +267,7 @@
 
                         @if (!string.IsNullOrWhiteSpace(ed.Description))
                         {
-                            <p class="mb-2 small text-muted">@Shorten(ed.Description, 140)</p>
+                            <p class="mb-2 small text-muted">@ed.Description</p>
                         }
                     </article>
                 }
@@ -266,43 +275,56 @@
 
             <!-- ===== BELOW THE FOLD: Skills, Certifications, Other DB-backed sections ===== -->
             <section class="mb-3" id="skills">
-                <h2 class="sect">Skills</h2>
+                <h2 class="sect">Technical Skills</h2>
                 <div class="row g-2">
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Languages &amp; Frameworks</div>
+                            <div class="tile-title mb-1">Cloud Data Architecture</div>
                             <div class="chips">
-                                @Chip("C# / .NET") @Chip("ASP.NET (Server & WASM)")
-                                @Chip("Python") @Chip("T-SQL") @Chip("R")
-                                @Chip("PowerShell")
-                                @Chip("Razor/Blazor") @Chip("REST APIs") @Chip("LINQ")
+                                @Chip("Azure Synapse (Dedicated Pools)") @Chip("Azure Data Factory")
+                                @Chip("Azure SQL") @Chip("Data Lake Gen2")
+                                @Chip("Event Grid") @Chip("Blob Storage")
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Data &amp; BI</div>
+                            <div class="tile-title mb-1">Full-Stack Engineering</div>
                             <div class="chips">
-                                @Chip("SQL Server / SQLite") @Chip("EF Core") @Chip("SSIS") @Chip("Postgres")
-                                @Chip("Power BI (Service/RS, RLS)") @Chip("DAX") @Chip("Dimensional Modeling")
+                                @Chip("C#") @Chip("ASP.NET Core")
+                                @Chip("Blazor") @Chip("React") @Chip("MVC")
+                                @Chip("Node.js") @Chip("Python")
+                                @Chip("REST API Design") @Chip("Swagger/OpenAPI")
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Cloud &amp; DevOps</div>
+                            <div class="tile-title mb-1">AI &amp; Automation</div>
                             <div class="chips">
-                                @Chip("Azure") @Chip("Azure DevOps (Repos/Boards/Wikis/Pipelines)")
-                                @Chip("CI/CD") @Chip("Git") @Chip("Azure Functions") @Chip("Azure Data Factory")
+                                @Chip("Azure OpenAI Service") @Chip("RAG Patterns")
+                                @Chip("AI-Augmented Dev (Windsurf, Codex, ChatGPT Pro)")
+                                @Chip("PowerShell Automation")
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tile h-100">
-                            <div class="tile-title mb-1">Security &amp; Delivery</div>
+                            <div class="tile-title mb-1">Security &amp; Networking</div>
                             <div class="chips">
-                                @Chip("CSP / Headers / Validation") @Chip("Antiforgery") @Chip("Rate Limiting")
-                                @Chip("Agile / Scrum") @Chip("Mentoring & Reviews")
+                                @Chip("Azure VNETs") @Chip("Private Endpoints")
+                                @Chip("Inbound/Outbound Traffic Security")
+                                @Chip("Vulnerability Management (Nexus)")
+                                @Chip("OAuth/OIDC")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="tile h-100">
+                            <div class="tile-title mb-1">DevOps &amp; Governance</div>
+                            <div class="chips">
+                                @Chip("Azure DevOps (CI/CD)") @Chip("Infrastructure as Code (IaC)")
+                                @Chip("Row-Level Security (RLS)") @Chip("Data Governance")
                             </div>
                         </div>
                     </div>
@@ -313,11 +335,10 @@
                 <h2 class="sect">Certifications</h2>
                 <div class="exp">
                     <div class="d-flex flex-wrap gap-2 mb-1">
-                        <a class="chip" href="https://www.credly.com/badges/15b0a37b-949e-4524-8712-8c69ab4030d8/public_url" target="_blank" rel="noopener">Azure Fundamentals</a>
-                        <a class="chip" href="https://www.credly.com/badges/c430137f-c648-4e46-980e-c2670fa734d6/public_url" target="_blank" rel="noopener">Azure Data Fundamentals</a>
-                        <a class="chip" href="https://www.credly.com/badges/fd62d8eb-1d69-4b3b-9138-44c50c2e86ae/public_url" target="_blank" rel="noopener">Azure AI Fundamentals</a>
+                        <span class="chip">Microsoft Certified: Azure AI Fundamentals (AI-900)</span>
+                        <span class="chip">Microsoft Certified: Azure Data Fundamentals (DP-900)</span>
+                        <span class="chip">Microsoft Certified: Azure Fundamentals (AZ-900)</span>
                     </div>
-                    <div class="text-muted small">Credly profile linked.</div>
                 </div>
             </section>
 
@@ -418,7 +439,17 @@
     {
         var t = Regex.Replace(text ?? string.Empty, "\\s+", " ").Trim();
         if (t.Length <= max) return t;
-        return t.Substring(0, Math.Max(0, max)).TrimEnd() + "…";
+        return t.Substring(0, Math.Max(0, max)).TrimEnd() + "...";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Position the export menu next to the button,
+            // and wire up outside-click / Esc to close.
+            await JS.InvokeVoidAsync("resume.initExportDropdowns");
+        }
     }
 
     private static string FormatDateRange(DateTime start, DateTime? end)
@@ -446,7 +477,7 @@
 
         var startStr = start.ToString("MMM yyyy");
         var endStr = end.HasValue ? end.Value.ToString("MMM yyyy") : "Present";
-        return $"{startStr} — {endStr} • {tenure}";
+        return $"{startStr} - {endStr} | {tenure}";
     }
 
     // ===== Robust helpers for 1-pager and ordering =====
@@ -464,6 +495,7 @@
                    .OrderByDescending(e => e.EndDate ?? DateTime.MaxValue)
                    .ThenByDescending(e => e.StartDate);
     }
+
 
     private IEnumerable<ResumeEntryDto> GetExperience(int take = 2)
         => GetExperienceAll().Take(take);
@@ -499,16 +531,10 @@
         => e.BulletPoints?.OrderBy(b => b.Order).Select(b => b.Text).Take(count)
            ?? Enumerable.Empty<string>();
 
-    // === Exports (resume.js must provide resume.printResume / resume.exportWord) ===
+    // === Print fallbacks (optional) ===
     private Task PrintFullAsync()
         => JS.InvokeVoidAsync("resume.printResume", ".resume-container").AsTask();
 
-    private Task ExportWordFullAsync()
-        => JS.InvokeVoidAsync("resume.exportWord", ".resume-container", "Justin-Resume").AsTask();
-
     private Task PrintShortAsync()
         => JS.InvokeVoidAsync("resume.printResume", "#resume-summary").AsTask();
-
-    private Task ExportWordShortAsync()
-        => JS.InvokeVoidAsync("resume.exportWord", "#resume-summary", "Justin-Resume-1pg").AsTask();
 }

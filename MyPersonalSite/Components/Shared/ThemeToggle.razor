@@ -1,15 +1,32 @@
 ﻿@inject IJSRuntime JS
-<button class="btn btn-sm btn-outline-secondary theme-toggle" @onclick="Toggle">
-    @(_theme == "dark" ? "🌙 Dark" : "☀️ Light")
+<button class="btn btn-sm btn-outline-secondary theme-toggle"
+        @onclick="Toggle"
+        aria-pressed="@IsDark"
+        aria-label="Toggle theme">
+    Theme: @(IsDark ? "Dark" : "Light")
 </button>
 
 @code {
     private string _theme = "light";
-    protected override async Task OnInitializedAsync()
-      => _theme = await JS.InvokeAsync<string>("site.getTheme");
+    private bool _ready;
+    private bool IsDark => _theme == "dark";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _ready) return;
+        try
+        {
+            _theme = await JS.InvokeAsync<string>("site.getTheme");
+            _ready = true;
+            StateHasChanged();
+        }
+        catch { _theme = "light"; }
+    }
+
     private async Task Toggle()
     {
         _theme = _theme == "dark" ? "light" : "dark";
-        await JS.InvokeVoidAsync("site.setTheme", _theme);
+        try { await JS.InvokeVoidAsync("site.setTheme", _theme); }
+        catch { }
     }
 }
