@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components.Web
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Components
 @using System.Text.Json
@@ -14,6 +15,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Justin Palmer | Software Engineer & Data/Cloud Platform Engineer" />
     <meta property="og:description" content="Azure data platforms, governed analytics, and production-ready cloud apps with Azure OpenAI RAG." />
+    <meta property="og:site_name" content="Justin Palmer" />
     <meta property="og:url" content="@CanonicalUrl" />
     <meta property="og:image" content="@OgImageUrl" />
 
@@ -27,6 +29,9 @@
 
     <script type="application/ld+json">
         @((MarkupString)JsonLdPerson)
+    </script>
+    <script type="application/ld+json">
+        @((MarkupString)JsonLdWebsite)
     </script>
 </HeadContent>
 
@@ -57,18 +62,6 @@
                 </ul>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                     <a class="btn btn-primary" href="mailto:justinraypalmer@gmail.com">Start a conversation</a>
-                    <a class="btn btn-outline-dark"
-                       href="/resume/Justin_Palmer_Resume_OnePage_Tighter.pdf"
-                       target="_blank"
-                       rel="noopener">
-                        Download resume (PDF)
-                    </a>
-                    <a class="btn btn-outline-dark"
-                       href="https://github.com/JustinPsHub/MyPersonalSite"
-                       target="_blank"
-                       rel="noopener">
-                        View GitHub
-                    </a>
                 </div>
             </div>
 
@@ -247,12 +240,12 @@
             <div class="col-12">
                 <div class="card compact p-4">
                     <div class="d-flex flex-wrap gap-2 align-items-center">
-                        <span>See the full source and architecture decisions:</span>
+                        <span>See what I built here:</span>
                         <a class="btn btn-sm btn-outline-dark"
                            href="https://github.com/JustinPsHub/MyPersonalSite"
                            target="_blank"
                            rel="noopener">
-                            GitHub repository
+                            This project on GitHub
                         </a>
                     </div>
                 </div>
@@ -328,11 +321,17 @@
         ["description"] = "Software engineer delivering Azure data platforms, governed analytics, and GenAI solutions.",
         ["url"] = CanonicalUrl,
         ["image"] = OgImageUrl,
+        ["email"] = "mailto:justinraypalmer@gmail.com",
+        ["sameAs"] = new[]
+        {
+            "https://justinraypalmer.com",
+            "https://github.com/JustinPsHub"
+        },
         ["knowsAbout"] = TechList
     });
 
     private string CanonicalUrl => ToAbsolute("/");
-    private string OgImageUrl => ToAbsolute("/favicon.png");
+    private string OgImageUrl => ToAbsolute("/og-image.png");
 
     private string ToAbsolute(string pathOrAbsolute)
     {
@@ -340,6 +339,14 @@
         if (Uri.TryCreate(pathOrAbsolute, UriKind.Absolute, out var abs)) return abs.ToString();
         return $"{Nav.BaseUri.TrimEnd('/')}{(pathOrAbsolute.StartsWith("/") ? string.Empty : "/")}{pathOrAbsolute}";
     }
+
+    private string JsonLdWebsite => JsonSerializer.Serialize(new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "WebSite",
+        ["name"] = "Justin Palmer",
+        ["url"] = ToAbsolute("/")
+    });
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

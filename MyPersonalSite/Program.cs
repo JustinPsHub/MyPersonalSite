@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Xml.Linq;
 using MyPersonalSite.Components;
 using MyPersonalSite.Data;
 using MyPersonalSite.Shared.Models;
@@ -21,7 +23,8 @@ builder.Services.AddControllers();
 
 // EF Core (SQLite)
 builder.Services.AddDbContext<AppDbContext>(o =>
-    o.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    o.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+     .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
 // HttpClient factory for DI in components
 builder.Services.AddHttpClient();
@@ -89,8 +92,8 @@ app.Use(async (ctx, next) =>
     h["Content-Security-Policy"] =
         "default-src 'self'; " +
         "script-src 'self'; " +                  // local JS only
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-        "font-src 'self' data: https://fonts.gstatic.com; " +
+        "style-src 'self' 'unsafe-inline'; " +
+        "font-src 'self' data:; " +
         "img-src 'self' data:; " +
         "connect-src 'self' wss: https:; " +     // Blazor circuit + APIs
         "base-uri 'self'; " +
@@ -113,6 +116,19 @@ app.UseOutputCache();
 
 // Static assets and referenced RCLs
 app.MapStaticAssets();
+
+// Dynamic sitemap.xml (keeps URLs current without manual edits)
+app.MapGet("/sitemap.xml", (HttpContext ctx, IConfiguration config) =>
+{
+    var configuredBaseUrl = config["App:BaseUrl"];
+    var baseUrl = string.IsNullOrWhiteSpace(configuredBaseUrl)
+        ? $"{ctx.Request.Scheme}://{ctx.Request.Host}".TrimEnd('/')
+        : configuredBaseUrl.TrimEnd('/');
+    var today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+    var xml = BuildSitemapXml(baseUrl, today);
+    ctx.Response.Headers.CacheControl = "public,max-age=3600";
+    return Results.Text(xml, "application/xml");
+});
 
 // ---- API GROUP (rate-limited) ----
 var api = app.MapGroup("/api").RequireRateLimiting("api");
@@ -324,6 +340,32 @@ app.MapRazorComponents<App>()
    .AddInteractiveServerRenderMode()
    .AddInteractiveWebAssemblyRenderMode()
    .AddAdditionalAssemblies(typeof(MyPersonalSite.Client._Imports).Assembly);
+
+static string BuildSitemapXml(string baseUrl, string lastMod)
+{
+    var urls = new[]
+    {
+        (loc: $"{baseUrl}/", priority: "1.0", changefreq: "monthly"),
+        (loc: $"{baseUrl}/resume", priority: "0.9", changefreq: "monthly"),
+        (loc: $"{baseUrl}/visuals", priority: "0.7", changefreq: "monthly"),
+        (loc: $"{baseUrl}/platform", priority: "0.7", changefreq: "monthly")
+    };
+
+    var urlset = new XElement("urlset",
+        new XAttribute("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9"),
+        urls.Select(u =>
+            new XElement("url",
+                new XElement("loc", u.loc),
+                new XElement("lastmod", lastMod),
+                new XElement("changefreq", u.changefreq),
+                new XElement("priority", u.priority)
+            )
+        )
+    );
+
+    var doc = new XDocument(new XDeclaration("1.0", "UTF-8", null), urlset);
+    return doc.ToString(SaveOptions.DisableFormatting);
+}
 
 app.Run();
 

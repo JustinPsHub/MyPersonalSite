@@ -7,6 +7,22 @@
 
 <PageTitle>Visuals - Cloud Ops Command Center</PageTitle>
 
+<HeadContent>
+    <meta name="description" content="Interactive cloud operations dashboard with seeded telemetry across reliability, delivery, and FinOps." />
+    <link rel="canonical" href="@CanonicalUrl" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Visuals - Cloud Ops Command Center" />
+    <meta property="og:description" content="Interactive cloud ops dashboard with reliability, delivery, and FinOps telemetry." />
+    <meta property="og:url" content="@CanonicalUrl" />
+    <meta property="og:image" content="@OgImageUrl" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Visuals - Cloud Ops Command Center" />
+    <meta name="twitter:description" content="Interactive cloud ops dashboard with reliability, delivery, and FinOps telemetry." />
+    <meta name="twitter:image" content="@OgImageUrl" />
+</HeadContent>
+
 <div class="container-fluid page-shell-wide">
     @if (!string.IsNullOrWhiteSpace(_error))
     {
@@ -841,6 +857,16 @@
         if (match.Success && int.TryParse(match.Value, out var y)) return y;
         if (DateTime.TryParse(value, out var dt)) return dt.Year;
         return 0;
+    }
+
+    private string CanonicalUrl => ToAbsolute("/visuals");
+    private string OgImageUrl => ToAbsolute("/og-image.png");
+
+    private string ToAbsolute(string pathOrAbsolute)
+    {
+        if (string.IsNullOrWhiteSpace(pathOrAbsolute)) return Nav.BaseUri.TrimEnd('/');
+        if (Uri.TryCreate(pathOrAbsolute, UriKind.Absolute, out var abs)) return abs.ToString();
+        return $"{Nav.BaseUri.TrimEnd('/')}{(pathOrAbsolute.StartsWith("/") ? string.Empty : "/")}{pathOrAbsolute}";
     }
 
     // DTOs for this page

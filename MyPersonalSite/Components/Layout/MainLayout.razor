@@ -1,6 +1,6 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Web
+@using MyPersonalSite.Components.Shared
+@inherits LayoutComponentBase
 @inject IJSRuntime JS
 
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -18,64 +18,60 @@
 
         @* <div class="brand-block">
             <a class="brand-title" href="/">Justin Palmer</a>
-            <span class="brand-subtitle d-none d-sm-inline">Senior Data Engineer &amp; Cloud Architect</span>
+            <span class="brand-subtitle d-none d-sm-inline">Software Engineer &amp; Data/Cloud Platform Engineer</span>
         </div> *@
 
         <div class="header-actions">
+            <a class="btn btn-sm btn-outline-dark"
+               href="https://github.com/JustinPsHub/MyPersonalSite"
+               target="_blank"
+               rel="noopener">
+                Source code
+            </a>
             <ThemeToggle />
         </div>
     </div>
 </header>
-=======
-@inherits LayoutComponentBase
->>>>>>> d0ba9979a730c5e3fca54cc1e062b583222494a4
-=======
-@inherits LayoutComponentBase
->>>>>>> 5eb0a9edbd4e1dbe6b846af0bcf938c90c8a66e1
 
 <div class="app-shell">
-    <header class="site-header">
-        <div class="site-header-inner">
-            <div class="header-left">
-                <button class="btn btn-outline-primary btn-sm menu-toggle"
-                        type="button"
-                        data-bs-toggle="offcanvas"
-                        data-bs-target="#siteMenu"
-                        aria-controls="siteMenu"
-                        aria-label="Open navigation menu">
-                    <span class="menu-icon" aria-hidden="true">☰</span>
-                    <span class="menu-label">Menu</span>
-                </button>
+    <div class="nav-host">
+        <NavMenu />
+    </div>
 
-                <a class="site-title text-decoration-none fw-semibold" href="/">Justin Palmer</a>
-            </div>
-        </div>
-    </header>
-
-    <main class="app-main">
-        <div class="page">
-            @Body
-        </div>
+    <main id="main-content" class="content-area" tabindex="-1">
+        @Body
     </main>
 
     <button class="nav-overlay" data-nav-close aria-label="Close menu"></button>
 </div>
 
-<div class="offcanvas offcanvas-start offcanvas-menu"
-     tabindex="-1"
-     id="siteMenu"
-     aria-labelledby="siteMenuLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="siteMenuLabel">Menu</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close menu"></button>
+<footer class="site-footer">
+    <div class="page-shell d-flex flex-column flex-md-row gap-2 justify-content-between">
+        <span>Software engineering · Enterprise data platforms · Secure governance</span>
+        <span>
+            Focused on Azure OpenAI, governed analytics, and production-ready cloud apps.
+            <a href="https://github.com/JustinPsHub" target="_blank" rel="noopener">GitHub</a>
+        </span>
     </div>
-    <div class="offcanvas-body">
-        <NavMenu />
-    </div>
-</div>
+</footer>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">Close</span>
 </div>
+
+@code {
+    private bool _themeReady;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _themeReady) return;
+        try
+        {
+            await JS.InvokeVoidAsync("site.initTheme");
+            _themeReady = true;
+        }
+        catch { }
+    }
+}

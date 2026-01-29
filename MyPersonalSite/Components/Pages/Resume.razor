@@ -5,11 +5,28 @@
 @using MyPersonalSite.Shared.DTOs
 @using MyPersonalSite.Shared.Models
 @inject IHttpClientFactory HttpFactory
+@inject IWebHostEnvironment Env
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 @using MyPersonalSite.Components.Shared
 
 <PageTitle>Resume - Justin Palmer - Software Engineer & Data/Cloud Platform Engineer</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="Resume for Justin Palmer, Software Engineer & Data/Cloud Platform Engineer with enterprise Azure platform delivery and full-stack experience." />
+    <link rel="canonical" href="@CanonicalUrl" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Resume - Justin Palmer" />
+    <meta property="og:description" content="Software Engineer & Data/Cloud Platform Engineer with enterprise Azure platform delivery and full-stack experience." />
+    <meta property="og:url" content="@CanonicalUrl" />
+    <meta property="og:image" content="@OgImageUrl" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Resume - Justin Palmer" />
+    <meta name="twitter:description" content="Software Engineer & Data/Cloud Platform Engineer with enterprise Azure platform delivery and full-stack experience." />
+    <meta name="twitter:image" content="@OgImageUrl" />
+</HeadContent>
 
 <!-- Quiet heading for a11y -->
 <div class="container-fluid page-shell-wide pt-3">
@@ -43,39 +60,45 @@
                         <summary class="btn btn-outline-secondary btn-sm" aria-label="Export options">Export</summary>
                         <div class="menu">
                             <a class="dropdown-item"
-                               href="/resume/jrp_resume_20260128.docx"
+                               href="/resume/@ResumeDocFile"
                                download
                                target="_blank"
                                rel="noopener"
                                data-close>
                                 Word
                             </a>
-                            <a class="dropdown-item"
-                               href="/resume/Justin_Palmer_Resume_OnePage_Tighter.pdf"
-                               download
-                               target="_blank"
-                               rel="noopener"
-                               data-close>
-                                PDF (One Page)
-                            </a>
-                            <a class="dropdown-item"
-                               href="/resume/Justin_Palmer_Resume_Full.pdf"
-                               download
-                               target="_blank"
-                               rel="noopener"
-                               data-close>
-                                PDF (Full)
-                            </a>
+                            @if (OnePagePdfAvailable)
+                            {
+                                <a class="dropdown-item"
+                                   href="/resume/@ResumePdfOnePageFile"
+                                   download
+                                   target="_blank"
+                                   rel="noopener"
+                                   data-close>
+                                    PDF (One Page)
+                                </a>
+                            }
+                            @if (FullPdfAvailable)
+                            {
+                                <a class="dropdown-item"
+                                   href="/resume/@ResumePdfFullFile"
+                                   download
+                                   target="_blank"
+                                   rel="noopener"
+                                   data-close>
+                                    PDF (Full)
+                                </a>
+                            }
                         </div>
                     </details>
                 </div>
+                <div class="text-muted small">Last updated: @ResumeLastUpdated</div>
 
-                <div class="d-flex flex-wrap gap-2 small text-muted">
+                <div class="resume-contact-grid small text-muted">
                     <span class="chip">Hillsboro, Ohio</span>
                     <a class="chip" href="mailto:justinraypalmer@gmail.com" rel="noopener">justinraypalmer@gmail.com</a>
-                    <a class="chip" href="tel:[redacted]">[redacted]</a>
-                    <a class="chip" href="https://justinpalmer.com" target="_blank" rel="noopener">justinpalmer.com</a>
-                    <a class="chip" href="https://github.com/JustinPsHub/MyPersonalSite" target="_blank" rel="noopener">github.com/JustinPsHub/MyPersonalSite</a>
+                    <a class="chip" href="https://justinraypalmer.com" target="_blank" rel="noopener">justinraypalmer.com</a>
+                    <a class="chip" href="https://github.com/JustinPsHub" target="_blank" rel="noopener">github.com/JustinPsHub</a>
                 </div>
             </div>
         </header>
@@ -105,7 +128,7 @@
                         </p>
                     </div>
                     <div class="rs-contact">
-                        Hillsboro, OH - <a href="mailto:justinraypalmer@gmail.com">justinraypalmer@gmail.com</a> - [redacted] - justinpalmer.com - github.com/JustinPsHub/MyPersonalSite
+                        Hillsboro, OH - <a href="mailto:justinraypalmer@gmail.com">justinraypalmer@gmail.com</a> - justinraypalmer.com - github.com/JustinPsHub
                     </div>
                 </header>
 
@@ -433,6 +456,14 @@
     private List<ResumeSectionDto>? _sections;
     private string? _error;
     private const int MaxBullets = 4;
+    private const string ResumeLastUpdated = "January 29, 2026";
+    private const string ResumeDocFile = "jrp_resume_20260128.docx";
+    private const string ResumePdfOnePageFile = "Justin_Palmer_Resume_OnePage_Tighter.pdf";
+    private const string ResumePdfFullFile = "Justin_Palmer_Resume_Full.pdf";
+    private string CanonicalUrl => ToAbsolute("/resume");
+    private string OgImageUrl => ToAbsolute("/og-image.png");
+    private bool OnePagePdfAvailable => File.Exists(Path.Combine(Env.WebRootPath, "resume", ResumePdfOnePageFile));
+    private bool FullPdfAvailable => File.Exists(Path.Combine(Env.WebRootPath, "resume", ResumePdfFullFile));
 
     protected override async Task OnInitializedAsync()
     {
@@ -551,6 +582,13 @@
     private static IEnumerable<string> TakeBullets(ResumeEntryDto e, int count)
         => e.BulletPoints?.OrderBy(b => b.Order).Select(b => b.Text).Take(count)
            ?? Enumerable.Empty<string>();
+
+    private string ToAbsolute(string pathOrAbsolute)
+    {
+        if (string.IsNullOrWhiteSpace(pathOrAbsolute)) return Nav.BaseUri.TrimEnd('/');
+        if (Uri.TryCreate(pathOrAbsolute, UriKind.Absolute, out var abs)) return abs.ToString();
+        return $"{Nav.BaseUri.TrimEnd('/')}{(pathOrAbsolute.StartsWith("/") ? string.Empty : "/")}{pathOrAbsolute}";
+    }
 
     // === Print fallbacks (optional) ===
     private Task PrintFullAsync()
