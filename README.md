@@ -113,3 +113,25 @@ flowchart TB
 ## Contact
 - Email: justinraypalmer@gmail.com
 - GitHub: https://github.com/JustinPsHub/MyPersonalSite
+
+
+## Redesigned portfolio (October 2026)
+
+The existing .NET 9 host now serves the redesigned portfolio from
+`MyPersonalSite/wwwroot/portfolio`. The public routes `/`, `/resume`, `/visuals`,
+and `/platform` keep their existing URLs; `.html` aliases are also supported.
+Existing APIs, SQLite setup, health checks, security headers, and Blazor source
+remain in place. Dashboard data is synthetic and browser-local.
+
+Build and publish the existing host, then ZIP the **contents** of the publish
+folder and deploy that ZIP to the existing App Service. Do not deploy the
+`wwwroot/portfolio` folder by itself. Preserve the existing App Service settings.
+
+```bash
+dotnet publish MyPersonalSite/MyPersonalSite.csproj -c Release -o ./publish
+(cd publish && zip -qr ../portfolio-release.zip .)
+az webapp deploy --resource-group DefaultResourceGroup-EUS --name justinraypalmer --src-path portfolio-release.zip --type zip
+```
+
+Fonts for the redesigned portfolio are served locally to respect the existing
+Content Security Policy. Theme and motion preferences are stored in the browser.

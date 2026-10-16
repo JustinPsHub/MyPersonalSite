@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.StaticFiles;
@@ -108,6 +108,40 @@ app.Use(async (ctx, next) =>
     h["Referrer-Policy"] = "strict-origin-when-cross-origin";
     h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
     h["X-Frame-Options"] = "DENY";
+    await next();
+});
+
+// The redesigned portfolio is served by the existing host. Keep API,
+// database, health-check, and Blazor registrations intact.
+var portfolioPages = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+{
+    ["/"] = "index.html",
+    ["/index.html"] = "index.html",
+    ["/resume"] = "resume.html",
+    ["/resume.html"] = "resume.html",
+    ["/visuals"] = "visuals.html",
+    ["/visuals.html"] = "visuals.html",
+    ["/platform"] = "platform.html",
+    ["/platform.html"] = "platform.html"
+};
+
+app.Use(async (ctx, next) =>
+{
+    var path = ctx.Request.Path.Value ?? "/";
+    if ((HttpMethods.IsGet(ctx.Request.Method) || HttpMethods.IsHead(ctx.Request.Method))
+        && portfolioPages.TryGetValue(path, out var page))
+    {
+        var file = Path.Combine(app.Environment.WebRootPath, "portfolio", page);
+        if (File.Exists(file))
+        {
+            ctx.Response.ContentType = "text/html; charset=utf-8";
+            ctx.Response.Headers.CacheControl = "no-cache";
+            ctx.Response.ContentLength = new FileInfo(file).Length;
+            if (HttpMethods.IsGet(ctx.Request.Method))
+                await ctx.Response.SendFileAsync(file, ctx.RequestAborted);
+            return;
+        }
+    }
     await next();
 });
 
