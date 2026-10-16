@@ -27,7 +27,7 @@
  one('.command-close').addEventListener('click',()=>menu.close());input.addEventListener('input',renderCommands);
  input.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();results.querySelector('a,button')?.focus()}if(e.key==='Enter'){e.preventDefault();results.querySelector('a,button')?.click()}});
  results.addEventListener('keydown',e=>{const items=[...results.querySelectorAll('a,button')],index=items.indexOf(document.activeElement);if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const next=index+(e.key==='ArrowDown'?1:-1);if(next<0)input.focus();else items[Math.min(next,items.length-1)]?.focus()}});
- document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(menu.open)menu.close();else openCommands()}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.open){e.preventDefault();menu.close();return}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(menu.open)menu.close();else openCommands()}});
  menu.addEventListener('click',e=>{if(e.target===menu){const r=menu.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)menu.close()}});
  // Morphing Canvas geometry. One animation loop, capped DPR and ~30 fps.
  // It owns no RAF while paused, hidden, or outside the viewport.
