@@ -4,11 +4,9 @@
     { "route": "/visuals", "rewrite": "/visuals.html", "headers": { "Cache-Control": "no-cache" } },
     { "route": "/platform", "rewrite": "/platform.html", "headers": { "Cache-Control": "no-cache" } },
     { "route": "/resume", "rewrite": "/resume.html", "headers": { "Cache-Control": "no-cache" } },
-    { "route": "/visuals/", "redirect": "/visuals", "statusCode": 301 },
-    { "route": "/platform/", "redirect": "/platform", "statusCode": 301 },
-    { "route": "/resume/", "redirect": "/resume", "statusCode": 301 },
     { "route": "/*.html", "headers": { "Cache-Control": "no-cache" } }
   ],
+  "trailingSlash": "never",
   "globalHeaders": {
     "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'",
     "X-Content-Type-Options": "nosniff",
