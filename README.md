@@ -98,26 +98,13 @@ JSDOM checks behavior without a layout engine; Canvas, observers, and dialog ope
 
 ## Build and deploy
 
-Publish the **ASP.NET Core host**, which includes the public frontend and the existing application:
+Publish the ASP.NET Core host, which includes the public frontend:
 
 ```bash
 dotnet publish MyPersonalSite/MyPersonalSite.csproj -c Release -o ./publish --nologo -p:CompressionEnabled=false
 ```
 
-The following packaging/deployment commands use Bash, `zip`, and an authenticated Azure CLI session with access to the existing App Service:
-
-```bash
-(cd publish && zip -qr ../portfolio-release.zip .)
-az webapp deploy \
-  --resource-group DefaultResourceGroup-EUS \
-  --name justinraypalmer \
-  --src-path portfolio-release.zip \
-  --type zip
-```
-
-Deploy the **contents** of the publish directory together, including the generated static-asset manifests. ASP.NET Core tracks asset hashes and lengths; independently replacing frontend files can leave stale metadata and break responses. Preserve the existing App Service configuration and persistent data. The deployed host starts with `dotnet MyPersonalSite.dll`.
-
-Before release, smoke-test `/`, `/visuals`, `/platform`, `/resume`, the portfolio scripts/styles/fonts, and the Word download. Check `/healthz` for the database health check and `/api/health` for the basic API response. Confirm those routes again after deployment.
+Deploy the publish output to an appropriately configured Azure App Service using your team's approved release process. Keep the generated static-asset manifests with their files; replacing assets without matching manifests can break responses. Supply environment-specific settings and persistent storage through the hosting environment rather than committing them here. After deployment, verify the site and its health checks in the target environment.
 
 ## Demo data and confidentiality
 
