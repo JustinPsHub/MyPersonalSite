@@ -1,0 +1,21 @@
+{
+  "routes": [
+    { "route": "/", "rewrite": "/index.html", "headers": { "Cache-Control": "no-cache" } },
+    { "route": "/visuals", "rewrite": "/visuals.html", "headers": { "Cache-Control": "no-cache" } },
+    { "route": "/platform", "rewrite": "/platform.html", "headers": { "Cache-Control": "no-cache" } },
+    { "route": "/resume", "rewrite": "/resume.html", "headers": { "Cache-Control": "no-cache" } },
+    { "route": "/*.html", "headers": { "Cache-Control": "no-cache" } }
+  ],
+  "trailingSlash": "never",
+  "globalHeaders": {
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "X-Frame-Options": "DENY"
+  },
+  "mimeTypes": {
+    ".woff": "font/woff",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  }
+}

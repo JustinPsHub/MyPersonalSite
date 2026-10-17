@@ -1,6 +1,6 @@
 # Modern portfolio frontend
 
-The existing .NET host serves four static portfolio pages from `MyPersonalSite/wwwroot/portfolio`. No frontend build, runtime dependency, CDN request, or external data service is required.
+Four static portfolio pages live in `MyPersonalSite/wwwroot/portfolio`. The original .NET host can serve them, and `node scripts/build-static.mjs` packages the same pages for Azure Static Web Apps Free. No frontend compilation, runtime dependency, CDN request, or external data service is required.
 
 ## Visitor experience
 
@@ -14,12 +14,14 @@ The existing .NET host serves four static portfolio pages from `MyPersonalSite/w
 
 Run `npm --prefix tests ci --ignore-scripts` and `npm --prefix tests test`. See `tests/README.md` for the distinction between DOM contract tests and real-browser verification.
 
-Publish using the established Azure host:
+Package the public site:
 
 ```sh
-dotnet publish MyPersonalSite/MyPersonalSite.csproj -c Release -o ./publish --nologo -p:CompressionEnabled=false
+node scripts/build-static.mjs
 ```
 
-Smoke-test `/`, `/resume`, `/visuals`, `/platform`, `/healthz`, and the five frontend CSS/JS assets. Package the **contents** of the publish directory as a ZIP, then deploy to the existing `justinraypalmer` App Service in `DefaultResourceGroup-EUS`. Keep the existing startup command, database, security policies, and API configuration.
+Deploy `artifacts/static-site` with its `staticwebapp.config.json`. The package includes the public pages, their scripts/styles/fonts, the existing Word résumé, robots.txt, and sitemap.xml. It excludes the .NET host, SQLite database, APIs, and host configuration. Exact route rewrites preserve the extensionless pages and `.html` aliases; missing assets remain 404s. Global response headers carry the frontend's Content Security Policy and related protections to the static host.
+
+Smoke-test `/`, `/resume`, `/visuals`, `/platform`, the frontend assets, the Word download, and the interactive controls. The original `/healthz` and `/api/health` endpoints belong to the retained .NET host and are not part of the static release.
 
 The development checks do not assert a Lighthouse score, Core Web Vitals result, or a browser frame-rate guarantee. Those require measurements of the deployed build.
