@@ -17,7 +17,7 @@
   {title:'Architecture approach',detail:'Explore the layers of a dependable platform',href:'/platform.html',keywords:'azure cloud api data design'},
   {title:'Résumé',detail:'Experience, credentials, and downloads',href:'/resume.html',keywords:'resume experience jobs cv'},
   {title:'Software & AI case study',detail:'A Blazor portal with retrieved audit context',href:'/index.html#ai-project',keywords:'openai rag blazor project'},
-  {title:'Data modernization case study',detail:'20+ legacy scripts and 20M+ rows daily',href:'/index.html#data-project',keywords:'sql plsql warehouse project'},
+  {title:'Azure platform engineering',detail:'Architecture, .NET APIs, secure access, and automation',href:'/index.html#data-project',keywords:'synapse sql warehouse functions security project'},
   {title:'Governed analytics case study',detail:'25 fact tables and 90 dimensions',href:'/index.html#analytics-project',keywords:'power bi dax model project'},
   {title:'Copy email address',detail:'justinraypalmer@gmail.com',action:async()=>{try{await navigator.clipboard.writeText('justinraypalmer@gmail.com');toast('Email address copied.')}catch{toast('Email: justinraypalmer@gmail.com')}},keywords:'contact talk'},
   {title:'Switch color theme',detail:'Choose a light or dark appearance',action:()=>one('#theme').click(),keywords:'dark light mode'},
