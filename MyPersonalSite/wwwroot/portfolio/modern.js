@@ -16,7 +16,9 @@
   {title:'Engineering playground',detail:'Run an event through a working pipeline',href:'/index.html#playground',keywords:'demo events validation animation'},
   {title:'Architecture approach',detail:'Explore the layers of a dependable platform',href:'/platform.html',keywords:'azure cloud api data design'},
   {title:'Résumé',detail:'Experience, credentials, and downloads',href:'/resume.html',keywords:'resume experience jobs cv'},
-  {title:'AI and application engineering',detail:'Making enterprise data conversational',href:'/index.html#work',keywords:'openai rag blazor project'},
+  {title:'Software & AI case study',detail:'A Blazor portal with retrieved audit context',href:'/index.html#ai-project',keywords:'openai rag blazor project'},
+  {title:'Data modernization case study',detail:'20+ legacy scripts and 20M+ rows daily',href:'/index.html#data-project',keywords:'sql plsql warehouse project'},
+  {title:'Governed analytics case study',detail:'25 fact tables and 90 dimensions',href:'/index.html#analytics-project',keywords:'power bi dax model project'},
   {title:'Copy email address',detail:'justinraypalmer@gmail.com',action:async()=>{try{await navigator.clipboard.writeText('justinraypalmer@gmail.com');toast('Email address copied.')}catch{toast('Email: justinraypalmer@gmail.com')}},keywords:'contact talk'},
   {title:'Switch color theme',detail:'Choose a light or dark appearance',action:()=>one('#theme').click(),keywords:'dark light mode'},
   {title:'Toggle animation',detail:'Pause or resume decorative motion',action:()=>one('#motion').click(),keywords:'motion accessibility reduce'}
@@ -29,6 +31,14 @@
  results.addEventListener('keydown',e=>{const items=[...results.querySelectorAll('a,button')],index=items.indexOf(document.activeElement);if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const next=index+(e.key==='ArrowDown'?1:-1);if(next<0)input.focus();else items[Math.min(next,items.length-1)]?.focus()}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.open){e.preventDefault();menu.close();return}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(menu.open)menu.close();else openCommands()}});
  menu.addEventListener('click',e=>{if(e.target===menu){const r=menu.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)menu.close()}});
+ // The capability lens changes only the selected explanation; every case stays visible.
+ const roleButtons=all('[data-role]'),rolePanels=all('[data-role-panel]');
+ function selectRole(key){
+  if(!rolePanels.some(p=>p.dataset.rolePanel===key))return;
+  roleButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.role===key)));
+  rolePanels.forEach(p=>{const active=p.dataset.rolePanel===key;p.hidden=!active;p.classList.toggle('role-enter',active&&!paused&&!reduced.matches)});
+ }
+ if(rolePanels.length){selectRole('software');roleButtons.forEach(b=>b.addEventListener('click',()=>selectRole(b.dataset.role)))}
  // Morphing Canvas geometry. One animation loop, capped DPR and ~30 fps.
  // It owns no RAF while paused, hidden, or outside the viewport.
  const canvas=one('#data-art');

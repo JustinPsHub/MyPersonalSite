@@ -25,3 +25,9 @@ Deploy `artifacts/static-site` with its `staticwebapp.config.json`. The package 
 Smoke-test `/`, `/resume`, `/visuals`, `/platform`, the frontend assets, the Word download, and the interactive controls. The original `/healthz` and `/api/health` endpoints belong to the retained .NET host and are not part of the static release.
 
 The development checks do not assert a Lighthouse score, Core Web Vitals result, or a browser frame-rate guarantee. Those require measurements of the deployed build.
+
+## Hiring review refresh
+
+The overview now leads with software/data positioning, a concise stack, résumé access, and project-specific outcomes. A capability explorer connects software/AI, data platforms, and analytics to the relevant case study. Each case distinguishes the challenge, personal contribution, design choice, and outcome. The event pipeline is an expandable native disclosure so the hiring narrative stays easy to scan. All capability explanations and project summaries are present in HTML; JavaScript selects a capability panel.
+
+The visual refresh retains the self-hosted Canvas/SVG implementation, saved theme and motion choices, and the existing animation cancellation rules. No new runtime dependencies or external services are added. Public résumé dates, project figures, credentials, and links are retained; the overview does not present total career tenure as years of software engineering.

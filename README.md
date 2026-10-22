@@ -2,7 +2,7 @@
 
 # Justin Palmer
 
-### Complex systems. Clear solutions.
+### Useful software. Dependable data.
 
 Software engineering · Data platforms · Cloud architecture
 
@@ -16,7 +16,7 @@ Software engineering · Data platforms · Cloud architecture
 
 [![Justin Palmer’s portfolio: clear typography, a green Canvas sculpture, and an overview of software and data engineering experience.](docs/images/portfolio-preview.jpg)](https://www.justinraypalmer.com/)
 
-A personal portfolio that makes complex engineering approachable through selected work, interactive demonstrations, and a readable résumé. The public experience combines native browser graphics and thoughtful motion in a small static release for Azure Static Web Apps. The repository also retains the original ASP.NET Core/Blazor application.
+A portfolio for evaluating my software and data engineering work: project outcomes, my contribution, key design choices, interactive demonstrations, and a readable résumé. The public experience combines native browser graphics and thoughtful motion in a small static release for Azure Static Web Apps. The repository also retains the original ASP.NET Core/Blazor application.
 
 Much of my professional work lives in federal environments. This repository provides a public example of how I turn engineering ideas into usable software; the demonstrations use synthetic data.
 
@@ -24,7 +24,7 @@ Much of my professional work lives in federal environments. This repository prov
 
 | Page | What to try |
 | --- | --- |
-| **[Overview](https://www.justinraypalmer.com/)** | Switch the Canvas sculpture between Network, Flow, and Insight; explore selected work; run an event through validation, transformation, and delivery. |
+| **[Overview](https://www.justinraypalmer.com/)** | Explore software, data, and analytics capabilities; read case studies; switch the Canvas sculpture between Network, Flow, and Insight; expand the event pipeline demo. |
 | **[Interactive lab](https://www.justinraypalmer.com/visuals)** | Filter services and date windows, compare requests, average latency, and failures, copy a view link, and export the filtered CSV. |
 | **[Approach](https://www.justinraypalmer.com/platform)** | Explore the experience, services, data, and integration layers of an architecture. |
 | **[Résumé](https://www.justinraypalmer.com/resume)** | Read the web version, print it or save it as PDF through the browser, or download the Word document. |
@@ -35,6 +35,7 @@ Much of my professional work lives in federal environments. This repository prov
 
 - **Native browser graphics.** Canvas renders the morphing hero sculpture; SVG renders the dashboard charts. The public frontend requires no charting library or JavaScript framework.
 - **Controlled animation.** The sculpture uses a single animation loop, targets roughly 30 fps, caps device pixel ratio at 1.75, and reduces point density for coarse pointers. Its loop stops when paused, off-screen, or in a hidden tab. OS reduced motion takes precedence.
+- **Evidence before effects.** Role-specific capability panels connect skills to visible case studies, with contribution, design choices, and project-specific outcomes. Project summaries and navigation remain available without JavaScript.
 - **Inspectable behavior.** The event playground exposes its contract and transformed output. Invalid amounts enter a quarantine path and skip downstream stages.
 - **Shareable state.** Allowlisted URL parameters restore dashboard filters, sorting, and metric selection. CSV export uses the same filtered rows as the view.
 - **Progressive enhancement.** Main content and navigation are present in HTML. Skip navigation, labeled controls, native dialogs, and keyboard interactions support usability; JavaScript adds the interactive demos.
