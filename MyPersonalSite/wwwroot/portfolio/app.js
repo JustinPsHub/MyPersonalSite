@@ -46,7 +46,7 @@ function groupServices(rows){return [...new Set(rows.map(r=>r.name))].map(name=>
 function drawVolume(rows){
  const daily=[...new Set(rows.map(r=>r.date))].map(date=>{const summary=summarize(rows.filter(r=>r.date===date));return {date,value:summary[state.metric]}});
  const label={requests:'Daily requests',latency:'Average latency',errors:'Failed requests'}[state.metric],unit=state.metric==='latency'?' ms':'';
- const w=Math.max(260,Math.min(700,Math.round($('#volume-chart').getBoundingClientRect().width)||600)),h=250,left=54,right=16,top=18,bottom=38,peak=Math.max(...daily.map(r=>r.value));
+ const w=Math.max(220,Math.min(700,Math.round($('#volume-chart').getBoundingClientRect().width)||600)),h=250,left=54,right=16,top=18,bottom=38,peak=Math.max(...daily.map(r=>r.value));
  const step=state.metric==='requests'?5000:state.metric==='latency'?50:10,max=Math.max(step,Math.ceil(peak/step)*step);
  const x=i=>left+i/Math.max(daily.length-1,1)*(w-left-right),y=n=>h-bottom-n/max*(h-top-bottom);
  const ink=isDark()?'#b5c8b8':'#5e7162',line=isDark()?'#344b40':'#e8ede5';
