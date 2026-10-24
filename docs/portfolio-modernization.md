@@ -31,3 +31,11 @@ The development checks do not assert a Lighthouse score, Core Web Vitals result,
 The overview now leads with software/data positioning, a concise stack, résumé access, and project-specific outcomes. A capability explorer connects software/AI, data platforms, and analytics to the relevant case study. Each case distinguishes the challenge, personal contribution, design choice, and outcome. The event pipeline is an expandable native disclosure so the hiring narrative stays easy to scan. All capability explanations and project summaries are present in HTML; JavaScript selects a capability panel.
 
 The visual refresh retains the self-hosted Canvas/SVG implementation, saved theme and motion choices, and the existing animation cancellation rules. No new runtime dependencies or external services are added. Public résumé dates, project figures, credentials, and links are retained; the overview does not present total career tenure as years of software engineering.
+
+The homepage strength strip emphasizes architecture, application delivery, and automation. The lead work example describes Treasury platform responsibilities: Synapse/SQL architecture, Data Factory and Functions integration, .NET APIs, Blazor administration, private endpoints, and security automation. Historical row/script counts remain in the résumé but no longer lead the overview or project search.
+
+## Phone readability
+
+The phone styles are consolidated into one 820px breakpoint. Reading text uses rem-based sizing (normally 16px, with a 17px hero description), clear line spacing, and a vertical layout. The navigation disclosure closes on Escape, outside interaction, link selection, or viewport changes; the four links remain visible without JavaScript. Buttons and form controls use at least 44px target heights in the mobile layout. Dashboard tables become labeled service cards, while responsive SVG geometry keeps chart labels from shrinking with a fixed desktop viewBox.
+
+The stylesheet budget is 14 KiB gzip (previously 12 KiB) to accommodate the consolidated readable phone layouts; unused legacy presentation rules were removed. The combined script budget remains 16 KiB gzip. These are development size limits, not measured network-performance claims.

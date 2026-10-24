@@ -38,8 +38,9 @@ Much of my professional work lives in federal environments. This repository prov
 - **Evidence before effects.** Role-specific capability panels connect skills to visible case studies, with contribution, design choices, and project-specific outcomes. Project summaries and navigation remain available without JavaScript.
 - **Inspectable behavior.** The event playground exposes its contract and transformed output. Invalid amounts enter a quarantine path and skip downstream stages.
 - **Shareable state.** Allowlisted URL parameters restore dashboard filters, sorting, and metric selection. CSV export uses the same filtered rows as the view.
+- **Readable phone layouts.** A compact navigation disclosure, larger body text and controls, single-column résumé and case studies, and service metric cards keep the same content usable on narrow screens. Dashboard SVG geometry follows the chart container so axis text stays readable.
 - **Progressive enhancement.** Main content and navigation are present in HTML. Skip navigation, labeled controls, native dialogs, and keyboard interactions support usability; JavaScript adds the interactive demos.
-- **Small, self-hosted assets.** Scripts, styles, and DM Sans/Manrope fonts are served locally. Automated budgets limit the combined gzip size of the four frontend scripts to under 16 KiB and the stylesheet to under 12 KiB, excluding HTML, fonts, and other assets.
+- **Small, self-hosted assets.** Scripts, styles, and DM Sans/Manrope fonts are served locally. Automated budgets limit the combined gzip size of the four frontend scripts to under 16 KiB and the stylesheet to under 14 KiB, excluding HTML, fonts, and other assets.
 
 ## How it is built
 

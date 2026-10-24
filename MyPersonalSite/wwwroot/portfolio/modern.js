@@ -2,6 +2,11 @@
  'use strict';
  const one=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)],engine=PortfolioEngine;
  document.documentElement.classList.add('enhanced');
+ // Mobile navigation is a disclosure; links stay visible when JavaScript is unavailable.
+ const navToggle=one('#nav-toggle'),nav=one('#main-navigation'),siteHeader=one('.header');
+ function setNav(open,restoreFocus=false){if(!navToggle||!siteHeader)return;siteHeader.dataset.menuOpen=String(open);navToggle.setAttribute('aria-expanded',String(open));navToggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');one('#nav-toggle-label').textContent=open?'Close':'Menu';if(restoreFocus)navToggle.focus()}
+ if(navToggle&&nav){setNav(false);navToggle.addEventListener('click',()=>setNav(navToggle.getAttribute('aria-expanded')!=='true'));nav.addEventListener('click',e=>{if(e.target.closest('a'))setNav(false)});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&navToggle.getAttribute('aria-expanded')==='true'){setNav(false,true);e.preventDefault()}});document.addEventListener('pointerdown',e=>{if(!siteHeader.contains(e.target))setNav(false)});matchMedia('(max-width: 820px)').addEventListener('change',()=>setNav(false))}
+
  // A sticky, quiet navigation bar and a passive reading-progress indicator.
  let scrollFrame=0;
  function readProgress(){scrollFrame=0;const distance=document.documentElement.scrollHeight-innerHeight;document.documentElement.style.setProperty('--read-progress',distance>0?`${scrollY/distance*100}%`:'0%')}
@@ -17,14 +22,14 @@
   {title:'Architecture approach',detail:'Explore the layers of a dependable platform',href:'/platform.html',keywords:'azure cloud api data design'},
   {title:'Résumé',detail:'Experience, credentials, and downloads',href:'/resume.html',keywords:'resume experience jobs cv'},
   {title:'Software & AI case study',detail:'A Blazor portal with retrieved audit context',href:'/index.html#ai-project',keywords:'openai rag blazor project'},
-  {title:'Data modernization case study',detail:'20+ legacy scripts and 20M+ rows daily',href:'/index.html#data-project',keywords:'sql plsql warehouse project'},
+  {title:'Azure platform engineering',detail:'Architecture, .NET APIs, secure access, and automation',href:'/index.html#data-project',keywords:'synapse sql warehouse functions security project'},
   {title:'Governed analytics case study',detail:'25 fact tables and 90 dimensions',href:'/index.html#analytics-project',keywords:'power bi dax model project'},
   {title:'Copy email address',detail:'justinraypalmer@gmail.com',action:async()=>{try{await navigator.clipboard.writeText('justinraypalmer@gmail.com');toast('Email address copied.')}catch{toast('Email: justinraypalmer@gmail.com')}},keywords:'contact talk'},
   {title:'Switch color theme',detail:'Choose a light or dark appearance',action:()=>one('#theme').click(),keywords:'dark light mode'},
   {title:'Toggle animation',detail:'Pause or resume decorative motion',action:()=>one('#motion').click(),keywords:'motion accessibility reduce'}
  ];
  function renderCommands(){const query=input.value.trim().toLowerCase();const matches=commands.filter(c=>`${c.title} ${c.detail} ${c.keywords}`.toLowerCase().includes(query));results.replaceChildren();for(const c of matches){const item=document.createElement(c.href?'a':'button');item.className='command-result';if(c.href)item.href=c.href;const title=document.createElement('strong'),detail=document.createElement('span'),arrow=document.createElement('i');title.textContent=c.title;detail.textContent=c.detail;arrow.textContent=c.href?'↗':'↵';item.append(title,detail,arrow);if(c.action)item.addEventListener('click',()=>{menu.close();c.action()});results.append(item)}if(!matches.length){const empty=document.createElement('p');empty.className='command-empty';empty.textContent='No matches. Try “lab”, “résumé”, or “theme”.';results.append(empty)}one('#command-count').textContent=`${matches.length} results`;}
- function openCommands(){input.value='';renderCommands();if(!menu.open)menu.showModal();input.focus()}
+ function openCommands(){setNav(false);input.value='';renderCommands();if(!menu.open)menu.showModal();input.focus()}
  all('.search-trigger').forEach(b=>{b.addEventListener('click',openCommands);const k=b.querySelector('kbd');if(!/Mac|iPhone|iPad/.test(navigator.platform))k.textContent='Ctrl K'});
  one('.command-close').addEventListener('click',()=>menu.close());input.addEventListener('input',renderCommands);
  input.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();results.querySelector('a,button')?.focus()}if(e.key==='Enter'){e.preventDefault();results.querySelector('a,button')?.click()}});
