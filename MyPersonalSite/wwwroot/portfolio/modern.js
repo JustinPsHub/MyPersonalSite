@@ -2,6 +2,11 @@
  'use strict';
  const one=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)],engine=PortfolioEngine;
  document.documentElement.classList.add('enhanced');
+ // Mobile navigation is a disclosure; links stay visible when JavaScript is unavailable.
+ const navToggle=one('#nav-toggle'),nav=one('#main-navigation'),siteHeader=one('.header');
+ function setNav(open,restoreFocus=false){if(!navToggle||!siteHeader)return;siteHeader.dataset.menuOpen=String(open);navToggle.setAttribute('aria-expanded',String(open));navToggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');one('#nav-toggle-label').textContent=open?'Close':'Menu';if(restoreFocus)navToggle.focus()}
+ if(navToggle&&nav){setNav(false);navToggle.addEventListener('click',()=>setNav(navToggle.getAttribute('aria-expanded')!=='true'));nav.addEventListener('click',e=>{if(e.target.closest('a'))setNav(false)});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&navToggle.getAttribute('aria-expanded')==='true'){setNav(false,true);e.preventDefault()}});document.addEventListener('pointerdown',e=>{if(!siteHeader.contains(e.target))setNav(false)});matchMedia('(max-width: 820px)').addEventListener('change',()=>setNav(false))}
+
  // A sticky, quiet navigation bar and a passive reading-progress indicator.
  let scrollFrame=0;
  function readProgress(){scrollFrame=0;const distance=document.documentElement.scrollHeight-innerHeight;document.documentElement.style.setProperty('--read-progress',distance>0?`${scrollY/distance*100}%`:'0%')}
@@ -24,7 +29,7 @@
   {title:'Toggle animation',detail:'Pause or resume decorative motion',action:()=>one('#motion').click(),keywords:'motion accessibility reduce'}
  ];
  function renderCommands(){const query=input.value.trim().toLowerCase();const matches=commands.filter(c=>`${c.title} ${c.detail} ${c.keywords}`.toLowerCase().includes(query));results.replaceChildren();for(const c of matches){const item=document.createElement(c.href?'a':'button');item.className='command-result';if(c.href)item.href=c.href;const title=document.createElement('strong'),detail=document.createElement('span'),arrow=document.createElement('i');title.textContent=c.title;detail.textContent=c.detail;arrow.textContent=c.href?'↗':'↵';item.append(title,detail,arrow);if(c.action)item.addEventListener('click',()=>{menu.close();c.action()});results.append(item)}if(!matches.length){const empty=document.createElement('p');empty.className='command-empty';empty.textContent='No matches. Try “lab”, “résumé”, or “theme”.';results.append(empty)}one('#command-count').textContent=`${matches.length} results`;}
- function openCommands(){input.value='';renderCommands();if(!menu.open)menu.showModal();input.focus()}
+ function openCommands(){setNav(false);input.value='';renderCommands();if(!menu.open)menu.showModal();input.focus()}
  all('.search-trigger').forEach(b=>{b.addEventListener('click',openCommands);const k=b.querySelector('kbd');if(!/Mac|iPhone|iPad/.test(navigator.platform))k.textContent='Ctrl K'});
  one('.command-close').addEventListener('click',()=>menu.close());input.addEventListener('input',renderCommands);
  input.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();results.querySelector('a,button')?.focus()}if(e.key==='Enter'){e.preventDefault();results.querySelector('a,button')?.click()}});
