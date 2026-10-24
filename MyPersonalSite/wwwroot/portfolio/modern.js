@@ -5,7 +5,7 @@
  // Mobile navigation is a disclosure; links stay visible when JavaScript is unavailable.
  const navToggle=one('#nav-toggle'),nav=one('#main-navigation'),siteHeader=one('.header');
  function setNav(open,restoreFocus=false){if(!navToggle||!siteHeader)return;siteHeader.dataset.menuOpen=String(open);navToggle.setAttribute('aria-expanded',String(open));navToggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');one('#nav-toggle-label').textContent=open?'Close':'Menu';if(restoreFocus)navToggle.focus()}
- if(navToggle&&nav){setNav(false);navToggle.addEventListener('click',()=>setNav(navToggle.getAttribute('aria-expanded')!=='true'));nav.addEventListener('click',e=>{if(e.target.closest('a'))setNav(false)});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&navToggle.getAttribute('aria-expanded')==='true'){setNav(false,true);e.preventDefault()}});document.addEventListener('pointerdown',e=>{if(!siteHeader.contains(e.target))setNav(false)});matchMedia('(max-width: 820px)').addEventListener('change',()=>setNav(false))}
+ if(navToggle&&nav){setNav(false);navToggle.addEventListener('click',()=>setNav(navToggle.getAttribute('aria-expanded')!=='true'));nav.addEventListener('click',e=>{if(e.target.closest('a'))setNav(false)});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&navToggle.getAttribute('aria-expanded')==='true'){setNav(false,true);e.preventDefault()}});document.addEventListener('pointerdown',e=>{if(!siteHeader.contains(e.target))setNav(false)});matchMedia('(max-width: 1024px), (max-height: 600px) and (pointer: coarse)').addEventListener('change',()=>setNav(false))}
 
  // A sticky, quiet navigation bar and a passive reading-progress indicator.
  let scrollFrame=0;

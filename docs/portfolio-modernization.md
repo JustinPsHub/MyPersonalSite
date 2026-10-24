@@ -36,6 +36,8 @@ The homepage strength strip emphasizes architecture, application delivery, and a
 
 ## Phone readability
 
-The phone styles are consolidated into one 820px breakpoint. Reading text uses rem-based sizing (normally 16px, with a 17px hero description), clear line spacing, and a vertical layout. The navigation disclosure closes on Escape, outside interaction, link selection, or viewport changes; the four links remain visible without JavaScript. Buttons and form controls use at least 44px target heights in the mobile layout. Dashboard tables become labeled service cards, while responsive SVG geometry keeps chart labels from shrinking with a fixed desktop viewBox.
+The phone styles are consolidated into a 1024px breakpoint plus short touch-screen layouts. Reading text uses rem-based sizing (normally 16px, with a 17px hero description), clear line spacing, and a vertical layout. The navigation disclosure closes on Escape, outside interaction, link selection, or viewport changes; the four links remain visible without JavaScript. Buttons and form controls use at least 44px target heights in the mobile layout. Dashboard tables become labeled service cards, while responsive SVG geometry keeps chart labels from shrinking with a fixed desktop viewBox.
 
 The stylesheet budget is 14 KiB gzip (previously 12 KiB) to accommodate the consolidated readable phone layouts; unused legacy presentation rules were removed. The combined script budget remains 16 KiB gzip. These are development size limits, not measured network-performance claims.
+
+Landscape phone layouts use a scrolling compact header, concise hero copy, and two-column actions and metrics where space permits. Decorative hero artwork is omitted on short landscape screens. Safe-area padding accommodates notches, while content remains available without horizontal page panning.
