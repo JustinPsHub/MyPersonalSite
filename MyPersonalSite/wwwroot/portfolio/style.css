@@ -108,7 +108,7 @@ html.motion-off{scroll-behavior:auto}.js-only{display:none}.enhanced .js-only{di
 @media(prefers-reduced-motion:reduce){.role-panels article.role-enter{animation:none}.reveal:not(.revealed){transform:none}#project-dialog::backdrop{backdrop-filter:none}}
 @media print{.hiring-hero .sculpture,.role-controls,.hero-system,.pipeline-disclosure,.source-band{display:none!important}.role-panels article[hidden]{display:block!important}.experience-band,.project-lead,.capability-grid{display:block}.hiring-proof{display:flex}.hiring-proof>a{flex:1}.project{break-inside:avoid}.contact-band{padding-block:20px}#project-dialog{display:none!important}}
 
-.nav-toggle{display:none}.table-hint{display:none}
+.nav-toggle,.enhanced .nav-toggle{display:none}.table-hint{display:none}
 
 /* Phone layouts prioritize readable text, clear controls, and vertical flow. */
 @media(max-width:820px){
