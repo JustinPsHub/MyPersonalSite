@@ -1,43 +1,27 @@
-# Modern portfolio frontend
+# Portfolio frontend
 
-Four static portfolio pages live in `MyPersonalSite/wwwroot/portfolio`. The original .NET host can serve them, and `node scripts/build-static.mjs` packages the same pages for Azure Static Web Apps Free. No frontend compilation, runtime dependency, CDN request, or external data service is required.
+The public portfolio uses four static HTML pages, one shared stylesheet, and small native JavaScript modules. The retained ASP.NET Core/Blazor application is separate from the Azure static release.
 
-## Visitor experience
+## Content hierarchy
 
-- A Canvas sculpture morphs between network, flow, and insight shapes. Its frame loop stops when paused, hidden, or off-screen. Rendering caps device pixel ratio at 1.75, targets about 30 frames per second, and reduces geometry on coarse pointers. The operating system's reduced-motion preference takes precedence.
-- A local event pipeline demonstrates a typed contract, boundary validation, normalization, and delivery. The invalid-amount scenario quarantines the payload and skips downstream stages. Output is synthetic and inspectable.
-- The native search dialog supports Ctrl/Cmd+K, search, arrow keys, Tab, and Enter. Page links remain available in the main navigation.
-- Dashboard filters, sorting, and selected chart metric are encoded in an allowlisted URL state. Visitors can copy the filtered view and export the underlying CSV.
-- Saved theme preferences apply before the stylesheet paints. Fonts are self-hosted. The content and main navigation remain available without JavaScript.
+The homepage has one introduction, three enterprise projects, and a brief business-perspective note. It removes the overlapping strength strip, capability explorer, career timeline, dashboard teaser, source promotion, and oversized contact section. Each project shows a short contribution, technical context, and scoped outcome; native details retain the fuller case study without script-generated dialogs.
 
-## Validation
+Experience, education, and certifications live on the résumé page. The lab keeps working dashboard filters, URL state, sorting, sharing, and exports. Engineering notes retain the `/platform` route and host the event-contract example formerly on the homepage. This secondary page is linked from the lab instead of adding a fourth primary navigation destination.
 
-Run `npm --prefix tests ci --ignore-scripts` and `npm --prefix tests test`. See `tests/README.md` for the distinction between DOM contract tests and real-browser verification.
+The sculpture, shape controls, decorative animation loops, reading-progress effect, entrance reveals, command search, duplicate capability content, and interactive architecture tabs were removed. No new features or dependencies replace them. The frontend never hides main content while waiting for a reveal animation.
 
-Package the public site:
+## Behavior
 
-```sh
-node scripts/build-static.mjs
-```
+- The mobile menu supports Escape, outside interaction, link selection, and breakpoint changes. Links stay visible without JavaScript.
+- Theme preference is stored defensively. SVG chart colors refresh without discarding filters.
+- The dashboard uses one deterministic dataset. Share links allowlist filter values; exports use the selected records. Responsive SVG geometry maintains readable labels.
+- The event example validates before transforming or delivering. Invalid amounts are quarantined; downstream stages are skipped. Artificial processing delays have been removed.
+- Contact links use `mailto:`. Browser print and original Word download remain available. A print-only contact line preserves identity when site navigation is omitted.
 
-Deploy `artifacts/static-site` with its `staticwebapp.config.json`. The package includes the public pages, their scripts/styles/fonts, the existing Word résumé, robots.txt, and sitemap.xml. It excludes the .NET host, SQLite database, APIs, and host configuration. Exact route rewrites preserve the extensionless pages and `.html` aliases; missing assets remain 404s. Global response headers carry the frontend's Content Security Policy and related protections to the static host.
+## Responsive design and performance
 
-Smoke-test `/`, `/resume`, `/visuals`, `/platform`, the frontend assets, the Word download, and the interactive controls. The original `/healthz` and `/api/health` endpoints belong to the retained .NET host and are not part of the static release.
+One stylesheet defines shared spacing, typography, colors, controls, native disclosures, and data layouts. Phone reading text is 16–17px, with 44px or larger primary controls. Narrow service tables become labeled cards. Landscape uses a normal scrolling header and a shorter hero. Safe-area padding supports notched screens. Hover transitions respect reduced motion; there is no continuous animation.
 
-The development checks do not assert a Lighthouse score, Core Web Vitals result, or a browser frame-rate guarantee. Those require measurements of the deployed build.
+The release script includes only explicit public assets and the résumé download. It preserves all four route targets and security headers. No deployment identifiers, credentials, private host files, database files, or server output belong in the static release.
 
-## Hiring review refresh
-
-The overview now leads with software/data positioning, a concise stack, résumé access, and project-specific outcomes. A capability explorer connects software/AI, data platforms, and analytics to the relevant case study. Each case distinguishes the challenge, personal contribution, design choice, and outcome. The event pipeline is an expandable native disclosure so the hiring narrative stays easy to scan. All capability explanations and project summaries are present in HTML; JavaScript selects a capability panel.
-
-The visual refresh retains the self-hosted Canvas/SVG implementation, saved theme and motion choices, and the existing animation cancellation rules. No new runtime dependencies or external services are added. Public résumé dates, project figures, credentials, and links are retained; the overview does not present total career tenure as years of software engineering.
-
-The homepage strength strip emphasizes architecture, application delivery, and automation. The lead work example describes Treasury platform responsibilities: Synapse/SQL architecture, Data Factory and Functions integration, .NET APIs, Blazor administration, private endpoints, and security automation. Historical row/script counts remain in the résumé but no longer lead the overview or project search.
-
-## Phone readability
-
-The phone styles are consolidated into a 1024px breakpoint plus short touch-screen layouts. Reading text uses rem-based sizing (normally 16px, with a 17px hero description), clear line spacing, and a vertical layout. The navigation disclosure closes on Escape, outside interaction, link selection, or viewport changes; the four links remain visible without JavaScript. Buttons and form controls use at least 44px target heights in the mobile layout. Dashboard tables become labeled service cards, while responsive SVG geometry keeps chart labels from shrinking with a fixed desktop viewBox.
-
-The stylesheet budget is 14 KiB gzip (previously 12 KiB) to accommodate the consolidated readable phone layouts; unused legacy presentation rules were removed. The combined script budget remains 16 KiB gzip. These are development size limits, not measured network-performance claims.
-
-Landscape phone layouts use a scrolling compact header, concise hero copy, and two-column actions and metrics where space permits. Decorative hero artwork is omitted on short landscape screens. Safe-area padding accommodates notches, while content remains available without horizontal page panning.
+Automated checks cover contracts, safe URL state, navigation/focus, printable identity, theme and dashboard consistency, narrow chart geometry, case details without scripts, local links, route targets, and compressed asset budgets. Browser viewport review is separate from JSDOM. No physical-device certification, accessibility certification, conversion result, or Core Web Vitals measurement is claimed.

@@ -12,12 +12,6 @@
   if(event.currency!=='USD')errors.push('This demo supports USD only.');
   return errors.length?{ok:false,errors,output:null}:{ok:true,errors:[],output:{eventId:event.id,eventType:event.type,total:event.totalCents/100,currency:event.currency,status:'ready',destination:'analytics.orders'}};
  }
- function pointForShape(shape,i,count,time=0){
-  const u=i/Math.max(count-1,1),angle=i*2.399963229728653;
-  if(shape==='flow'){const turn=u*Math.PI*6;return {x:(u-.5)*310,y:Math.cos(turn+time)*54,z:Math.sin(turn+time)*75}}
-  if(shape==='insight'){const row=i%12,col=Math.floor(i/12);return {x:(row-5.5)*23,y:Math.sin(row*.32+col*.3+time)*28-55,z:(col-(count/12-1)/2)*23}}
-  const y=1-u*2,r=Math.sqrt(Math.max(0,1-y*y));return {x:Math.cos(angle)*r*144,y:y*144,z:Math.sin(angle)*r*144};
- }
- const engine=Object.freeze({dashboardState,processEvent,pointForShape});
+ const engine=Object.freeze({dashboardState,processEvent});
  if(typeof module!=='undefined'&&module.exports)module.exports=engine;else globalThis.PortfolioEngine=engine;
 })();
