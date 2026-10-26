@@ -4,11 +4,13 @@ The public portfolio uses four static HTML pages, one shared stylesheet, and sma
 
 ## Content hierarchy
 
-The homepage has one introduction, three enterprise projects, and a brief business-perspective note. It removes the overlapping strength strip, capability explorer, career timeline, dashboard teaser, source promotion, and oversized contact section. Each project shows a short contribution, technical context, and scoped outcome; native details retain the fuller case study without script-generated dialogs.
+The homepage is a professional introduction, with a short statement of positioning and three capability rows: software engineering, data architecture, and technical leadership. It omits employer names, internal systems, project case studies, implementation disclosures, and project-specific dimensions or event counts.
 
-Experience, education, and certifications live on the résumé page. The lab keeps working dashboard filters, URL state, sorting, sharing, and exports. Engineering notes retain the `/platform` route and host the event-contract example formerly on the homepage. This secondary page is linked from the lab instead of adding a fourth primary navigation destination.
+The Background page preserves accurate employer names, role titles, dates, education, certifications, and one defensible reporting-audience metric. Each role has one broad description. The original Word résumé keeps the detailed accomplishments and complete career record; printing the web page produces the shorter background.
 
-The sculpture, shape controls, decorative animation loops, reading-progress effect, entrance reveals, command search, duplicate capability content, and interactive architecture tabs were removed. No new features or dependencies replace them. The frontend never hides main content while waiting for a reveal animation.
+Primary navigation is Profile, Background, and Contact. Engineering examples remain available through the footer and their existing URLs. Dashboard filtering, sharing, sorting, and export are preserved. The secondary event example remains functional but no longer includes an architecture presented as an employer platform.
+
+The typography and restrained palette are retained, with a simpler two-column expertise layout, fewer section boundaries, and a direct résumé download. Content is present before scripts load. No entrance effects, animation loops, or new dependencies are added.
 
 ## Behavior
 
@@ -24,4 +26,4 @@ One stylesheet defines shared spacing, typography, colors, controls, native disc
 
 The release script includes only explicit public assets and the résumé download. It preserves all four route targets and security headers. No deployment identifiers, credentials, private host files, database files, or server output belong in the static release.
 
-Automated checks cover contracts, safe URL state, navigation/focus, printable identity, theme and dashboard consistency, narrow chart geometry, case details without scripts, local links, route targets, and compressed asset budgets. Browser viewport review is separate from JSDOM. No physical-device certification, accessibility certification, conversion result, or Core Web Vitals measurement is claimed.
+Automated checks cover contracts, safe URL state, navigation/focus, printable identity, theme and dashboard consistency, narrow chart geometry, capability content without scripts, local links, route targets, and compressed asset budgets. Browser viewport review is separate from JSDOM. No physical-device certification, accessibility certification, conversion result, or Core Web Vitals measurement is claimed.
