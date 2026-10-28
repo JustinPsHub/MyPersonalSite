@@ -1,0 +1,1 @@
+{"version":"2.0","extensions":{"http":{"routePrefix":"api","maxConcurrentRequests":10,"maxOutstandingRequests":50}},"logging":{"logLevel":{"default":"Warning","Host.Results":"Warning","Function":"Warning"}}}

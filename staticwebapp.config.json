@@ -1,10 +1,61 @@
 {
   "routes": [
-    { "route": "/", "rewrite": "/index.html", "headers": { "Cache-Control": "no-cache" } },
-    { "route": "/visuals", "rewrite": "/visuals.html", "headers": { "Cache-Control": "no-cache" } },
-    { "route": "/platform", "rewrite": "/platform.html", "headers": { "Cache-Control": "no-cache" } },
-    { "route": "/resume", "rewrite": "/resume.html", "headers": { "Cache-Control": "no-cache" } },
-    { "route": "/*.html", "headers": { "Cache-Control": "no-cache" } }
+    {
+      "route": "/",
+      "rewrite": "/index.html",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "route": "/visuals",
+      "rewrite": "/visuals.html",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "route": "/platform",
+      "rewrite": "/platform.html",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "route": "/resume",
+      "rewrite": "/resume.html",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "route": "/contact",
+      "rewrite": "/contact.html",
+      "headers": {
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex, noarchive, nosnippet"
+      }
+    },
+    {
+      "route": "/contact.html",
+      "headers": {
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex, noarchive, nosnippet"
+      }
+    },
+    {
+      "route": "/resume/*.docx",
+      "headers": {
+        "Cache-Control": "no-cache",
+        "X-Robots-Tag": "noindex, noarchive"
+      }
+    },
+    {
+      "route": "/*.html",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    }
   ],
   "trailingSlash": "never",
   "globalHeaders": {
@@ -17,5 +68,8 @@
   "mimeTypes": {
     ".woff": "font/woff",
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  },
+  "platform": {
+    "apiRuntime": "node:22"
   }
 }

@@ -1,0 +1,11 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const {execFileSync}=require('node:child_process');
+const {JSDOM}=require('jsdom');
+const root=path.resolve(__dirname,'..'),source=path.join(root,'MyPersonalSite/wwwroot/portfolio');
+const address=/[A-Za-z0-9_.+%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
+test('public pages and scripts have no recipient address and all pages retain a contact path',()=>{for(const file of fs.readdirSync(source).filter(f=>/\.(html|js)$/.test(f))){const text=fs.readFileSync(path.join(source,file),'utf8');assert.doesNotMatch(text,address,file);if(file.endsWith('.html')){const dom=new JSDOM(text);assert.ok(dom.window.document.querySelector('a[href="contact.html"],a[href="/contact"]'),file);dom.window.close()}}});
+test('public resume contains a contact hyperlink with no email address in document parts',()=>{execFileSync('python',['-c',`import zipfile,re\np=${JSON.stringify(path.join(root,'MyPersonalSite/wwwroot/resume/jrp_resume_20260128.docx'))}\nwith zipfile.ZipFile(p) as z:\n parts=b' '.join(z.read(n) for n in z.namelist() if n.endswith(('.xml','.rels')))\n assert not re.search(rb'[A-Za-z0-9_.+%-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}',parts)\n assert b'https://justinraypalmer.com/contact' in parts\n`])});
+test('contact and downloadable document are excluded from indexing while professional pages remain indexable',()=>{const config=JSON.parse(fs.readFileSync(path.join(root,'staticwebapp.config.json'),'utf8'));for(const route of ['/contact','/contact.html','/resume/*.docx'])assert.match(config.routes.find(x=>x.route===route).headers['X-Robots-Tag'],/noindex/);assert.equal(config.routes.find(x=>x.route==='/').headers['X-Robots-Tag'],undefined);assert.ok(!config.globalHeaders['X-Robots-Tag']);assert.equal(config.platform.apiRuntime,'node:22')});
