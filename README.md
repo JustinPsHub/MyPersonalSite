@@ -14,12 +14,12 @@ A concise professional introduction focused on transferable software engineering
 
 | Page | Purpose |
 | --- | --- |
-| **Profile** | Concise positioning, three areas of expertise, and direct résumé/contact actions. Detailed accomplishments stay in the downloadable résumé. |
+| **Overview** | Concise positioning, three concise capability statements, and direct résumé/contact actions. Detailed accomplishments stay in the downloadable résumé. |
 | **Background** | Compact career context, education, certifications, Word résumé with a contact-page link, and browser printing. |
 | **Engineering examples** | A working synthetic-data dashboard with linked filters, shareable views, and CSV exports. |
 | **Engineering notes** | A secondary event-validation example, linked from the dashboard. Existing `/platform` links remain valid. |
 
-The interface uses self-hosted DM Sans and Manrope, restrained colors, responsive type, keyboard-accessible controls, and a persistent light/dark preference. A small interactive systems visual connects software, data, and delivery. Subtle scroll reveals and short state transitions respect reduced-motion preferences; content remains available without scripts. There is no animation loop or frontend framework.
+The interface uses self-hosted DM Sans and Manrope, restrained colors, responsive type, keyboard-accessible controls, and a persistent light/dark preference. A small interactive architecture illustration connects application, data, and cloud layers. Short state transitions respect reduced-motion preferences; content remains available without scripts. There is no animation loop or frontend framework.
 
 ## Implementation
 
