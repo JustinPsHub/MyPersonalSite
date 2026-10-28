@@ -14,7 +14,7 @@ A concise professional introduction focused on transferable software engineering
 
 | Page | Purpose |
 | --- | --- |
-| **Profile** | Concise positioning, two résumé-backed outcomes, three areas of expertise, and direct résumé/contact actions. |
+| **Profile** | Concise positioning, three areas of expertise, and direct résumé/contact actions. Detailed accomplishments stay in the downloadable résumé. |
 | **Background** | Compact career context, education, certifications, Word résumé, and browser printing. |
 | **Engineering examples** | A working synthetic-data dashboard with linked filters, shareable views, and CSV exports. |
 | **Engineering notes** | A secondary event-validation example, linked from the dashboard. Existing `/platform` links remain valid. |
