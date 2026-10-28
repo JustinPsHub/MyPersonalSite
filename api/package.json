@@ -1,0 +1,1 @@
+{"name":"portfolio-contact-api","version":"1.0.0","private":true,"main":"src/azure.js","engines":{"node":">=22"},"scripts":{"test":"node --test ../tests/contact-api.test.cjs"},"dependencies":{"@azure/functions":"4.17.0"}}

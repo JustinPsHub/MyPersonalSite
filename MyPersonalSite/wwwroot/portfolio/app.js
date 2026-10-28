@@ -11,7 +11,6 @@ syncThemeControl();
 $('#theme').addEventListener('click',()=>{document.documentElement.dataset.theme=isDark()?'light':'dark';storage.set('jp-theme',document.documentElement.dataset.theme);syncThemeControl();document.dispatchEvent(new Event('themechange'));if(typeof renderDashboard==='function'&&$('#volume-chart'))renderDashboard()});
 let toastTimer;
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),3500)}
-$('#copy-email')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText('justinraypalmer@gmail.com');toast('Email address copied.')}catch{toast('Email: justinraypalmer@gmail.com')}});
 $('#print-resume')?.addEventListener('click',()=>window.print());
 // Pure data functions share one deterministic dataset across every dashboard view.
 function makeData(){const names=['Data Platform','API Gateway','Identity','Observability','Storage'];return Array.from({length:90},(_,day)=>names.map((name,index)=>{const noise=Math.sin(day*1.39+index*2.1);const requests=Math.round((6200-index*850)*(1+day*.003)+noise*600);const errors=Math.max(1,Math.round(requests*(.0003+index*.00009+Math.abs(noise)*.0005)));return {day,date:new Date(Date.UTC(2026,6,17+day)).toISOString().slice(0,10),name,requests,errors,latency:Math.round(75+index*19+(noise+1)*18),deployments:(day+index*2)%4===0?1+(day%3):0}})).flat()}

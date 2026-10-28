@@ -4,7 +4,7 @@
 
 Software engineer & data architect
 
-**[Portfolio ↗](https://www.justinraypalmer.com/)** · [Background](https://www.justinraypalmer.com/resume) · [Engineering examples](https://www.justinraypalmer.com/visuals) · [Email](mailto:justinraypalmer@gmail.com)
+**[Portfolio ↗](https://www.justinraypalmer.com/)** · [Background](https://www.justinraypalmer.com/resume) · [Engineering examples](https://www.justinraypalmer.com/visuals) · [Contact](https://www.justinraypalmer.com/contact)
 
 </div>
 
@@ -15,7 +15,7 @@ A concise professional introduction focused on transferable software engineering
 | Page | Purpose |
 | --- | --- |
 | **Profile** | Concise positioning, three areas of expertise, and direct résumé/contact actions. Detailed accomplishments stay in the downloadable résumé. |
-| **Background** | Compact career context, education, certifications, Word résumé, and browser printing. |
+| **Background** | Compact career context, education, certifications, Word résumé with a contact-page link, and browser printing. |
 | **Engineering examples** | A working synthetic-data dashboard with linked filters, shareable views, and CSV exports. |
 | **Engineering notes** | A secondary event-validation example, linked from the dashboard. Existing `/platform` links remain valid. |
 
@@ -33,7 +33,7 @@ The interface uses self-hosted DM Sans and Manrope, restrained colors, responsiv
 | Contract, interaction, and packaging checks | [`tests`](tests) |
 | Retained .NET application | `MyPersonalSite`, `MyPersonalSite.Client`, `MyPersonalSite.Shared` |
 
-The static release needs no server process, API keys, database, or data service. The retained .NET 9 application uses ASP.NET Core, Blazor, EF Core, and SQLite and can be run independently.
+The static frontend uses a small managed contact API on the existing Azure Free site. The recipient address and session signing secret stay in Azure application settings; no message relay or contact database is used. See [contact privacy](docs/contact-security.md). The retained .NET 9 application uses ASP.NET Core, Blazor, EF Core, and SQLite and can be run independently.
 
 ## Run and verify
 
@@ -59,7 +59,7 @@ The host applies migrations and seeds a local SQLite database on startup. Its da
 
 ## Publish
 
-Deploy `artifacts/static-site`, including `staticwebapp.config.json`, through an authenticated Azure Static Web Apps deployment workflow. Keep credentials in hosting or CI secret storage. The site uses the **Free** plan; domain registration and unrelated resources have separate costs.
+Deploy `artifacts/static-site`, including `staticwebapp.config.json`, and `api/` together through the authenticated Azure Static Web Apps deployment workflow. Keep credentials in hosting or CI secret storage. The site uses the **Free** plan; domain registration and unrelated resources have separate costs.
 
 Verify the four routes, navigation, theme switching, dashboard, event example, and résumé download after publication. Automated JSDOM tests verify behavior without a browser layout engine; separate browser review is needed for responsive rendering, native focus, and printing. The tests do not establish Core Web Vitals or a Lighthouse score.
 

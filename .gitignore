@@ -366,3 +366,8 @@ FodyWeavers.xsd
 app.db
 app.db-*
 app.backup.db
+
+# Backend secrets remain in Azure application settings.
+local.settings.json
+.env
+.env.*
