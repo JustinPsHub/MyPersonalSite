@@ -1,6 +1,11 @@
 {
   "name": "portfolio-contract-tests",
   "private": true,
-  "scripts": {"test": "node --test *.test.cjs"},
-  "devDependencies": {"jsdom": "26.1.0"}
+  "scripts": {
+    "test": "node --test *.test.cjs"
+  },
+  "devDependencies": {
+    "axe-core": "4.14.0",
+    "jsdom": "26.1.0"
+  }
 }
