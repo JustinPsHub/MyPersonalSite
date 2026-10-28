@@ -7,6 +7,27 @@
  function setNav(open,restoreFocus=false){if(!navToggle||!siteHeader)return;siteHeader.dataset.menuOpen=String(open);navToggle.setAttribute('aria-expanded',String(open));navToggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');one('#nav-toggle-label').textContent=open?'Close':'Menu';if(restoreFocus)navToggle.focus()}
  if(navToggle&&nav){setNav(false);navToggle.addEventListener('click',()=>setNav(navToggle.getAttribute('aria-expanded')!=='true'));nav.addEventListener('click',e=>{if(e.target.closest('a'))setNav(false)});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&navToggle.getAttribute('aria-expanded')==='true'){setNav(false,true);e.preventDefault()}});document.addEventListener('pointerdown',e=>{if(!siteHeader.contains(e.target))setNav(false)});matchMedia('(max-width: 760px)').addEventListener('change',()=>setNav(false))}
 
+ const system=one('.system-figure');
+ if(system){
+  const perspectives={software:['01','Clear boundaries. Predictable behavior. A useful interface.'],data:['02','Reliable flows. Consistent models. Data people can use.'],delivery:['03','Clear requirements. Considered trade-offs. Dependable delivery.']};
+  all('[data-perspective]').forEach(button=>button.addEventListener('click',()=>{
+   const key=button.dataset.perspective,content=perspectives[key];
+   if(!content)return;
+   system.dataset.system=key;
+   all('[data-perspective]').forEach(control=>control.setAttribute('aria-pressed',String(control===button)));
+   one('.system-index').textContent=content[0]+' — 03';
+   one('#system-caption').textContent=content[1];
+  }));
+ }
+ // Start with visible content. Enhancement only affects elements below the fold.
+ const motion=matchMedia('(prefers-reduced-motion: reduce)');
+ if(!motion.matches&&'IntersectionObserver' in window){
+  const pending=all('.reveal').filter(el=>el.getBoundingClientRect().top>innerHeight);
+  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.remove('is-pending');observer.unobserve(entry.target)}}),{threshold:0.08});
+  pending.forEach(el=>{el.classList.add('is-pending');observer.observe(el)});
+  motion.addEventListener('change',()=>{all('.reveal').forEach(el=>el.classList.remove('is-pending'));observer.disconnect()},{once:true});
+ }
+
  if(one('#run-pipeline')){
   const sample={id:'demo-001',type:'order.created',totalCents:12900,currency:'USD'},stages=[
    {label:'RECEIVE',title:'Start with a clear contract.',description:'An event carries an ID and a typed payload. A predictable shape lets each service evolve independently.'},

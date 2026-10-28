@@ -6,7 +6,9 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const savedTheme = storage.get('jp-theme');
 if(savedTheme) document.documentElement.dataset.theme=savedTheme;
 function isDark(){return document.documentElement.dataset.theme==='dark'}
-$('#theme').addEventListener('click',()=>{document.documentElement.dataset.theme=isDark()?'light':'dark';storage.set('jp-theme',document.documentElement.dataset.theme);document.dispatchEvent(new Event('themechange'));if(typeof renderDashboard==='function'&&$('#volume-chart'))renderDashboard()});
+function syncThemeControl(){const label='Switch to '+(isDark()?'light':'dark')+' theme';$('#theme').setAttribute('aria-label',label);$('#theme').title=label;$('#theme').textContent=isDark()?'☼':'◐'}
+syncThemeControl();
+$('#theme').addEventListener('click',()=>{document.documentElement.dataset.theme=isDark()?'light':'dark';storage.set('jp-theme',document.documentElement.dataset.theme);syncThemeControl();document.dispatchEvent(new Event('themechange'));if(typeof renderDashboard==='function'&&$('#volume-chart'))renderDashboard()});
 let toastTimer;
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),3500)}
 $('#copy-email')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText('justinraypalmer@gmail.com');toast('Email address copied.')}catch{toast('Email: justinraypalmer@gmail.com')}});
