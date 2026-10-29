@@ -143,7 +143,7 @@
           dateLabel(E.endDate) +
           ", 2026";
       one("#selection-summary").textContent =
-        `${scope} · ${period} · ${rows.length} synthetic daily records`;
+        `${scope} · ${period} · ${rows.length} synthetic daily record${rows.length === 1 ? "" : "s"}`;
       one("#clear-date").hidden = !state.date;
     }
     function renderTrend() {
