@@ -57,6 +57,12 @@
       if (state.date) p.set("date", state.date);
       if (state.delta) p.set("delta", state.delta);
       if (search) p.set("q", search);
+      if (window.JourneyEngine) {
+        const view = window.JourneyEngine.parse(location.search);
+        p.set("journey", view.key);
+        p.set("stage", view.stage);
+        p.set("event", view.selected);
+      }
       history.replaceState(
         null,
         "",
@@ -387,6 +393,7 @@
       renderFailures();
       renderDependencies();
       renderExplorer();
+      window.dispatchEvent(new CustomEvent("atlas:render"));
       if (focused)
         one(`[data-map-node="${focused}"]`)?.focus({ preventScroll: true });
       if (failureFocus)
@@ -470,6 +477,7 @@
       one("#service-search").value = "";
       serialize();
       render();
+      window.dispatchEvent(new CustomEvent("atlas:reset"));
       toast("Workspace reset.");
     });
     one("#service-search").value = search;
@@ -615,10 +623,23 @@
         },
         { rootMargin: "-10% 0px -65% 0px", threshold: 0 },
       );
-      ["overview", "dependencies", "explorer"].forEach((id) =>
+      ["overview", "dependencies", "explorer", "journey"].forEach((id) =>
         observer.observe(one("#" + id)),
       );
     }
+    window.addEventListener("atlas:select", (event) => {
+      const service = E.serviceById(event.detail?.id);
+      if (!service) return;
+      const date = event.detail.date || "";
+      if (
+        date &&
+        !E.select(state, { allServices: true, ignoreDate: true }).some(
+          (r) => r.date === date,
+        )
+      )
+        return;
+      update({ service: service.name, focus: service.id, date });
+    });
     render();
     let chartWidth = Math.round(
       one("#volume-chart").getBoundingClientRect().width,

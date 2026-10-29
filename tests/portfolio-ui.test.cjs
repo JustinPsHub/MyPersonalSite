@@ -67,3 +67,47 @@ test('Atlas has no serious semantic accessibility violations, including the serv
 
 test('reduced motion retains the full Atlas workflow and live chart values',()=>{const ui=setup('visuals',{reduced:true});ui.doc.querySelector('#investigate').click();assert.equal(ui.doc.querySelector('#latency').textContent,'276 ms');assert.equal(ui.doc.querySelector('#atlas-error').hidden,true);assert.equal(ui.raf.size,0);ui.close()});
 test('keyboard focus survives cross filtering from a failure contribution',()=>{const ui=setup('visuals'),b=ui.doc.querySelector('.failure-row[data-service="storage"]');b.focus();b.click();assert.equal(ui.doc.activeElement.dataset.service,'storage');assert.ok(ui.doc.activeElement.classList.contains('failure-row'));ui.close()});
+
+test('journey scenarios change derived measures and reveal rejected provenance without altering telemetry',()=>{
+ const ui=setup('visuals'),{doc,w}=ui,requests=doc.querySelector('#requests').textContent;
+ assert.equal(doc.querySelector('#journey-total').textContent,'$1,729.00');
+ const scenario=doc.querySelector('#journey-scenario');scenario.value='drift';scenario.dispatchEvent(new w.Event('change'));
+ assert.equal(doc.querySelector('#journey-total').textContent,'$1,340.50');assert.equal(doc.querySelector('#journey-orders').textContent,'9');
+ doc.querySelector('#journey-ledger [data-event="3"]').click();assert.match(doc.querySelector('#journey-code').textContent,/quarantined/);assert.match(doc.querySelector('#journey-code').textContent,/safe integer/);
+ assert.equal(doc.activeElement.dataset.event,'3');assert.equal(doc.querySelector('#requests').textContent,requests);
+ scenario.value='retry';scenario.dispatchEvent(new w.Event('change'));doc.querySelector('#journey-ledger [data-event="10"]').click();assert.match(doc.querySelector('#journey-code').textContent,/skipped/);
+ assert.equal(doc.querySelector('#journey-total').textContent,'$1,356.00');assert.deepEqual(ui.errors,[]);ui.close();
+});
+test('journey share state survives analytical filters, browser navigation and reset',()=>{
+ const ui=setup('visuals',{query:'?journey=drift&stage=1&event=7'}),{doc,w}=ui;
+ assert.equal(doc.querySelector('#journey-scenario').value,'drift');assert.match(doc.querySelector('#journey-code').textContent,/USD/);
+ doc.querySelector('[data-days="7"]').click();assert.match(w.location.search,/journey=drift/);assert.match(w.location.search,/stage=1/);assert.match(w.location.search,/event=7/);
+ w.history.replaceState(null,'','?journey=retry&stage=2&event=10');w.dispatchEvent(new w.PopStateEvent('popstate'));assert.match(doc.querySelector('#journey-code').textContent,/skipped/);
+ doc.querySelector('#reset-filters').click();assert.equal(doc.querySelector('#journey-scenario').value,'clean');assert.equal(doc.querySelector('#journey-total').textContent,'$1,729.00');ui.close();
+});
+test('matrix keyboard movement and selection coordinate the exact service and day',()=>{
+ const ui=setup('visuals'),{doc,w}=ui;let cell=doc.querySelector('[data-cell="49"]');cell.focus();cell.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true}));
+ assert.equal(doc.activeElement.dataset.cell,'50');doc.activeElement.click();assert.equal(doc.querySelector('#service').value,'Storage');assert.match(doc.querySelector('#selection-summary').textContent,/Oct 9/);
+ assert.equal(doc.activeElement.dataset.cell,'50');assert.match(doc.querySelector('#matrix-readout').textContent,/250 failed/);
+ doc.querySelector('[data-days="7"]').click();assert.equal(doc.querySelectorAll('[data-cell]').length,35);assert.equal(doc.querySelectorAll('[data-cell][tabindex="0"]').length,1);ui.close();
+});
+test('command menu supports query, arrow keys, safe empty state, navigation and focus return',async()=>{
+ const ui=setup('visuals'),{doc,w}=ui;const opener=doc.querySelector('#open-command');opener.focus();opener.click();assert.equal(doc.querySelector('#command-dialog').open,true);assert.equal(doc.activeElement.id,'command-search');
+ const input=doc.querySelector('#command-search');input.value='<img>';input.dispatchEvent(new w.Event('input'));assert.ok(doc.querySelector('.command-empty'));assert.equal(doc.querySelector('#command-results img'),null);
+ input.value='data journey';input.dispatchEvent(new w.Event('input'));input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}));assert.equal(doc.activeElement.dataset.command,'0');doc.activeElement.click();assert.equal(w.location.hash,'#journey');assert.equal(doc.activeElement.id,'journey-title');
+ opener.focus();opener.click();doc.querySelector('#close-command').click();assert.equal(doc.activeElement,opener);
+ doc.dispatchEvent(new w.KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true,cancelable:true}));assert.equal(doc.querySelector('#command-dialog').open,true);
+ w.eval(require('axe-core').source);const result=await w.axe.run(doc,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']},rules:{'color-contrast':{enabled:false}}});assert.equal(result.violations.length,0,JSON.stringify(result.violations.map(v=>v.id)));ui.close();
+});
+test('reduced motion replay is immediate, inspectable and schedules no animation',()=>{
+ const ui=setup('visuals',{reduced:true}),{doc}=ui;doc.querySelector('#journey-replay').click();assert.equal(doc.querySelector('#journey-progress').textContent,'5 of 5');assert.equal(doc.querySelector('#journey-canvas').dataset.replaying,'false');doc.querySelector('[data-journey-stage="0"]').focus();doc.querySelector('[data-journey-stage="0"]').click();assert.equal(doc.activeElement.dataset.journeyStage,'0');assert.match(doc.querySelector('#journey-code').textContent,/totalCents/);ui.close();
+});
+
+
+test('replay can be paused and scenario changes cancel an in-flight sequence',()=>{
+ const ui=setup('visuals'),{doc,w}=ui;const timers=new Map();let id=0;w.setTimeout=fn=>{timers.set(++id,fn);return id};w.clearTimeout=key=>timers.delete(key);
+ doc.querySelector('#journey-replay').click();assert.equal(doc.querySelector('#journey-progress').textContent,'1 of 5 · Replaying');assert.equal(timers.size,1);
+ const advance=[...timers.values()][0];timers.clear();advance();assert.equal(doc.querySelector('#journey-progress').textContent,'2 of 5 · Replaying');
+ doc.querySelector('#journey-replay').click();assert.equal(timers.size,0);assert.equal(doc.querySelector('#journey-progress').textContent,'2 of 5');
+ doc.querySelector('#journey-replay').click();const scenario=doc.querySelector('#journey-scenario');scenario.value='retry';scenario.dispatchEvent(new w.Event('change'));assert.equal(timers.size,0);assert.equal(doc.querySelector('#journey-progress').textContent,'5 of 5');assert.equal(doc.querySelector('#journey-total').textContent,'$1,356.00');ui.close();
+});

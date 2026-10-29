@@ -120,3 +120,5 @@
 /* Contact is a direct personal handoff, with room for clear loading and recovery states. */
 .contact-page{padding-block:80px 90px;min-height:66vh}.contact-page h1{font-size:clamp(40px,5vw,64px);letter-spacing:-.06em;line-height:1.15;margin-block:24px}.contact-intro{font-size:18px;max-width:44ch;text-wrap:pretty}.contact-action .fine-print{font-size:13px}#contact-ready{border-left:2px solid var(--accent);padding-left:24px}.contact-address{font-size:18px}.contact-alternatives{max-width:540px;margin-top:22px;padding-top:16px}.contact-alternatives .text-link{font-size:13px}
 @media(max-width:760px){.contact-page{padding-block:44px 54px;min-height:66vh}.contact-page h1{font-size:clamp(34px,7.7vw,52px)}.contact-intro{font-size:17px}.contact-alternatives{gap:24px}.contact-page .fine-print{font-size:13px}}
+
+.hero-lab-link{display:inline-flex;gap:10px;align-items:center;margin-top:12px;font-size:14px;min-height:44px;color:var(--accent)}

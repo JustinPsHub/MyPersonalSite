@@ -22,3 +22,10 @@ test('Atlas light and dark text and chart tokens meet their contrast thresholds'
   for(const [fg,bg,min] of [['ink','surface',4.5],['muted','surface',4.5],['warning','warning-soft',4.5],['chart','surface',3],['compare','surface',3]])assert.ok(contrast(colors[fg],colors[bg])>=min,`${fg} on ${bg}`);
  }
 });
+
+
+test('journey enhancements remain isolated to Atlas and within their compressed budget',()=>{
+ const scripts=['journey.js','journey-engine.js'];const bytes=scripts.reduce((sum,file)=>sum+gzipSync(fs.readFileSync(path.join(root,file))).length,0);assert.ok(bytes<8*1024,`${bytes} compressed journey script bytes`);
+ assert.ok(gzipSync(fs.readFileSync(path.join(root,'journey.css'))).length<6*1024);
+ for(const page of ['index','resume','contact','platform'])assert.doesNotMatch(fs.readFileSync(path.join(root,page+'.html'),'utf8'),/journey\.(js|css)|journey-engine\.js/);
+});

@@ -29,12 +29,15 @@
       crossorigin
     />
     <link rel="stylesheet" href="/portfolio/style.css?v=17" />
-    <link rel="stylesheet" href="/portfolio/atlas.css?v=17" />
+    <link rel="stylesheet" href="/portfolio/atlas.css?v=18" />
     <script src="/portfolio/engine.js?v=17" defer></script>
     <script src="/portfolio/app.js?v=17" defer></script>
     <script src="/portfolio/modern.js?v=17" defer></script>
     <script src="/portfolio/atlas-engine.js?v=17" defer></script>
-    <script src="/portfolio/atlas.js?v=17" defer></script>
+    <link rel="stylesheet" href="/portfolio/journey.css?v=18" />
+    <script src="/portfolio/journey-engine.js?v=18" defer></script>
+    <script src="/portfolio/atlas.js?v=18" defer></script>
+    <script src="/portfolio/journey.js?v=18" defer></script>
   </head>
   <body class="atlas-page">
     <a class="skip" href="#main">Skip to content</a>
@@ -96,8 +99,22 @@
               <circle cx="8" cy="8" r="5" />
               <path d="m12 12 5 5M5 8h6M8 5v6" /></svg
             >Service explorer</a
+          ><a href="#journey"
+            ><svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M3 5h4l3 10h7M7 5h10M10 15H3" />
+              <circle cx="3" cy="5" r="1.5" />
+              <circle cx="17" cy="15" r="1.5" /></svg
+            >Data journey</a
           >
         </div>
+        <button
+          class="atlas-button command-trigger"
+          id="open-command"
+          aria-haspopup="dialog"
+          aria-controls="command-dialog"
+        >
+          Jump to… <kbd>⌘ K</kbd>
+        </button>
         <div class="rail-bottom">
           <span class="snapshot-dot"></span>Frozen snapshot<span
             >14 OCT 2026 · UTC</span
@@ -127,6 +144,48 @@
             </div>
             <span class="synthetic-label"
               ><span aria-hidden="true">◇</span> Synthetic dataset</span
+            >
+          </div>
+          <div
+            class="experience-shortcuts"
+            aria-label="Explore engineering capabilities"
+          >
+            <a href="#journey"
+              ><span class="shortcut-art" aria-hidden="true"
+                ><svg viewBox="0 0 64 30">
+                  <path d="M8 15h14m10 0h18" />
+                  <circle cx="5" cy="15" r="4" />
+                  <path d="m27 9 6 6-6 6-6-6Z" />
+                  <rect
+                    x="50"
+                    y="9"
+                    width="12"
+                    height="12"
+                    rx="1"
+                  /></svg></span
+              ><span
+                ><strong>Follow the data</strong
+                ><small>Contracts → trusted measures</small></span
+              ><span aria-hidden="true">↗</span></a
+            >
+            <a href="#reliability"
+              ><span class="shortcut-matrix" aria-hidden="true"
+                ><i></i><i></i><i></i><i></i><i></i><i></i></span
+              ><span
+                ><strong>Find the signal</strong
+                ><small>Reliability across services</small></span
+              ><span aria-hidden="true">↗</span></a
+            >
+            <a href="#dependencies"
+              ><span class="shortcut-art" aria-hidden="true"
+                ><svg viewBox="0 0 56 30">
+                  <path
+                    d="M5 23 18 10m-10 0h10v10M28 16h8l4-6 5 12 5-6h5"
+                  /></svg></span
+              ><span
+                ><strong>Trace the impact</strong
+                ><small>Explore a dependency model</small></span
+              ><span aria-hidden="true">↗</span></a
             >
           </div>
           <noscript
@@ -313,6 +372,44 @@
               </div>
             </article>
           </div>
+          <article
+            id="reliability"
+            class="atlas-panel reliability-matrix-panel"
+            aria-labelledby="matrix-title"
+          >
+            <div class="panel-heading">
+              <div>
+                <p class="atlas-kicker">A DIFFERENT VIEW / SAME RECORDS</p>
+                <h2 id="matrix-title">Reliability, day by day.</h2>
+              </div>
+              <span class="mini-label" id="matrix-scope">LAST 14 DAYS</span>
+            </div>
+            <p class="panel-intro">
+              Find the amber cluster. Select a cell to connect a service and day
+              across the workspace.
+            </p>
+            <div
+              class="matrix-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Reliability heatmap, scroll horizontally on narrow screens"
+            >
+              <div id="reliability-matrix"></div>
+            </div>
+            <div class="matrix-footer">
+              <p class="matrix-scroll-hint">
+                Scroll horizontally to explore all days.
+              </p>
+              <p id="matrix-readout" role="status">
+                Arrow keys move between cells. Enter selects a service and day.
+              </p>
+              <div class="matrix-key">
+                <span><i data-level="0"></i>Within budget</span
+                ><span><i data-level="1"></i>Over budget</span
+                ><span><i data-level="2"></i>5× or more</span>
+              </div>
+            </div>
+          </article>
           <div class="incident-callout">
             <div class="incident-symbol" aria-hidden="true">↗</div>
             <div>
@@ -329,6 +426,142 @@
             <button class="atlas-button" id="investigate">
               Investigate incident <span aria-hidden="true">→</span>
             </button>
+          </div>
+        </section>
+        <section
+          id="journey"
+          class="workspace-section journey-section"
+          aria-labelledby="journey-title"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="atlas-kicker">
+                SIGNATURE EXPERIENCE / DATA ENGINEERING
+              </p>
+              <h2 id="journey-title">From an event to a decision.</h2>
+              <p>
+                Change the input. Follow the contracts. See what reaches the
+                dashboard.
+              </p>
+            </div>
+            <span class="synthetic-label"
+              >12 synthetic deliveries · Local simulation</span
+            >
+          </div>
+          <div id="journey-error" class="atlas-message" role="alert" hidden>
+            This demonstration could not initialize.
+            <a href="visuals.html#journey">Reload to try again ↻</a>
+          </div>
+          <div class="atlas-panel journey-workbench">
+            <div class="journey-toolbar">
+              <label for="journey-scenario"
+                >Input scenario
+                <select id="journey-scenario">
+                  <option value="clean">Healthy delivery</option>
+                  <option value="drift">Schema drift</option>
+                  <option value="retry">Delivery retries</option>
+                </select></label
+              >
+              <p id="journey-scenario-note"></p>
+              <button id="journey-replay" class="atlas-button">
+                Replay flow <span aria-hidden="true">↻</span>
+              </button>
+            </div>
+            <div class="journey-canvas" id="journey-canvas">
+              <div
+                class="journey-flow"
+                role="group"
+                aria-label="Inspect data processing stages"
+                id="journey-stages"
+              ></div>
+              <div
+                class="journey-reconciliation"
+                id="journey-reconciliation"
+              ></div>
+            </div>
+            <div class="journey-lower">
+              <div class="journey-stage-inspector">
+                <p class="atlas-kicker" id="journey-kind"></p>
+                <h3 id="journey-stage-title" tabindex="-1"></h3>
+                <p id="journey-description"></p>
+                <div class="journey-step-controls">
+                  <button class="atlas-button" id="journey-prev">
+                    ← Previous</button
+                  ><span id="journey-progress" role="status"></span
+                  ><button class="atlas-button" id="journey-next">
+                    Next stage →
+                  </button>
+                </div>
+                <div class="journey-code">
+                  <span id="journey-code-caption"></span>
+                  <pre
+                    id="journey-code"
+                    tabindex="0"
+                    aria-label="Selected event at this processing stage"
+                  ></pre>
+                </div>
+              </div>
+              <div class="journey-product">
+                <div class="product-heading">
+                  <p class="atlas-kicker">PUBLISHED PRODUCT</p>
+                  <span id="product-status"></span>
+                </div>
+                <h3>Order intelligence</h3>
+                <div class="product-total">
+                  <span>Recognized order value</span
+                  ><strong id="journey-total"></strong>
+                </div>
+                <div class="product-measures">
+                  <div>
+                    <span>Unique orders</span
+                    ><strong id="journey-orders"></strong>
+                  </div>
+                  <div>
+                    <span>Average order</span
+                    ><strong id="journey-average"></strong>
+                  </div>
+                </div>
+                <div
+                  id="journey-contributions"
+                  class="journey-contributions"
+                  role="group"
+                  aria-label="Inspect an order's contribution"
+                ></div>
+                <p id="journey-product-note" class="chart-note"></p>
+              </div>
+            </div>
+            <div class="journey-ledger-heading">
+              <div>
+                <h3>Every delivery accounted for.</h3>
+                <p>
+                  Select an event to inspect its path. Outcomes are calculated
+                  from the input.
+                </p>
+              </div>
+              <span class="mini-label">PROVENANCE / 12 RECORDS</span>
+            </div>
+            <div
+              id="journey-ledger"
+              class="journey-ledger"
+              role="group"
+              aria-label="Inspect synthetic deliveries"
+            ></div>
+            <details class="model-assumptions journey-definitions">
+              <summary>Processing rules &amp; demonstration limits</summary>
+              <p>
+                This independent dataset illustrates order processing; it is
+                separate from the service telemetry above. USD only. Amounts
+                must be nonnegative safe integers in cents. The first valid
+                event for an ID wins; repeated IDs are skipped, and invalid
+                events are quarantined. Totals use integer cents, then display
+                dollars. No backend, queue, authentication, payment or network
+                request is involved. Replay animates the same deterministic
+                result; no data is persisted.
+              </p>
+              <a href="platform.html"
+                >Open the individual event contract lab ↗</a
+              >
+            </details>
           </div>
         </section>
         <section
@@ -546,6 +779,38 @@
           Focus workspace <span aria-hidden="true">→</span>
         </button>
       </div>
+    </dialog>
+    <dialog
+      id="command-dialog"
+      class="service-dialog command-dialog"
+      aria-labelledby="command-title"
+    >
+      <div class="dialog-heading">
+        <h2 id="command-title">Jump to anything.</h2>
+        <button
+          id="close-command"
+          class="atlas-button"
+          aria-label="Close command menu"
+        >
+          Close ×
+        </button>
+      </div>
+      <label class="command-search"
+        ><span class="sr-only">Find a view or service</span
+        ><input
+          id="command-search"
+          type="search"
+          placeholder="Views, services, actions…"
+          maxlength="80"
+          autocomplete="off"
+      /></label>
+      <div
+        id="command-results"
+        class="command-results"
+        role="group"
+        aria-label="Matching destinations"
+      ></div>
+      <p class="chart-note">↓ ↑ to move · Enter to open · Escape to close</p>
     </dialog>
     <div id="toast" role="status"></div>
   </body>
