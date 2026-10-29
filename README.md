@@ -14,12 +14,12 @@ A concise professional introduction focused on transferable software engineering
 
 | Page | Purpose |
 | --- | --- |
-| **Profile** | Concise positioning, three areas of expertise, and direct résumé/contact actions. Detailed accomplishments stay in the downloadable résumé. |
+| **Overview** | Concise positioning, three concise capability statements, and direct résumé/contact actions. Detailed accomplishments stay in the downloadable résumé. |
 | **Background** | Compact career context, education, certifications, Word résumé with a contact-page link, and browser printing. |
-| **Engineering examples** | A working synthetic-data dashboard with linked filters, shareable views, and CSV exports. |
+| **Engineering examples** | Atlas: linked operational analytics, prior-period comparisons, daily drilldown, dependency tracing, and an explicit latency sensitivity model. |
 | **Engineering notes** | A secondary event-validation example, linked from the dashboard. Existing `/platform` links remain valid. |
 
-The interface uses self-hosted DM Sans and Manrope, restrained colors, responsive type, keyboard-accessible controls, and a persistent light/dark preference. A small interactive systems visual connects software, data, and delivery. Subtle scroll reveals and short state transitions respect reduced-motion preferences; content remains available without scripts. There is no animation loop or frontend framework.
+The interface uses self-hosted DM Sans and Manrope, restrained colors, responsive type, keyboard-accessible controls, and a persistent light/dark preference. Systems Studio connects application, service, data, and delivery layers through a keyboard-accessible architecture study. Two visual previews lead directly into the working lab; the lab is a primary navigation destination. Short state transitions respect reduced-motion preferences; content remains available without scripts. The pointer light updates only in response to pointer events, with at most one queued animation frame, and is disabled for reduced motion. There is no persistent animation loop or frontend framework.
 
 ## Implementation
 
@@ -27,7 +27,8 @@ The interface uses self-hosted DM Sans and Manrope, restrained colors, responsiv
 | --- | --- |
 | Public pages, CSS, JavaScript, SVG charts | [`MyPersonalSite/wwwroot/portfolio`](MyPersonalSite/wwwroot/portfolio) |
 | Pure event validation and dashboard URL parsing | [`engine.js`](MyPersonalSite/wwwroot/portfolio/engine.js) |
-| Dashboard and theme behavior | [`app.js`](MyPersonalSite/wwwroot/portfolio/app.js) |
+| Shared theme and print behavior | [`app.js`](MyPersonalSite/wwwroot/portfolio/app.js) |
+| Atlas analytics engine and workspace | [`atlas-engine.js`](MyPersonalSite/wwwroot/portfolio/atlas-engine.js), [`atlas.js`](MyPersonalSite/wwwroot/portfolio/atlas.js), [`atlas.css`](MyPersonalSite/wwwroot/portfolio/atlas.css) |
 | Navigation disclosure and event example | [`modern.js`](MyPersonalSite/wwwroot/portfolio/modern.js) |
 | Static packaging and routes | [`scripts/build-static.mjs`](scripts/build-static.mjs), [`staticwebapp.config.json`](staticwebapp.config.json) |
 | Contract, interaction, and packaging checks | [`tests`](tests) |
@@ -67,4 +68,6 @@ Verify the four routes, navigation, theme switching, dashboard, event example, a
 
 Professional copy generalizes experience without publishing employer project details; employer names and dates are confined to career context. The dashboard and event example use deterministic synthetic data and run locally in the browser. Self-hosted font licenses are included beside the font files.
 
-[Frontend notes](docs/portfolio-modernization.md) · [Test details](tests/README.md)
+[Atlas design, data, and verification](docs/atlas-dashboard.md) · [Frontend notes](docs/portfolio-modernization.md) · [Test details](tests/README.md)
+
+[Systems Studio release and verification](docs/systems-studio.md)

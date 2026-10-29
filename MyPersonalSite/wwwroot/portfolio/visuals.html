@@ -1,4 +1,818 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>Engineering example — Justin Palmer</title><meta name="description" content="A self-contained engineering example by Justin Palmer: shared data filters, responsive charts, and CSV exports using synthetic data."><meta property="og:type" content="website"><meta property="og:title" content="Justin Palmer — Software, Data &amp; Technical Leadership"><meta property="og:description" content="A self-contained engineering example by Justin Palmer: shared data filters, responsive charts, and CSV exports using synthetic data."><link rel="icon" href="/portfolio/favicon.svg" type="image/svg+xml"><script src="/portfolio/preferences.js?v=15"></script><link rel="stylesheet" href="/portfolio/style.css?v=15"><script src="/portfolio/engine.js?v=15" defer=""></script><script src="/portfolio/app.js?v=15" defer=""></script><script src="/portfolio/modern.js?v=15" defer=""></script><link rel="canonical" href="https://www.justinraypalmer.com/visuals"></head>
-<body><a class="skip" href="#main">Skip to content</a><header class="header wrap"><a class="brand" href="index.html" aria-label="Justin Palmer home"><span class="mark" aria-hidden="true">jp.</span>Justin Palmer</a><button class="nav-toggle js-only" id="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="main-navigation"><span id="nav-toggle-label">Menu</span><span aria-hidden="true">≡</span></button><nav id="main-navigation" aria-label="Main navigation"><a href="index.html">Profile</a><a href="resume.html">Background</a><a href="contact.html">Contact <span aria-hidden="true">↗</span></a></nav><button class="icon-btn js-only" id="theme" aria-label="Switch color theme" title="Switch color theme">◐</button></header><main id="main"><section class="page-intro wrap"><p class="eyebrow">ENGINEERING EXAMPLE</p><h1>A working example.</h1><p>Shared filters, responsive charts, and exports built around one consistent data flow.</p><p class="notice">Synthetic data. Independent demonstration; not an employer system.</p></section><section class="wrap dashboard"><div class="dashboard-toolbar"><div><label for="service">Service portfolio</label><select id="service"><option value="all">All services</option><option>Data Platform</option><option>API Gateway</option><option>Identity</option><option>Observability</option><option>Storage</option></select></div><fieldset><legend>Reporting window</legend><div class="segmented" id="window-control"><button data-days="7" aria-pressed="false">7 days</button><button data-days="30" aria-pressed="true">30 days</button><button data-days="90" aria-pressed="false">90 days</button></div></fieldset><button id="reset-filters" class="text-btn">Reset</button><button class="text-btn" id="share-view">Copy view link ↗</button><button class="button outline" id="export-data">Export CSV ↓</button></div><div class="dashboard-kpis" aria-live="polite"><div><span>Total requests</span><strong id="requests">—</strong><small>Across selected services</small></div><div><span>Request success</span><strong id="success">—</strong><small>Successful / total requests</small></div><div><span>Avg. response time</span><strong id="latency">—</strong><small>Weighted by request volume</small></div><div><span>Deployments</span><strong id="deployments">—</strong><small>In selected window</small></div></div><div class="dashboard-charts"><article class="chart-panel volume-panel"><div class="chart-title"><div><p class="eyebrow">TRAFFIC</p><h2 id="metric-title">Request volume</h2></div><label class="metric-label"><span class="sr-only">Chart metric</span><select id="chart-metric"><option value="requests">Requests</option><option value="latency">Avg. latency</option><option value="errors">Failed requests</option></select></label></div><div id="volume-chart"></div><p class="chart-note" id="chart-summary" aria-live="polite"></p></article><article class="chart-panel"><div class="chart-title"><div><p class="eyebrow">SERVICE MIX</p><h2>Where activity happens</h2></div></div><div id="service-bars"></div><p class="chart-note">Share of requests in the selected window.</p></article></div><article class="chart-panel table-panel"><div class="chart-title"><div><p class="eyebrow">BEHIND THE CHARTS</p><h2>Service performance</h2></div><label class="sort-label">Sort by <select id="sort"><option value="requests">Requests</option><option value="success">Success rate</option><option value="name">Service name</option></select></label></div><p class="table-hint">Each service’s metrics are grouped below for easy comparison.</p><div class="table-scroll"><table role="table"><caption class="sr-only">Metrics for services in the selected reporting window</caption><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Service</th><th scope="col" role="columnheader">Requests</th><th scope="col" role="columnheader">Success</th><th scope="col" role="columnheader">Avg. latency</th><th scope="col" role="columnheader">Deployments</th></tr></thead><tbody id="service-table" role="rowgroup"></tbody></table></div></article></section><section class="wrap lab-note"><p>Built with native SVG and shared client-side state. Filters can be shared by URL; CSV exports use the same selected records.</p><div><a class="text-link" href="platform.html">Event validation example ↗</a><a class="text-link" href="https://github.com/JustinPsHub/MyPersonalSite" target="_blank" rel="noopener">Source code ↗</a></div></section></main><footer class="wrap footer"><div><a href="contact.html">Contact Justin <span aria-hidden="true">↗</span></a><span>Hillsboro, Ohio · Remote &amp; hybrid</span></div><div><a href="visuals.html">Engineering examples</a><a href="https://github.com/JustinPsHub" target="_blank" rel="noopener">GitHub ↗</a><small>© 2026 Justin Palmer · Views are my own.</small></div></footer><div id="toast" role="status"></div>
-</body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Atlas · Operational intelligence — Justin Palmer</title>
+    <meta
+      name="description"
+      content="Explore Atlas by Justin Palmer: connected service analytics, interactive dependency tracing, and a transparent latency model. Entirely synthetic demonstration data."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Atlas · Operational intelligence — Justin Palmer"
+    />
+    <meta
+      property="og:description"
+      content="From a performance signal to its system dependencies. An interactive engineering demonstration with synthetic data."
+    />
+    <link rel="icon" href="/portfolio/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://www.justinraypalmer.com/visuals" />
+    <script src="/portfolio/preferences.js?v=17"></script>
+    <link
+      rel="preload"
+      href="/portfolio/fonts/font-0.woff"
+      as="font"
+      type="font/woff"
+      crossorigin
+    />
+    <link rel="stylesheet" href="/portfolio/style.css?v=19" />
+    <link rel="stylesheet" href="/portfolio/atlas.css?v=18" />
+    <script src="/portfolio/engine.js?v=17" defer></script>
+    <script src="/portfolio/app.js?v=17" defer></script>
+    <script src="/portfolio/modern.js?v=17" defer></script>
+    <script src="/portfolio/atlas-engine.js?v=17" defer></script>
+    <link rel="stylesheet" href="/portfolio/journey.css?v=19" />
+    <script src="/portfolio/journey-engine.js?v=18" defer></script>
+    <script src="/portfolio/atlas.js?v=18" defer></script>
+    <script src="/portfolio/journey.js?v=19" defer></script>
+  </head>
+  <body class="atlas-page">
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="header wrap">
+      <a class="brand" href="index.html" aria-label="Justin Palmer home"
+        ><span class="mark" aria-hidden="true">jp.</span>Justin Palmer
+        <span class="portfolio-divider">/</span
+        ><span class="portfolio-context">Engineering lab</span></a
+      ><button
+        class="nav-toggle js-only"
+        id="nav-toggle"
+        type="button"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        aria-controls="main-navigation"
+      >
+        <span id="nav-toggle-label">Menu</span><span aria-hidden="true">≡</span>
+      </button>
+      <nav id="main-navigation" aria-label="Main navigation">
+        <a href="index.html">Overview</a><a href="visuals.html" aria-current="page">Engineering lab</a><a href="resume.html">Background</a
+        ><a href="contact.html">Contact <span aria-hidden="true">↗</span></a>
+      </nav>
+      <button
+        class="icon-btn js-only"
+        id="theme"
+        aria-label="Switch color theme"
+      >
+        ◐
+      </button>
+    </header>
+    <div class="atlas-shell">
+      <aside class="atlas-rail" aria-label="Workspace navigation">
+        <a class="atlas-wordmark" href="visuals.html"
+          ><svg viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M5 25 16 5l11 20H5Z M10 25l6-11 6 11M11 20h10" /></svg
+          ><span>atlas<span>OPERATIONAL INTELLIGENCE</span></span></a
+        >
+        <div class="rail-label">
+          WORKSPACE <span class="demo-tag">DEMO</span>
+        </div>
+        <div class="workspace-nav">
+          <a href="#overview" aria-current="location"
+            ><svg viewBox="0 0 20 20" aria-hidden="true">
+              <rect x="3" y="3" width="5" height="5" rx="1" />
+              <rect x="12" y="3" width="5" height="5" rx="1" />
+              <rect x="3" y="12" width="5" height="5" rx="1" />
+              <rect x="12" y="12" width="5" height="5" rx="1" /></svg
+            >Overview</a
+          ><a href="#dependencies"
+            ><svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M5 10h10M10 5v10" />
+              <circle cx="10" cy="3" r="2" />
+              <circle cx="3" cy="10" r="2" />
+              <circle cx="17" cy="10" r="2" />
+              <circle cx="10" cy="17" r="2" /></svg
+            >Dependency lens</a
+          ><a href="#explorer"
+            ><svg viewBox="0 0 20 20" aria-hidden="true">
+              <circle cx="8" cy="8" r="5" />
+              <path d="m12 12 5 5M5 8h6M8 5v6" /></svg
+            >Service explorer</a
+          ><a href="#journey"
+            ><svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M3 5h4l3 10h7M7 5h10M10 15H3" />
+              <circle cx="3" cy="5" r="1.5" />
+              <circle cx="17" cy="15" r="1.5" /></svg
+            >Data journey</a
+          >
+        </div>
+        <button
+          class="atlas-button command-trigger"
+          id="open-command"
+          aria-haspopup="dialog"
+          aria-controls="command-dialog"
+        >
+          Jump to… <kbd>⌘ K</kbd>
+        </button>
+        <div class="rail-bottom">
+          <span class="snapshot-dot"></span>Frozen snapshot<span
+            >14 OCT 2026 · UTC</span
+          ><a href="platform.html">Event validation lab ↗</a
+          ><a
+            href="https://github.com/JustinPsHub/MyPersonalSite"
+            target="_blank"
+            rel="noopener"
+            >View the source ↗</a
+          >
+        </div>
+      </aside>
+      <main id="main" class="atlas-main">
+        <section id="overview" aria-labelledby="workspace-title">
+          <div class="workspace-heading">
+            <div>
+              <p class="atlas-kicker">
+                PLATFORM OPERATIONS <span>/</span> SERVICE PORTFOLIO
+              </p>
+              <h1 id="workspace-title">
+                See the signal.<span> Understand the system.</span>
+              </h1>
+              <p class="workspace-subtitle">
+                Five connected services. One view from performance to
+                dependencies.
+              </p>
+            </div>
+            <span class="synthetic-label"
+              ><span aria-hidden="true">◇</span> Synthetic dataset</span
+            >
+          </div>
+          <div
+            class="experience-shortcuts"
+            aria-label="Explore engineering capabilities"
+          >
+            <a href="#journey"
+              ><span class="shortcut-art" aria-hidden="true"
+                ><svg viewBox="0 0 64 30">
+                  <path d="M8 15h14m10 0h18" />
+                  <circle cx="5" cy="15" r="4" />
+                  <path d="m27 9 6 6-6 6-6-6Z" />
+                  <rect
+                    x="50"
+                    y="9"
+                    width="12"
+                    height="12"
+                    rx="1"
+                  /></svg></span
+              ><span
+                ><strong>Follow the data</strong
+                ><small>Contracts → trusted measures</small></span
+              ><span aria-hidden="true">↗</span></a
+            >
+            <a href="#reliability"
+              ><span class="shortcut-matrix" aria-hidden="true"
+                ><i></i><i></i><i></i><i></i><i></i><i></i></span
+              ><span
+                ><strong>Find the signal</strong
+                ><small>Reliability across services</small></span
+              ><span aria-hidden="true">↗</span></a
+            >
+            <a href="#dependencies"
+              ><span class="shortcut-art" aria-hidden="true"
+                ><svg viewBox="0 0 56 30">
+                  <path
+                    d="M5 23 18 10m-10 0h10v10M28 16h8l4-6 5 12 5-6h5"
+                  /></svg></span
+              ><span
+                ><strong>Trace the impact</strong
+                ><small>Explore a dependency model</small></span
+              ><span aria-hidden="true">↗</span></a
+            >
+          </div>
+          <noscript
+            ><div class="atlas-message">
+              Atlas uses JavaScript to link its charts and dependency model.
+              This independent demonstration contains five fictional services
+              and a fixed 180-day synthetic dataset. The portfolio, résumé, and
+              contact pages remain available.
+            </div></noscript
+          >
+          <div id="atlas-error" class="atlas-message" role="alert" hidden>
+            <strong>The workspace could not initialize.</strong>
+            <p>
+              Reload this page to try again. Your portfolio and résumé are still
+              available.
+            </p>
+            <a href="visuals.html">Reload workspace ↻</a>
+          </div>
+          <div class="atlas-toolbar" aria-label="Analytics filters">
+            <div class="filter-field">
+              <label for="service">Service</label
+              ><select id="service">
+                <option value="all">All services</option>
+                <option>API Gateway</option>
+                <option>Data Platform</option>
+                <option>Identity</option>
+                <option>Storage</option>
+                <option>Observability</option>
+              </select>
+            </div>
+            <fieldset>
+              <legend>Snapshot window</legend>
+              <div class="atlas-segmented" id="window-control">
+                <button data-days="7" aria-pressed="false">7 days</button
+                ><button data-days="30" aria-pressed="true">30 days</button
+                ><button data-days="90" aria-pressed="false">90 days</button>
+              </div>
+            </fieldset>
+            <div class="toolbar-actions">
+              <button
+                id="reset-filters"
+                class="atlas-button quiet"
+                title="Reset the workspace"
+              >
+                Reset</button
+              ><button id="share-view" class="atlas-button">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path
+                    d="m8 12 4-4M6 8l-2 2a3 3 0 0 0 4 4l2-2M10 8l2-2a3 3 0 0 1 4 4l-2 2"
+                  /></svg
+                >Share view</button
+              ><button id="export-data" class="atlas-button">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M10 3v9m-4-4 4 4 4-4M4 14v3h12v-3" /></svg
+                >Export CSV
+              </button>
+            </div>
+          </div>
+          <div class="selection-line">
+            <p id="selection-summary" role="status">
+              Preparing synthetic snapshot…
+            </p>
+            <button id="clear-date" class="date-chip" hidden>
+              Clear day filter <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="atlas-kpis">
+            <article>
+              <span class="kpi-label">Request volume</span
+              ><strong id="requests">—</strong>
+              <div id="requests-change" class="kpi-change">
+                Previous period comparison
+              </div>
+              <small>Service requests, including internal calls</small
+              ><svg
+                id="request-spark"
+                class="kpi-spark"
+                viewBox="0 0 180 30"
+                aria-hidden="true"
+              ></svg>
+            </article>
+            <article>
+              <span class="kpi-label"
+                >Request success <span class="target-tag">SLO 99.9%</span></span
+              ><strong id="success">—</strong>
+              <div id="success-change" class="kpi-change">
+                Volume-weighted success
+              </div>
+              <small id="budget-note">Error budget consumption</small>
+              <div class="budget-track"><span id="budget-fill"></span></div>
+            </article>
+            <article>
+              <span class="kpi-label">Average response</span
+              ><strong id="latency">—</strong>
+              <div id="latency-change" class="kpi-change">
+                Previous period comparison
+              </div>
+              <small>Weighted by service request volume</small
+              ><svg
+                id="latency-spark"
+                class="kpi-spark"
+                viewBox="0 0 180 30"
+                aria-hidden="true"
+              ></svg>
+            </article>
+            <article>
+              <span class="kpi-label">Production releases</span
+              ><strong id="deployments">—</strong>
+              <div id="deployments-change" class="kpi-change">
+                Previous period comparison
+              </div>
+              <small>Across the selected service scope</small>
+              <div
+                id="release-ticks"
+                class="release-ticks"
+                aria-hidden="true"
+              ></div>
+            </article>
+          </div>
+          <div class="atlas-chart-grid">
+            <article class="atlas-panel trend-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="atlas-kicker">PERFORMANCE OVER TIME</p>
+                  <h2 id="metric-title">Request volume</h2>
+                </div>
+                <label
+                  ><span class="sr-only">Chart metric</span
+                  ><select id="chart-metric">
+                    <option value="requests">Requests</option>
+                    <option value="latency">Avg. latency</option>
+                    <option value="errors">Failed requests</option>
+                  </select></label
+                >
+              </div>
+              <div class="chart-legend">
+                <span><i></i>Selected window</span
+                ><span><i class="previous"></i>Previous equal window</span
+                ><span id="chart-unit">REQUESTS / DAY</span>
+              </div>
+              <div class="trend-stage">
+                <div id="volume-chart">
+                  <div class="chart-loading">
+                    Preparing the performance view…
+                  </div>
+                </div>
+                <div id="chart-tooltip" class="chart-tooltip" hidden></div>
+              </div>
+              <div class="chart-inspector">
+                <label for="inspect-day"
+                  >Inspect day <strong id="inspect-date">—</strong></label
+                ><input
+                  type="range"
+                  id="inspect-day"
+                  min="0"
+                  max="29"
+                  value="29"
+                  aria-label="Inspect day"
+                /><button id="focus-day" class="atlas-button quiet">
+                  Focus this day ↗
+                </button>
+              </div>
+              <p id="chart-summary" class="chart-note">
+                Arrow keys explore daily values. Select a point to focus the
+                workspace.
+              </p>
+            </article>
+            <article class="atlas-panel reliability-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="atlas-kicker">RELIABILITY DRIVERS</p>
+                  <h2>Follow the failures.</h2>
+                </div>
+                <span class="mini-label">PORTFOLIO</span>
+              </div>
+              <p class="panel-intro">
+                Each service’s share of failed requests. Select a service to
+                investigate.
+              </p>
+              <div id="service-bars"></div>
+              <div class="reliability-foot">
+                <span>Success target</span><strong>99.9%</strong
+                ><span>per service request</span>
+              </div>
+            </article>
+          </div>
+          <article
+            id="reliability"
+            class="atlas-panel reliability-matrix-panel"
+            aria-labelledby="matrix-title"
+          >
+            <div class="panel-heading">
+              <div>
+                <p class="atlas-kicker">A DIFFERENT VIEW / SAME RECORDS</p>
+                <h2 id="matrix-title">Reliability, day by day.</h2>
+              </div>
+              <span class="mini-label" id="matrix-scope">LAST 14 DAYS</span>
+            </div>
+            <p class="panel-intro">
+              Find the amber cluster. Select a cell to connect a service and day
+              across the workspace.
+            </p>
+            <div
+              class="matrix-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Reliability heatmap, scroll horizontally on narrow screens"
+            >
+              <div id="reliability-matrix"></div>
+            </div>
+            <div class="matrix-footer">
+              <p class="matrix-scroll-hint">
+                Scroll horizontally to explore all days.
+              </p>
+              <p id="matrix-readout" role="status">
+                Arrow keys move between cells. Enter selects a service and day.
+              </p>
+              <div class="matrix-key">
+                <span><i data-level="0"></i>Within budget</span
+                ><span><i data-level="1"></i>Over budget</span
+                ><span><i data-level="2"></i>5× or more</span>
+              </div>
+            </div>
+          </article>
+          <div class="incident-callout">
+            <div class="incident-symbol" aria-hidden="true">↗</div>
+            <div>
+              <span class="atlas-kicker"
+                >A SIGNAL WORTH FOLLOWING · 08 OCT</span
+              >
+              <p>
+                <strong>One storage slowdown. Three exposed services.</strong
+                ><span>
+                  Trace the dependency path behind the latency spike.</span
+                >
+              </p>
+            </div>
+            <button class="atlas-button" id="investigate">
+              Investigate incident <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </section>
+        <section
+          id="journey"
+          class="workspace-section journey-section"
+          aria-labelledby="journey-title"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="atlas-kicker">
+                SIGNATURE EXPERIENCE / DATA ENGINEERING
+              </p>
+              <h2 id="journey-title">From an event to a decision.</h2>
+              <p>
+                Change the input. Follow the contracts. See what reaches the
+                dashboard.
+              </p>
+            </div>
+            <span class="synthetic-label"
+              >12 synthetic deliveries · Local simulation</span
+            >
+          </div>
+          <div id="journey-error" class="atlas-message" role="alert" hidden>
+            This demonstration could not initialize.
+            <a href="visuals.html#journey">Reload to try again ↻</a>
+          </div>
+          <div class="atlas-panel journey-workbench">
+            <div class="journey-toolbar">
+              <label for="journey-scenario"
+                >Input scenario
+                <select id="journey-scenario">
+                  <option value="clean">Healthy delivery</option>
+                  <option value="drift">Schema drift</option>
+                  <option value="retry">Delivery retries</option>
+                </select></label
+              >
+              <p id="journey-scenario-note"></p>
+              <button id="journey-replay" class="atlas-button">
+                Replay flow <span aria-hidden="true">↻</span>
+              </button>
+            </div>
+            <div class="journey-canvas" id="journey-canvas">
+              <div
+                class="journey-flow"
+                role="group"
+                aria-label="Inspect data processing stages"
+                id="journey-stages"
+              ></div>
+              <div
+                class="journey-reconciliation"
+                id="journey-reconciliation"
+              ></div>
+            </div>
+            <div class="journey-lower">
+              <div class="journey-stage-inspector">
+                <p class="atlas-kicker" id="journey-kind"></p>
+                <h3 id="journey-stage-title" tabindex="-1"></h3>
+                <p id="journey-description"></p>
+                <div class="journey-step-controls">
+                  <button class="atlas-button" id="journey-prev">
+                    ← Previous</button
+                  ><span id="journey-progress" role="status"></span
+                  ><button class="atlas-button" id="journey-next">
+                    Next stage →
+                  </button>
+                </div>
+                <div class="journey-code">
+                  <span id="journey-code-caption"></span>
+                  <pre
+                    id="journey-code"
+                    tabindex="0"
+                    aria-label="Selected event at this processing stage"
+                  ></pre>
+                </div>
+              </div>
+              <div class="journey-product">
+                <div class="product-heading">
+                  <p class="atlas-kicker">PUBLISHED PRODUCT</p>
+                  <span id="product-status"></span>
+                </div>
+                <h3>Order intelligence</h3>
+                <div class="product-total">
+                  <span>Recognized order value</span
+                  ><strong id="journey-total"></strong>
+                </div>
+                <div class="product-measures">
+                  <div>
+                    <span>Unique orders</span
+                    ><strong id="journey-orders"></strong>
+                  </div>
+                  <div>
+                    <span>Average order</span
+                    ><strong id="journey-average"></strong>
+                  </div>
+                </div>
+                <div
+                  id="journey-contributions"
+                  class="journey-contributions"
+                  role="group"
+                  aria-label="Inspect an order's contribution"
+                ></div>
+                <p id="journey-product-note" class="chart-note"></p>
+              </div>
+            </div>
+            <div class="journey-ledger-heading">
+              <div>
+                <h3>Every delivery accounted for.</h3>
+                <p>
+                  Select an event to inspect its path. Outcomes are calculated
+                  from the input.
+                </p>
+              </div>
+              <span class="mini-label">PROVENANCE / 12 RECORDS</span>
+            </div>
+            <div
+              id="journey-ledger"
+              class="journey-ledger"
+              role="group"
+              aria-label="Inspect synthetic deliveries"
+            ></div>
+            <details class="scenario-disclosure js-only" id="scenario-comparison"><summary><span>Compare the outcomes</span><span aria-hidden="true">+</span></summary><p>Three runs of the same deterministic pipeline. Select a scenario to inspect the first excluded delivery.</p><div id="scenario-comparisons" role="group" aria-label="Compare synthetic processing scenarios"></div><p class="scenario-legend"><span>Accepted</span><span>Quarantined</span><span>Duplicate</span></p></details>
+            <details class="model-assumptions journey-definitions">
+              <summary>Processing rules &amp; demonstration limits</summary>
+              <p>
+                This independent dataset illustrates order processing; it is
+                separate from the service telemetry above. USD only. Amounts
+                must be nonnegative safe integers in cents. The first valid
+                event for an ID wins; repeated IDs are skipped, and invalid
+                events are quarantined. Totals use integer cents, then display
+                dollars. No backend, queue, authentication, payment or network
+                request is involved. Replay animates the same deterministic
+                result; no data is persisted.
+              </p>
+              <a href="platform.html"
+                >Open the individual event contract lab ↗</a
+              >
+            </details>
+          </div>
+        </section>
+        <section
+          id="dependencies"
+          aria-labelledby="dependencies-title"
+          class="workspace-section"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="atlas-kicker">01 / CONNECTED INTELLIGENCE</p>
+              <h2 id="dependencies-title">Dependency lens</h2>
+              <p>Move from an isolated metric to its place in the system.</p>
+            </div>
+            <button id="show-portfolio" class="atlas-button quiet">
+              Show all services ↗
+            </button>
+          </div>
+          <div class="dependency-workbench atlas-panel">
+            <div class="dependency-visual">
+              <div class="map-topline">
+                <span><i class="map-key"></i>Selected service</span
+                ><span><i class="map-key exposed"></i>Exposed caller</span
+                ><span>Caller → dependency</span>
+              </div>
+              <div
+                id="dependency-map"
+                class="dependency-map"
+                aria-label="Interactive service dependencies"
+              ></div>
+              <p class="map-caption">
+                Solid connections carry synchronous calls. Dashed connections
+                deliver asynchronous telemetry.
+              </p>
+            </div>
+            <aside
+              class="service-inspector"
+              aria-label="Selected service details"
+            >
+              <p class="atlas-kicker" id="inspector-kind">PERSISTENCE / ST</p>
+              <h3 id="inspector-title">Storage</h3>
+              <p id="inspector-description"></p>
+              <div id="inspector-metrics" class="inspector-metrics"></div>
+              <div id="inspector-relations"></div>
+              <button id="open-details" class="atlas-button">
+                Inspect service <span aria-hidden="true">↗</span>
+              </button>
+            </aside>
+            <div class="scenario-panel">
+              <div class="scenario-heading">
+                <div>
+                  <span class="model-tag">WHAT-IF MODEL</span>
+                  <h3>How far does a slowdown travel?</h3>
+                  <p id="scenario-description">
+                    Add latency to Storage to reveal the effect on its callers.
+                  </p>
+                </div>
+                <div class="scenario-control">
+                  <label for="latency-delta"
+                    >Added latency
+                    <output id="delta-output" for="latency-delta"
+                      >+0 ms</output
+                    ></label
+                  ><input
+                    type="range"
+                    id="latency-delta"
+                    min="0"
+                    max="300"
+                    step="25"
+                    value="0"
+                  />
+                  <div class="range-limits">
+                    <span>0 ms</span><span>+300 ms</span>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="scenario-results"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                <div>
+                  <span>Exposed callers</span
+                  ><strong id="affected-count">3</strong>
+                </div>
+                <div>
+                  <span>Portfolio average impact</span
+                  ><strong id="modeled-impact">+0 <small>ms</small></strong>
+                </div>
+                <p id="scenario-insight">
+                  Move the slider to test the dependency model.
+                </p>
+              </div>
+              <details class="model-assumptions">
+                <summary>Model assumptions &amp; data definitions</summary>
+                <p>
+                  Illustrative sensitivity analysis, not a forecast. Added
+                  latency propagates through the directed call graph using fixed
+                  synchronous exposure weights: gateway → data 65%; gateway →
+                  identity 35%; data → storage 80%; identity → storage 50%.
+                  Asynchronous telemetry has zero latency exposure. Portfolio
+                  impact is weighted by selected request volumes. Throughput and
+                  failure rates stay fixed; queueing, retries, and saturation
+                  are not modeled. Metrics count service-level requests, so one
+                  user action may contribute to several services. All records
+                  and service relationships are synthetic.
+                </p>
+              </details>
+            </div>
+          </div>
+        </section>
+        <section
+          id="explorer"
+          class="workspace-section"
+          aria-labelledby="explorer-title"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="atlas-kicker">02 / FROM SUMMARY TO DETAIL</p>
+              <h2 id="explorer-title">Service explorer</h2>
+              <p>
+                Compare the portfolio. Open a service to inspect its
+                dependencies and daily performance.
+              </p>
+            </div>
+          </div>
+          <article class="atlas-panel explorer-panel">
+            <div class="explorer-tools">
+              <label class="search-field"
+                ><svg viewBox="0 0 20 20" aria-hidden="true">
+                  <circle cx="8" cy="8" r="5" />
+                  <path d="m12 12 5 5" /></svg
+                ><span class="sr-only">Search services</span
+                ><input
+                  type="search"
+                  id="service-search"
+                  placeholder="Search service or team…"
+                  maxlength="80" /></label
+              ><label class="sort-field"
+                >Sort by
+                <select id="sort">
+                  <option value="requests">Requests</option>
+                  <option value="success">Lowest success</option>
+                  <option value="latency">Highest latency</option>
+                  <option value="name">Service name</option>
+                </select></label
+              ><span id="explorer-count" role="status">5 services</span>
+            </div>
+            <div class="atlas-table-scroll">
+              <table role="table">
+                <caption class="sr-only">
+                  Portfolio service metrics in the selected snapshot window. The
+                  highlighted service matches the workspace selection.
+                </caption>
+                <thead role="rowgroup">
+                  <tr role="row">
+                    <th scope="col">Service / team</th>
+                    <th scope="col">Requests</th>
+                    <th scope="col">Success</th>
+                    <th scope="col">Avg. latency</th>
+                    <th scope="col">Releases</th>
+                    <th scope="col"><span class="sr-only">Details</span></th>
+                  </tr>
+                </thead>
+                <tbody id="service-table" role="rowgroup"></tbody>
+              </table>
+            </div>
+            <div class="explorer-empty" id="explorer-empty" hidden>
+              <strong>No matching services.</strong>
+              <p>
+                Try a service name or team, such as “Storage” or “engineering”.
+              </p>
+              <button class="atlas-button" id="clear-search">
+                Clear search
+              </button>
+            </div>
+            <p class="explorer-note">
+              Portfolio comparison retains all services. Filters, day selection,
+              and exports share the same underlying records.
+            </p>
+          </article>
+        </section>
+        <footer class="atlas-footer">
+          <p>
+            <strong>Designed &amp; engineered by Justin Palmer.</strong
+            ><span
+              >Independent demonstration · 900 synthetic daily records · No live
+              operational data</span
+            >
+          </p>
+          <a href="contact.html"
+            >Let’s build something useful <span aria-hidden="true">↗</span></a
+          >
+        </footer>
+      </main>
+    </div>
+    <dialog
+      id="service-dialog"
+      class="service-dialog"
+      aria-labelledby="detail-title"
+    >
+      <div class="dialog-heading">
+        <p class="atlas-kicker">SERVICE INSPECTOR</p>
+        <button
+          id="close-details"
+          class="atlas-button"
+          aria-label="Close service inspector"
+        >
+          Close <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div id="detail-content"></div>
+      <div class="dialog-footer">
+        <span>Synthetic snapshot · 14 Oct 2026</span
+        ><button id="focus-service" class="atlas-button primary">
+          Focus workspace <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </dialog>
+    <dialog
+      id="command-dialog"
+      class="service-dialog command-dialog"
+      aria-labelledby="command-title"
+    >
+      <div class="dialog-heading">
+        <h2 id="command-title">Jump to anything.</h2>
+        <button
+          id="close-command"
+          class="atlas-button"
+          aria-label="Close command menu"
+        >
+          Close ×
+        </button>
+      </div>
+      <label class="command-search"
+        ><span class="sr-only">Find a view or service</span
+        ><input
+          id="command-search"
+          type="search"
+          placeholder="Views, services, actions…"
+          maxlength="80"
+          autocomplete="off"
+      /></label>
+      <div
+        id="command-results"
+        class="command-results"
+        role="group"
+        aria-label="Matching destinations"
+      ></div>
+      <p class="chart-note">↓ ↑ to move · Enter to open · Escape to close</p>
+    </dialog>
+    <div id="toast" role="status"></div>
+  </body>
+</html>

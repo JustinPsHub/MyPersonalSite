@@ -9,23 +9,15 @@
 
  const system=one('.system-figure');
  if(system){
-  const perspectives={software:['01','Clear boundaries. Predictable behavior. A useful interface.'],data:['02','Reliable flows. Consistent models. Data people can use.'],delivery:['03','Clear requirements. Considered trade-offs. Dependable delivery.']};
+  const perspectives={software:['01','Clear interfaces. Dependable software.'],data:['02','Connected data. Confident decisions.'],delivery:['03','Considered architecture. Reliable delivery.']};
   all('[data-perspective]').forEach(button=>button.addEventListener('click',()=>{
    const key=button.dataset.perspective,content=perspectives[key];
    if(!content)return;
    system.dataset.system=key;
    all('[data-perspective]').forEach(control=>control.setAttribute('aria-pressed',String(control===button)));
-   one('.system-index').textContent=content[0]+' — 03';
+   one('.system-index').textContent=content[0]+' / 03';
    one('#system-caption').textContent=content[1];
   }));
- }
- // Start with visible content. Enhancement only affects elements below the fold.
- const motion=matchMedia('(prefers-reduced-motion: reduce)');
- if(!motion.matches&&'IntersectionObserver' in window){
-  const pending=all('.reveal').filter(el=>el.getBoundingClientRect().top>innerHeight);
-  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.remove('is-pending');observer.unobserve(entry.target)}}),{threshold:0.08});
-  pending.forEach(el=>{el.classList.add('is-pending');observer.observe(el)});
-  motion.addEventListener('change',()=>{all('.reveal').forEach(el=>el.classList.remove('is-pending'));observer.disconnect()},{once:true});
  }
 
  if(one('#run-pipeline')){

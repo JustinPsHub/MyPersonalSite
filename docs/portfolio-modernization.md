@@ -1,29 +1,21 @@
 # Portfolio frontend
 
-The public portfolio uses four static HTML pages, one shared stylesheet, and small native JavaScript modules. The retained ASP.NET Core/Blazor application is separate from the Azure static release.
+The Azure portfolio uses five static HTML pages, one shared stylesheet, and small native JavaScript modules. The retained ASP.NET Core/Blazor application is separate from the public release.
 
-## Content hierarchy
+## Experience
 
-The homepage is a professional introduction, with a short statement of positioning and three capability rows: software engineering, data architecture, and technical leadership. It omits employer names, internal systems, project case studies, implementation disclosures, and project-specific dimensions or event counts.
+The homepage opens with “Software & data. Built for people.”, one supporting sentence, a direct Word résumé download, and a contact action. Three short capability statements cover software and automation, cloud and data architecture, and technical leadership. Employer projects, detailed results, and credentials stay in the background and résumé. A secondary invitation opens the existing interactive dashboard.
 
-The Background page preserves accurate employer names, role titles, dates, education, certifications, and one defensible reporting-audience metric. Each role has one broad description. The original Word résumé keeps the detailed accomplishments and complete career record; printing the web page produces the shorter background.
+The visual is a small inline SVG architecture stack. Three native buttons highlight application, data, and cloud layers and update a polite live caption. It has no animation loop, timer, network dependency, or required pointer gesture. Transitions respect reduced motion. Content remains visible before enhancement.
 
-Primary navigation is Profile, Background, and Contact. Engineering examples remain available through the footer and their existing URLs. Dashboard filtering, sharing, sorting, and export are preserved. The secondary event example remains functional but no longer includes an architecture presented as an employer platform.
+Overview, Background, and Contact are the primary navigation. Existing dashboard, event example, résumé, and extensionless URLs remain valid. The shared warm neutral/forest palette, responsive type, spacing, and controls extend across every page, with persistent light and dark themes.
 
-The typography and restrained palette are retained, with a simpler two-column expertise layout, fewer section boundaries, and a direct résumé download. Content is present before scripts load. No entrance effects, animation loops, or new dependencies are added.
+## Functionality and privacy
 
-## Behavior
+The mobile menu supports Escape, outside interaction, link selection, and breakpoint changes. Navigation remains available without JavaScript. The dashboard retains linked filters, shareable views, sorting, responsive SVG charts, and CSV export. The event example retains validation, transformation, delivery, and quarantine behavior. The résumé still supports download and browser printing.
 
-- The mobile menu supports Escape, outside interaction, link selection, and breakpoint changes. Links stay visible without JavaScript.
-- Theme preference is stored defensively. SVG chart colors refresh without discarding filters.
-- The dashboard uses one deterministic dataset. Share links allowlist filter values; exports use the selected records. Responsive SVG geometry maintains readable labels.
-- The event example validates before transforming or delivering. Invalid amounts are quarantined; downstream stages are skipped. Artificial processing delays have been removed.
-- Contact links use `mailto:`. Browser print and original Word download remain available. A print-only contact line preserves identity when site navigation is omitted.
+The contact page uses the existing signed server-side disclosure, session binding, timing checks, honeypot, request limits, and no-JavaScript fallback. The address is absent from static pages, scripts, metadata, and the downloadable document. A deliberate successful action opens the visitor’s email app and offers a copy fallback. Network failures and unreadable responses show a plain recovery message. No messages are sent or stored by the site. See [contact privacy](contact-security.md).
 
-## Responsive design and performance
+## Verification
 
-One stylesheet defines shared spacing, typography, colors, controls, native disclosures, and data layouts. Phone reading text is 16–17px, with 44px or larger primary controls. Narrow service tables become labeled cards. Landscape uses a normal scrolling header and a shorter hero. Safe-area padding supports notched screens. Hover transitions respect reduced motion; there is no continuous animation.
-
-The release script includes only explicit public assets and the résumé download. It preserves all four route targets and security headers. No deployment identifiers, credentials, private host files, database files, or server output belong in the static release.
-
-Automated checks cover contracts, safe URL state, navigation/focus, printable identity, theme and dashboard consistency, narrow chart geometry, capability content without scripts, local links, route targets, and compressed asset budgets. Browser viewport review is separate from JSDOM. No physical-device certification, accessibility certification, conversion result, or Core Web Vitals measurement is claimed.
+Automated checks cover behavior, security contracts, public asset and résumé privacy, local links, route targets, and compressed asset budgets. Browser review checks desktop, phone-width and landscape layouts, both themes, controls, keyboard focus, contact, résumé, and working examples. Viewport review is separate from JSDOM; no physical-device certification, accessibility certification, or Core Web Vitals measurement is claimed.
