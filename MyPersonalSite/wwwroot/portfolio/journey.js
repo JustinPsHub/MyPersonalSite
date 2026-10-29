@@ -81,6 +81,7 @@
         location.pathname + "?" + p + location.hash,
       );
       $("#journey-scenario").value = result.key;
+      document.querySelectorAll('[data-compare-scenario]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.compareScenario===result.key)));
       const focusedStage = document.activeElement?.dataset.journeyStage;
       const record = result.records[selected],
         current = J.stages[stage];
@@ -467,6 +468,21 @@
           .forEach((b) => b.removeAttribute("aria-current"));
       }),
     );
+    const comparison = $("#scenario-comparisons");
+    if(comparison){
+      comparison.innerHTML=Object.entries(J.scenarios).map(([key,scenario])=>{
+        const run=J.run(key);
+        return `<button type="button" class="scenario-row" data-compare-scenario="${key}" aria-pressed="${key===result.key}"><span class="scenario-name">${scenario.name}<small>${run.accepted} accepted · ${run.quarantine} quarantined · ${run.duplicate} duplicates</small></span><span class="scenario-composition" aria-hidden="true"><i style="width:${run.accepted/run.received*100}%"></i><i style="width:${run.quarantine/run.received*100}%"></i><i style="width:${run.duplicate/run.received*100}%"></i></span><span class="scenario-value">${money(run.totalCents)}<small>recognized value ↗</small></span></button>`;
+      }).join("");
+      comparison.addEventListener('click',event=>{
+        const button=event.target.closest('[data-compare-scenario]');if(!button)return;
+        stop();result=J.run(button.dataset.compareScenario);
+        const excluded=result.records.find(record=>record.status!=='accepted');
+        selected=excluded?excluded.index:0;
+        stage=excluded?(excluded.status==='duplicate'?2:1):4;
+        renderJourney();$("#journey-stage-title").focus();
+      });
+    }
     renderJourney();
     renderMatrix();
   } catch (error) {

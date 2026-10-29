@@ -28,16 +28,16 @@
       type="font/woff"
       crossorigin
     />
-    <link rel="stylesheet" href="/portfolio/style.css?v=17" />
+    <link rel="stylesheet" href="/portfolio/style.css?v=19" />
     <link rel="stylesheet" href="/portfolio/atlas.css?v=18" />
     <script src="/portfolio/engine.js?v=17" defer></script>
     <script src="/portfolio/app.js?v=17" defer></script>
     <script src="/portfolio/modern.js?v=17" defer></script>
     <script src="/portfolio/atlas-engine.js?v=17" defer></script>
-    <link rel="stylesheet" href="/portfolio/journey.css?v=18" />
+    <link rel="stylesheet" href="/portfolio/journey.css?v=19" />
     <script src="/portfolio/journey-engine.js?v=18" defer></script>
     <script src="/portfolio/atlas.js?v=18" defer></script>
-    <script src="/portfolio/journey.js?v=18" defer></script>
+    <script src="/portfolio/journey.js?v=19" defer></script>
   </head>
   <body class="atlas-page">
     <a class="skip" href="#main">Skip to content</a>
@@ -57,7 +57,7 @@
         <span id="nav-toggle-label">Menu</span><span aria-hidden="true">≡</span>
       </button>
       <nav id="main-navigation" aria-label="Main navigation">
-        <a href="index.html">Overview</a><a href="resume.html">Background</a
+        <a href="index.html">Overview</a><a href="visuals.html" aria-current="page">Engineering lab</a><a href="resume.html">Background</a
         ><a href="contact.html">Contact <span aria-hidden="true">↗</span></a>
       </nav>
       <button
@@ -546,6 +546,7 @@
               role="group"
               aria-label="Inspect synthetic deliveries"
             ></div>
+            <details class="scenario-disclosure js-only" id="scenario-comparison"><summary><span>Compare the outcomes</span><span aria-hidden="true">+</span></summary><p>Three runs of the same deterministic pipeline. Select a scenario to inspect the first excluded delivery.</p><div id="scenario-comparisons" role="group" aria-label="Compare synthetic processing scenarios"></div><p class="scenario-legend"><span>Accepted</span><span>Quarantined</span><span>Duplicate</span></p></details>
             <details class="model-assumptions journey-definitions">
               <summary>Processing rules &amp; demonstration limits</summary>
               <p>
