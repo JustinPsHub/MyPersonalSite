@@ -1298,3 +1298,6 @@
 @media(max-height:600px) and (max-width:1000px){.scenario-name,.scenario-disclosure summary{font-size:17px}.scenario-name small,.scenario-value small,.scenario-disclosure .scenario-legend{font-size:14px}.scenario-disclosure>p{font-size:16px}.scenario-value{font-size:22px}}
 .scenario-disclosure{padding:8px 26px 20px}
 @media(max-width:760px){.scenario-disclosure{padding-inline:16px}}
+.journey-pagination{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 26px;border-top:1px solid var(--line)}.journey-pagination>span{font-size:12px;color:var(--muted)}#journey-scope{overflow-wrap:anywhere;min-height:24px;margin-block:10px}#journey-clear-selection{margin-bottom:14px}#journey-bars-label{margin-block:16px 8px}.journey-stage-inspector h3{overflow-wrap:anywhere}.journey-product .product-total>strong{overflow-wrap:anywhere}#journey-ledger-count{white-space:normal;text-align:right}
+@media(max-width:760px){.journey-pagination{padding:16px;gap:10px;flex-wrap:wrap}.journey-pagination .atlas-button{font-size:13px}.journey-pagination>span{order:3;flex-basis:100%;text-align:center}#journey-scope{font-size:14px}.journey-stage-inspector h3{font-size:22px}}
+@media(max-height:600px){#journey-scope,#journey-bars-label,.journey-pagination>span{font-size:14px}.journey-pagination .atlas-button{font-size:15px}}

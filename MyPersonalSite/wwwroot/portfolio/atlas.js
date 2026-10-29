@@ -62,6 +62,7 @@
         p.set("journey", view.key);
         p.set("stage", view.stage);
         p.set("event", view.selected);
+        if (new URLSearchParams(location.search).get('order') === 'selected') p.set('order', 'selected');
       }
       history.replaceState(
         null,
@@ -451,6 +452,7 @@
     one("#inspect-day").addEventListener("input", (e) => {
       inspectedIndex = Number(e.target.value);
       inspectDay();
+      update({ date: dailySeries[inspectedIndex].date });
     });
     one("#focus-day").addEventListener("click", () =>
       update(

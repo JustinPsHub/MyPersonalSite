@@ -34,10 +34,10 @@
     <script src="/portfolio/app.js?v=17" defer></script>
     <script src="/portfolio/modern.js?v=17" defer></script>
     <script src="/portfolio/atlas-engine.js?v=17" defer></script>
-    <link rel="stylesheet" href="/portfolio/journey.css?v=19" />
-    <script src="/portfolio/journey-engine.js?v=18" defer></script>
-    <script src="/portfolio/atlas.js?v=18" defer></script>
-    <script src="/portfolio/journey.js?v=19" defer></script>
+    <link rel="stylesheet" href="/portfolio/journey.css?v=20" />
+    <script src="/portfolio/journey-engine.js?v=20" defer></script>
+    <script src="/portfolio/atlas.js?v=20" defer></script>
+    <script src="/portfolio/journey.js?v=20" defer></script>
   </head>
   <body class="atlas-page">
     <a class="skip" href="#main">Skip to content</a>
@@ -192,14 +192,14 @@
             ><div class="atlas-message">
               Atlas uses JavaScript to link its charts and dependency model.
               This independent demonstration contains five fictional services
-              and a fixed 180-day synthetic dataset. The portfolio, résumé, and
+              and a fixed 180-day synthetic dataset. The portfolio, resume, and
               contact pages remain available.
             </div></noscript
           >
           <div id="atlas-error" class="atlas-message" role="alert" hidden>
             <strong>The workspace could not initialize.</strong>
             <p>
-              Reload this page to try again. Your portfolio and résumé are still
+              Reload this page to try again. Your portfolio and resume are still
               available.
             </p>
             <a href="visuals.html">Reload workspace ↻</a>
@@ -445,7 +445,7 @@
               </p>
             </div>
             <span class="synthetic-label"
-              >12 synthetic deliveries · Local simulation</span
+              >Dated synthetic orders · Linked filters</span
             >
           </div>
           <div id="journey-error" class="atlas-message" role="alert" hidden>
@@ -507,20 +507,23 @@
                   <span id="product-status"></span>
                 </div>
                 <h3>Order intelligence</h3>
+                <p id="journey-scope" class="chart-note" aria-live="polite"></p>
+                <button type="button" id="journey-clear-selection" class="atlas-button quiet" hidden>Show all filtered orders</button>
                 <div class="product-total">
-                  <span>Recognized order value</span
+                  <span id="journey-value-label">Recognized order value</span
                   ><strong id="journey-total"></strong>
                 </div>
                 <div class="product-measures">
                   <div>
-                    <span>Unique orders</span
+                    <span id="journey-count-label">Unique orders</span
                     ><strong id="journey-orders"></strong>
                   </div>
                   <div>
-                    <span>Average order</span
+                    <span id="journey-average-label">Average order</span
                     ><strong id="journey-average"></strong>
                   </div>
                 </div>
+                <p class="chart-note" id="journey-bars-label"></p>
                 <div
                   id="journey-contributions"
                   class="journey-contributions"
@@ -534,11 +537,10 @@
               <div>
                 <h3>Every delivery accounted for.</h3>
                 <p>
-                  Select an event to inspect its path. Outcomes are calculated
-                  from the input.
+                  Select a delivery to filter the measures and inspect its path.
                 </p>
               </div>
-              <span class="mini-label">PROVENANCE / 12 RECORDS</span>
+              <span class="mini-label" id="journey-ledger-count"></span>
             </div>
             <div
               id="journey-ledger"
@@ -546,12 +548,12 @@
               role="group"
               aria-label="Inspect synthetic deliveries"
             ></div>
+            <div class="journey-pagination"><button type="button" id="journey-page-prev" class="atlas-button">← Previous deliveries</button><span id="journey-page" role="status"></span><button type="button" id="journey-page-next" class="atlas-button">Next deliveries →</button></div>
             <details class="scenario-disclosure js-only" id="scenario-comparison"><summary><span>Compare the outcomes</span><span aria-hidden="true">+</span></summary><p>Three runs of the same deterministic pipeline. Select a scenario to inspect the first excluded delivery.</p><div id="scenario-comparisons" role="group" aria-label="Compare synthetic processing scenarios"></div><p class="scenario-legend"><span>Accepted</span><span>Quarantined</span><span>Duplicate</span></p></details>
             <details class="model-assumptions journey-definitions">
               <summary>Processing rules &amp; demonstration limits</summary>
               <p>
-                This independent dataset illustrates order processing; it is
-                separate from the service telemetry above. USD only. Amounts
+                Synthetic order deliveries are attributed to the same five service labels and dates used by the workspace filters. They illustrate processing; their amounts are not derived from service request counts or the latency model. Each service and date has twelve deliveries. Service, reporting window and date filter this dataset; selecting a delivery filters its measures. Stage previews distinguish unvalidated, validated and deduplicated values. USD only. Amounts
                 must be nonnegative safe integers in cents. The first valid
                 event for an ID wins; repeated IDs are skipped, and invalid
                 events are quarantined. Totals use integer cents, then display
