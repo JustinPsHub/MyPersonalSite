@@ -12,11 +12,11 @@
     },
     drift: {
       name: "Schema drift",
-      note: "Three events violate the contract. Quarantine keeps invalid values out of the analytical model.",
+      note: "Three deliveries per dated service batch violate the contract. Quarantine keeps invalid values out of the analytical model.",
     },
     retry: {
       name: "Delivery retries",
-      note: "Two repeated deliveries share existing IDs. Idempotency prevents double counting.",
+      note: "Two repeated deliveries per dated service batch share existing IDs. Idempotency prevents double counting.",
     },
   });
   const stages = Object.freeze([
@@ -105,6 +105,67 @@
       averageCents: accepted.length ? totalCents / accepted.length : 0,
     });
   }
+
+  // Each dated service batch is synthetic attribution, not service telemetry or real sales.
+  const atlas = typeof module !== "undefined" && module.exports
+    ? require("./atlas-engine.js") : root.AtlasEngine;
+  const datasets = new Map();
+  function summarize(records, key = "clean") {
+    const accepted = records.filter(r => r.status === "accepted");
+    const totalCents = accepted.reduce((sum, r) => sum + r.event.totalCents, 0);
+    const quarantine = records.filter(r => r.status === "quarantined").length;
+    const duplicate = records.filter(r => r.status === "duplicate").length;
+    return Object.freeze({ key, records: Object.freeze(records), received: records.length,
+      valid: records.length - quarantine, quarantine, duplicate, accepted: accepted.length,
+      totalCents, averageCents: accepted.length ? totalCents / accepted.length : 0 });
+  }
+  function dataset(key) {
+    if (!Object.hasOwn(scenarios, key)) key = "clean";
+    if (datasets.has(key)) return datasets.get(key);
+    const template = run(key), records = [];
+    for (let offset = 0; offset < 90; offset++) {
+      const date = atlas.dateForDay(179 - offset);
+      atlas.services.forEach((service, serviceIndex) => {
+        const seen = new Set();
+        template.records.forEach((source, delivery) => {
+          const amount = Math.round(Math.abs(Number(source.event.totalCents)) *
+            (1 + serviceIndex * .13 + (offset % 13) * .017));
+          const event = Object.freeze({ ...source.event,
+            id: source.event.id.replace('order-', `order-${date.replaceAll('-', '')}-${service.id}-`),
+            totalCents: typeof source.event.totalCents === 'string' ? String(amount)
+              : source.event.totalCents < 0 ? -amount : amount });
+          const validation = contract.processEvent(event);
+          const duplicate = validation.ok && seen.has(event.id);
+          if (validation.ok && !duplicate) seen.add(event.id);
+          const status = !validation.ok ? 'quarantined' : duplicate ? 'duplicate' : 'accepted';
+          records.push(Object.freeze({ index: records.length, date, offset, serviceId: service.id,
+            serviceName: service.name, delivery, event, status,
+            reasons: Object.freeze(validation.errors),
+            output: status === 'accepted' ? Object.freeze(validation.output) : null }));
+        });
+      });
+    }
+    const result = Object.freeze(records); datasets.set(key, result); return result;
+  }
+  function select(key, state) {
+    return summarize(dataset(key).filter(r => r.offset < state.days &&
+      (state.service === 'all' || r.serviceName === state.service) &&
+      (!state.date || r.date === state.date)), Object.hasOwn(scenarios, key) ? key : 'clean');
+  }
+  function product(result, stage, selectedIndex = null) {
+    const scoped = selectedIndex === null ? result.records
+      : result.records.filter(r => r.index === selectedIndex);
+    const records = stage === 0 ? scoped : stage === 1
+      ? scoped.filter(r => r.status !== 'quarantined')
+      : scoped.filter(r => r.status === 'accepted');
+    const totalCents = stage === 0 ? null : records.reduce((sum, r) => sum + r.event.totalCents, 0);
+    return { records, totalCents, count: records.length,
+      averageCents: totalCents === null ? null : records.length ? totalCents / records.length : 0,
+      valueLabel: stage === 0 ? 'Order value pending validation' : stage === 1 ? 'Validated delivery value' : 'Recognized order value',
+      countLabel: stage === 0 ? 'Received deliveries' : stage === 1 ? 'Valid deliveries' : 'Unique orders',
+      averageLabel: stage < 2 ? 'Average delivery' : 'Average order' };
+  }
+
   function matrix(rows, limit = 14) {
     const dates = [...new Set(rows.map((r) => r.date))].sort().slice(-limit);
     return {
@@ -129,10 +190,10 @@
         ? p.get("journey")
         : "clean",
       stage: integer("stage", 4, 4),
-      selected: integer("event", 0, 11),
+      selected: integer("event", 0, 5399),
     };
   }
-  const api = Object.freeze({ scenarios, stages, run, matrix, parse });
+  const api = Object.freeze({ scenarios, stages, run, summarize, select, product, matrix, parse });
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.JourneyEngine = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);

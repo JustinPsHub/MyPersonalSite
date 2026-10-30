@@ -15,10 +15,11 @@ test('static release preserves page links, fonts, downloads, and route targets w
     const dom=new JSDOM(fs.readFileSync(path.join(output,page+'.html'),'utf8'));
     for(const element of dom.window.document.querySelectorAll('[href],[src]')){
       const value=element.getAttribute('href')||element.getAttribute('src');
-      if(!value||value.startsWith('#')||/^[a-z]+:/i.test(value))continue;
+      if(!value||/^[a-z]+:/i.test(value))continue;
       if(value==='/api/contact'){assert.ok(fs.existsSync(path.join(root,'api/src/azure.js')));continue;}
       const url=new URL(value,'https://example.com/'+page+'.html');
-      assert.ok(fs.existsSync(path.join(output,decodeURIComponent(url.pathname))),`${page}: ${value}`);
+      const target=path.join(output,decodeURIComponent(url.pathname));assert.ok(fs.existsSync(target),`${page}: ${value}`);
+      if(url.hash&&target.endsWith('.html')){const targetDom=new JSDOM(fs.readFileSync(target,'utf8'));assert.ok(targetDom.window.document.getElementById(decodeURIComponent(url.hash.slice(1))),`${page}: missing fragment ${value}`);targetDom.window.close();}
     }
     dom.window.close();
   }
@@ -29,5 +30,5 @@ test('static release preserves page links, fonts, downloads, and route targets w
   }
   assert.equal(config.navigationFallback,undefined,'Missing files must remain 404s');
   assert.ok(config.globalHeaders['Content-Security-Policy'].includes("script-src 'self'"));
-  assert.deepEqual(fs.readdirSync(output).sort(),['contact.html','index.html','platform.html','portfolio','resume','resume.html','robots.txt','sitemap.xml','staticwebapp.config.json','visuals.html']);
+  assert.deepEqual(fs.readdirSync(output).sort(),['admin.html','contact.html','index.html','platform.html','portfolio','privacy.html','resume','resume.html','robots.txt','sitemap.xml','staticwebapp.config.json','visuals.html']);
 });

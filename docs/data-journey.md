@@ -10,11 +10,13 @@ The updated entry adds a visible engineering-lab link in the portfolio introduct
 
 ## Processing and provenance
 
+The current workspace links order measures to service, date, reporting-window and delivery filters. The amounts below describe the original single-batch validation fixture, which remains in the pure engine tests. See [current order filtering behavior](order-intelligence-filters.md).
+
 `journey-engine.js` reuses `PortfolioEngine.processEvent` for the contract boundary. Twelve deterministic deliveries have IDs, `order.created` types, USD currency and integer cents. Healthy input publishes twelve unique orders totaling $1,729.00. Schema drift quarantines three violations and publishes nine orders totaling $1,340.50. Delivery retries skip two repeated IDs and publish ten orders totaling $1,356.00. First valid ID wins. Each dataset satisfies `received = accepted + quarantined + duplicates`.
 
-The analytical product is explicitly a calculated preview. Stage selection changes the representation of an inspected delivery; it does not rerun a backend. Rejected events and skipped retries expose their exclusion reason at subsequent stages and contribute nothing additional. Accepted contribution bars and the complete delivery ledger open the same provenance inspector. Pausable replay walks the stages; scenario changes cancel a pending replay. Reduced motion completes replay immediately and leaves manual inspection available.
+The analytical product is explicitly a calculated preview. Stage selection updates the inspected delivery and the stage-appropriate measure preview; it does not rerun a backend. Rejected events and skipped retries expose their exclusion reason at subsequent stages and contribute nothing additional. Contribution bars and the delivery ledger filter the product to one delivery and open its provenance inspector; a clear action restores the aggregate scope. Pausable replay walks the stages; scenario changes cancel a pending replay. Reduced motion completes replay immediately and leaves manual inspection available.
 
-The order dataset is independent of the service telemetry. The on-screen processing disclosure states this, together with the absence of a backend, queue, authentication, payments, persistence and external calls. The existing service latency model remains a sensitivity illustration; it does not claim causal inference.
+The order amounts are independent of service request and latency measures, while sharing the workspace service/date attribution and filters. The on-screen processing disclosure states this, together with the absence of a backend, queue, authentication, payments, persistence and external calls. The existing service latency model remains a sensitivity illustration; it does not claim causal inference.
 
 ## Coordination and state
 
@@ -22,7 +24,7 @@ The order dataset is independent of the service telemetry. The on-screen process
 
 The heatmap shows the last min(14, selected-window-days) daily records for every service, regardless of service/day focus. Its scope is visible. Color and symbols distinguish within-budget, over-budget and at-least-five-times-budget cells. Every button has exact success/error values in its accessible label; pointer and keyboard inspection display a textual readout. Roving tab order, arrow keys and Home/End keep the 70-cell matrix manageable. A narrow, labeled scrolling region contains genuine analytical width.
 
-Allowlisted URL parameters `journey`, `stage` and `event` retain scenario, stage and selected delivery while Atlas changes service, date, reporting window or model. Values are clamped; arbitrary scenario keys fall back. Native modal behavior provides focus containment and Escape dismissal for command search. Search content is never inserted into HTML.
+Allowlisted URL parameters `journey`, `stage`, `event` and `order=selected` retain scenario, stage, inspected delivery and product selection while Atlas changes service, date, reporting window or model. Values are clamped; arbitrary scenario keys fall back. Native modal behavior provides focus containment and Escape dismissal for command search. Search content is never inserted into HTML.
 
 ## Design and responsive behavior
 

@@ -71,3 +71,7 @@ Professional copy generalizes experience without publishing employer project det
 [Atlas design, data, and verification](docs/atlas-dashboard.md) · [Frontend notes](docs/portfolio-modernization.md) · [Test details](tests/README.md)
 
 [Systems Studio release and verification](docs/systems-studio.md)
+
+[Coordinated order intelligence filters](docs/order-intelligence-filters.md)
+
+Architecture and interaction contracts: [Architecture labs](docs/architecture-labs.md).

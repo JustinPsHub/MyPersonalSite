@@ -30,15 +30,15 @@
     />
     <link rel="stylesheet" href="/portfolio/style.css?v=19" />
     <link rel="stylesheet" href="/portfolio/atlas.css?v=18" />
-    <script src="/portfolio/engine.js?v=17" defer></script>
+    <script src="/portfolio/engine.js?v=22" defer></script>
     <script src="/portfolio/app.js?v=17" defer></script>
-    <script src="/portfolio/modern.js?v=17" defer></script>
+    <script src="/portfolio/modern.js?v=22" defer></script>
     <script src="/portfolio/atlas-engine.js?v=17" defer></script>
-    <link rel="stylesheet" href="/portfolio/journey.css?v=19" />
-    <script src="/portfolio/journey-engine.js?v=18" defer></script>
-    <script src="/portfolio/atlas.js?v=18" defer></script>
-    <script src="/portfolio/journey.js?v=19" defer></script>
-  </head>
+    <link rel="stylesheet" href="/portfolio/journey.css?v=20" />
+    <script src="/portfolio/journey-engine.js?v=20" defer></script>
+    <script src="/portfolio/atlas.js?v=22" defer></script>
+    <script src="/portfolio/journey.js?v=22" defer></script>
+  <link rel="stylesheet" href="/portfolio/product.css?v=22"><link rel="stylesheet" href="/portfolio/telemetry.css?v=1"><script defer src="/portfolio/telemetry.js?v=1"></script></head>
   <body class="atlas-page">
     <a class="skip" href="#main">Skip to content</a>
     <header class="header wrap">
@@ -56,10 +56,7 @@
       >
         <span id="nav-toggle-label">Menu</span><span aria-hidden="true">≡</span>
       </button>
-      <nav id="main-navigation" aria-label="Main navigation">
-        <a href="index.html">Overview</a><a href="visuals.html" aria-current="page">Engineering lab</a><a href="resume.html">Background</a
-        ><a href="contact.html">Contact <span aria-hidden="true">↗</span></a>
-      </nav>
+      <nav id="main-navigation" aria-label="Main navigation"><a href="index.html">Overview</a><a href="visuals.html" aria-current="page">Atlas Lab</a><a href="platform.html">Event Lab</a><a href="resume.html">Resume</a><a href="contact.html">Contact <span aria-hidden="true">↗</span></a></nav>
       <button
         class="icon-btn js-only"
         id="theme"
@@ -132,18 +129,17 @@
           <div class="workspace-heading">
             <div>
               <p class="atlas-kicker">
-                PLATFORM OPERATIONS <span>/</span> SERVICE PORTFOLIO
+                ATLAS <span>/</span> OPERATIONAL INTELLIGENCE LAB
               </p>
               <h1 id="workspace-title">
-                See the signal.<span> Understand the system.</span>
+                Find the signal.<span> Trace the impact.</span>
               </h1>
               <p class="workspace-subtitle">
-                Five connected services. One view from performance to
-                dependencies.
+                Explore how service performance, reliability, and dependencies connect across one system.
               </p>
             </div>
             <span class="synthetic-label"
-              ><span aria-hidden="true">◇</span> Synthetic dataset</span
+              ><span aria-hidden="true">◇</span> Interactive simulation</span
             >
           </div>
           <div
@@ -188,22 +184,11 @@
               ><span aria-hidden="true">↗</span></a
             >
           </div>
-          <noscript
-            ><div class="atlas-message">
-              Atlas uses JavaScript to link its charts and dependency model.
-              This independent demonstration contains five fictional services
-              and a fixed 180-day synthetic dataset. The portfolio, résumé, and
-              contact pages remain available.
-            </div></noscript
-          >
-          <div id="atlas-error" class="atlas-message" role="alert" hidden>
-            <strong>The workspace could not initialize.</strong>
-            <p>
-              Reload this page to try again. Your portfolio and résumé are still
-              available.
-            </p>
-            <a href="visuals.html">Reload workspace ↻</a>
-          </div>
+          <section class="architecture-banner" aria-labelledby="atlas-architecture-title"><h2 id="atlas-architecture-title">System Architecture &amp; Operational Impact</h2><p>A deterministic browser engine connects service telemetry, SLO error budgets, and directed dependency analysis—so you can investigate reliability signals and test latency exposure without a backend.</p><p class="architecture-meta">Synthetic snapshot · 5 services · 900 daily records · 180 days · 99.9% SLO target</p></section>
+          <noscript><p class="atlas-message">Enable JavaScript to explore the workspace. Atlas demonstrates five connected services and a fixed synthetic snapshot; the architecture summary and model definitions remain available below.</p></noscript>
+          <div id="atlas-error" class="atlas-message" role="alert" hidden></div>
+          <div class="scenario-bar js-only" role="group" aria-label="Guided Atlas scenarios"><span class="scenario-label">Start with a scenario</span><button class="scenario-pill" data-atlas-scenario="slowdown" aria-pressed="false">Oct 08 · Storage slowdown<small>Trace three exposed callers</small></button><button class="scenario-pill" data-atlas-scenario="latency" aria-pressed="false">Storage +150 ms<small>Explore the modeled blast radius</small></button><button class="scenario-pill" data-atlas-scenario="slo" aria-pressed="false">Inspect SLO burn<small>99.9% success target</small></button><button id="scenario-reset" class="scenario-pill scenario-reset">Reset workspace ↻</button></div>
+          <p id="atlas-scenario-status" class="scenario-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
           <div class="atlas-toolbar" aria-label="Analytics filters">
             <div class="filter-field">
               <label for="service">Service</label
@@ -445,13 +430,10 @@
               </p>
             </div>
             <span class="synthetic-label"
-              >12 synthetic deliveries · Local simulation</span
+              >Dated synthetic orders · Linked filters</span
             >
           </div>
-          <div id="journey-error" class="atlas-message" role="alert" hidden>
-            This demonstration could not initialize.
-            <a href="visuals.html#journey">Reload to try again ↻</a>
-          </div>
+          <div id="journey-error" class="atlas-message" role="alert" hidden></div>
           <div class="atlas-panel journey-workbench">
             <div class="journey-toolbar">
               <label for="journey-scenario"
@@ -503,24 +485,27 @@
               </div>
               <div class="journey-product">
                 <div class="product-heading">
-                  <p class="atlas-kicker">PUBLISHED PRODUCT</p>
+                  <p class="atlas-kicker">ORDER MEASURES</p>
                   <span id="product-status"></span>
                 </div>
                 <h3>Order intelligence</h3>
+                <p id="journey-scope" class="chart-note" aria-live="polite"></p>
+                <button type="button" id="journey-clear-selection" class="atlas-button quiet" hidden>Show all filtered orders</button>
                 <div class="product-total">
-                  <span>Recognized order value</span
+                  <span id="journey-value-label">Recognized order value</span
                   ><strong id="journey-total"></strong>
                 </div>
                 <div class="product-measures">
                   <div>
-                    <span>Unique orders</span
+                    <span id="journey-count-label">Unique orders</span
                     ><strong id="journey-orders"></strong>
                   </div>
                   <div>
-                    <span>Average order</span
+                    <span id="journey-average-label">Average order</span
                     ><strong id="journey-average"></strong>
                   </div>
                 </div>
+                <p class="chart-note" id="journey-bars-label"></p>
                 <div
                   id="journey-contributions"
                   class="journey-contributions"
@@ -534,11 +519,10 @@
               <div>
                 <h3>Every delivery accounted for.</h3>
                 <p>
-                  Select an event to inspect its path. Outcomes are calculated
-                  from the input.
+                  Select a delivery to filter the measures and inspect its path.
                 </p>
               </div>
-              <span class="mini-label">PROVENANCE / 12 RECORDS</span>
+              <span class="mini-label" id="journey-ledger-count"></span>
             </div>
             <div
               id="journey-ledger"
@@ -546,12 +530,12 @@
               role="group"
               aria-label="Inspect synthetic deliveries"
             ></div>
+            <div class="journey-pagination"><button type="button" id="journey-page-prev" class="atlas-button">← Previous deliveries</button><span id="journey-page" role="status"></span><button type="button" id="journey-page-next" class="atlas-button">Next deliveries →</button></div>
             <details class="scenario-disclosure js-only" id="scenario-comparison"><summary><span>Compare the outcomes</span><span aria-hidden="true">+</span></summary><p>Three runs of the same deterministic pipeline. Select a scenario to inspect the first excluded delivery.</p><div id="scenario-comparisons" role="group" aria-label="Compare synthetic processing scenarios"></div><p class="scenario-legend"><span>Accepted</span><span>Quarantined</span><span>Duplicate</span></p></details>
             <details class="model-assumptions journey-definitions">
               <summary>Processing rules &amp; demonstration limits</summary>
               <p>
-                This independent dataset illustrates order processing; it is
-                separate from the service telemetry above. USD only. Amounts
+                Synthetic order deliveries are attributed to the same five service labels and dates used by the workspace filters. They illustrate processing; their amounts are not derived from service request counts or the latency model. Each service and date has twelve deliveries. Service, reporting window and date filter this dataset; selecting a delivery filters its measures. Stage previews distinguish unvalidated, validated and deduplicated values. USD only. Amounts
                 must be nonnegative safe integers in cents. The first valid
                 event for an ID wins; repeated IDs are skipped, and invalid
                 events are quarantined. Totals use integer cents, then display
@@ -656,19 +640,10 @@
                 </p>
               </div>
               <details class="model-assumptions">
-                <summary>Model assumptions &amp; data definitions</summary>
+                <summary>Model Assumptions &amp; Graph Math</summary>
                 <p>
-                  Illustrative sensitivity analysis, not a forecast. Added
-                  latency propagates through the directed call graph using fixed
-                  synchronous exposure weights: gateway → data 65%; gateway →
-                  identity 35%; data → storage 80%; identity → storage 50%.
-                  Asynchronous telemetry has zero latency exposure. Portfolio
-                  impact is weighted by selected request volumes. Throughput and
-                  failure rates stay fixed; queueing, retries, and saturation
-                  are not modeled. Metrics count service-level requests, so one
-                  user action may contribute to several services. All records
-                  and service relationships are synthetic.
-                </p>
+                  A sensitivity model for exploring dependency exposure, rather than a production forecast. Directed edges run from caller to dependency: Gateway → Data 65%; Gateway → Identity 35%; Data → Storage 80%; Identity → Storage 50%. Exposure multiplies along each synchronous path and adds across paths (capped at 100%). Gateway’s Storage exposure is (0.65 × 0.80) + (0.35 × 0.50) = 0.695. Portfolio latency impact is weighted by request volume in the selected scope. Asynchronous telemetry contributes no latency exposure. Throughput and failure rates stay fixed; queueing, retry amplification, and saturation are outside this model. Error-budget consumption compares observed failures with the failures permitted by the 99.9% success target. Counts represent service calls, so one user action may contribute to several services. All records and relationships are synthetic.
+              </p>
               </details>
             </div>
           </div>
