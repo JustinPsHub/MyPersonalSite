@@ -159,7 +159,7 @@ test('order intelligence recalculates for service, period, day slider, map and r
 });
 test('delivery selection filters measures, stages expose processing state, and clearing retains workspace filters',()=>{
  const ui=setup('visuals',{query:'?service=API+Gateway&days=7&date=2026-10-14'}),{doc,w}=ui;
- doc.querySelector('#journey-ledger [data-event="0"]').click();assert.equal(doc.querySelector('#journey-total').textContent,'$129.00');assert.equal(doc.querySelector('#journey-orders').textContent,'1');assert.match(w.location.search,/order=selected/);
+ doc.querySelector('#journey-ledger [data-event="0"]').click();assert.equal(doc.querySelector('#journey-total').textContent,'$129.00');assert.equal(doc.querySelector('#journey-orders').textContent,'1');assert.match(w.location.search,/order=selected/);assert.match(doc.querySelector('[data-journey-stage="0"]').textContent,/1 delivery/);assert.match(doc.querySelector('[data-journey-stage="4"]').textContent,/1 order/);
  doc.querySelector('#journey-contributions [data-event="1"]').click();assert.equal(doc.querySelector('#journey-total').textContent,'$84.50');
  doc.querySelector('[data-journey-stage="0"]').click();assert.equal(doc.querySelector('#journey-total').textContent,'Pending');assert.equal(doc.querySelector('#journey-count-label').textContent,'Received deliveries');
  doc.querySelector('[data-journey-stage="4"]').click();assert.equal(doc.querySelector('#journey-total').textContent,'$84.50');
