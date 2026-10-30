@@ -3,7 +3,12 @@
   "use strict";
   const $ = s => document.querySelector(s), J = window.JourneyEngine, E = window.AtlasEngine;
   if (!$("#journey")) return;
-  if (!J || !E) { $("#journey-error").hidden = false; return; }
+  function showFailure() {
+    const host = $('#journey-error'), description = document.createElement('p'), retry = document.createElement('a');
+    description.textContent = 'The data journey couldn’t start.';retry.href = 'visuals.html#journey';retry.textContent = 'Reload to try again ↻';
+    host.replaceChildren(description, retry);host.hidden = false;
+  }
+  if (!J || !E) { showFailure(); return; }
   try {
     const money = cents => (cents / 100).toLocaleString('en-US', {style:'currency',currency:'USD',maximumFractionDigits:2});
     const dateLabel = date => new Date(date+'T00:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'});
@@ -351,7 +356,7 @@
     renderComparisons();renderJourney();
     renderMatrix();
   } catch (error) {
-    $("#journey-error").hidden = false;
+    showFailure();
     console.error("Data journey initialization failed.", error);
   }
 })();

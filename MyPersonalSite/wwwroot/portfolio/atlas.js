@@ -389,6 +389,10 @@
       previousSeries = E.daily(
         E.select(state, { previous: true, ignoreDate: true }),
       );
+      all('[data-atlas-scenario]').forEach(button => {
+        const presetState = E.parse(guidedScenarios[button.dataset.atlasScenario].query);
+        button.setAttribute('aria-pressed', String(!search && Object.keys(presetState).every(key => presetState[key] === state[key])));
+      });
       renderKpis();
       renderTrend();
       renderFailures();
@@ -472,16 +476,24 @@
     one("#show-portfolio").addEventListener("click", () =>
       update({ service: "all" }),
     );
-    one("#reset-filters").addEventListener("click", () => {
-      state = E.parse("");
-      search = "";
-      inspectedIndex = 29;
-      one("#service-search").value = "";
-      serialize();
-      render();
-      window.dispatchEvent(new CustomEvent("atlas:reset"));
-      toast("Workspace reset.");
-    });
+    const guidedScenarios = {
+      slowdown: {query:'service=Storage&days=7&metric=latency&sort=latency&focus=storage&date=2026-10-08', target:'#dependencies', message:'Viewing the Oct 08 snapshot. Storage is selected; three callers are exposed through synchronous dependencies.'},
+      latency: {query:'service=all&days=30&metric=latency&sort=latency&focus=storage&delta=150', target:'#dependencies', message:'Added 150 ms to Storage. Caller impact follows the dependency weights; request volumes and failure rates remain unchanged.'},
+      slo: {query:'service=all&days=30&metric=errors&sort=success&focus=storage', target:'#reliability', message:'Viewing failures and error-budget consumption across the 30-day reporting window. Success target: 99.9%.'}
+    };
+    function applyGuidedScenario(key) {
+      const preset = guidedScenarios[key];
+      state = E.parse(preset?.query || ''); search = ''; inspectedIndex = state.days - 1;
+      one('#service-search').value = '';
+      // A preset replaces the complete workspace state, including stale order selections.
+      history.replaceState(null, '', location.pathname);
+      serialize(); render(); window.dispatchEvent(new CustomEvent('atlas:reset'));
+      one('#atlas-scenario-status').textContent = preset?.message || 'Workspace reset. All services, 30-day scope, no selected day or added latency.';
+      if (preset) one(preset.target)?.scrollIntoView?.({behavior:'auto', block:'start'});
+    }
+    all('[data-atlas-scenario]').forEach(button => button.addEventListener('click', () => applyGuidedScenario(button.dataset.atlasScenario)));
+    one('#scenario-reset').addEventListener('click', () => applyGuidedScenario(''));
+    one('#reset-filters').addEventListener('click', () => {applyGuidedScenario('');toast('Workspace reset.');});
     one("#service-search").value = search;
     one("#service-search").addEventListener("input", (e) => {
       search = e.target.value.slice(0, 80);
@@ -498,7 +510,7 @@
     one("#latency-delta").addEventListener("input", (e) => {
       state.delta = Number(e.target.value);
       serialize();
-      renderDependencies();
+      render();
     });
     // Delegate interactions so re-rendered visual elements keep one stable event listener.
     one(".atlas-main").addEventListener("click", (e) => {
@@ -545,19 +557,7 @@
       one("#service").focus({ preventScroll: true });
       one("#overview").scrollIntoView?.({ behavior: "auto" });
     });
-    one("#investigate").addEventListener("click", () => {
-      update({
-        service: "Storage",
-        focus: "storage",
-        date: E.incidentDate,
-        metric: "latency",
-        delta: 125,
-      });
-      one("#dependencies").scrollIntoView?.({ behavior: "auto" });
-      toast(
-        "October 8 incident selected. The what-if model is set to +125 ms.",
-      );
-    });
+    one('#investigate').addEventListener('click', () => applyGuidedScenario('slowdown'));
     one("#share-view").addEventListener("click", async () => {
       serialize();
       try {
@@ -659,7 +659,11 @@
       new ResizeObserver(resize).observe(one("#volume-chart"));
     else window.addEventListener("resize", resize);
   } catch (error) {
-    one("#atlas-error").hidden = false;
+    const fallback = one('#atlas-error');
+    const title = document.createElement('strong');title.textContent = 'Atlas couldn’t start.';
+    const description = document.createElement('p');description.textContent = 'Reload the workspace to try again.';
+    const retry = document.createElement('a');retry.href = 'visuals.html';retry.textContent = 'Reload workspace ↻';
+    fallback.replaceChildren(title, description, retry);fallback.hidden = false;
     one("#selection-summary").textContent =
       "Workspace unavailable. Reload to retry.";
     console.error("Atlas initialization failed.", error);

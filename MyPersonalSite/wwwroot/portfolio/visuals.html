@@ -30,15 +30,15 @@
     />
     <link rel="stylesheet" href="/portfolio/style.css?v=19" />
     <link rel="stylesheet" href="/portfolio/atlas.css?v=18" />
-    <script src="/portfolio/engine.js?v=17" defer></script>
+    <script src="/portfolio/engine.js?v=22" defer></script>
     <script src="/portfolio/app.js?v=17" defer></script>
-    <script src="/portfolio/modern.js?v=17" defer></script>
+    <script src="/portfolio/modern.js?v=22" defer></script>
     <script src="/portfolio/atlas-engine.js?v=17" defer></script>
     <link rel="stylesheet" href="/portfolio/journey.css?v=20" />
     <script src="/portfolio/journey-engine.js?v=20" defer></script>
-    <script src="/portfolio/atlas.js?v=21" defer></script>
-    <script src="/portfolio/journey.js?v=21" defer></script>
-  </head>
+    <script src="/portfolio/atlas.js?v=22" defer></script>
+    <script src="/portfolio/journey.js?v=22" defer></script>
+  <link rel="stylesheet" href="/portfolio/product.css?v=22"></head>
   <body class="atlas-page">
     <a class="skip" href="#main">Skip to content</a>
     <header class="header wrap">
@@ -56,10 +56,7 @@
       >
         <span id="nav-toggle-label">Menu</span><span aria-hidden="true">≡</span>
       </button>
-      <nav id="main-navigation" aria-label="Main navigation">
-        <a href="index.html">Overview</a><a href="visuals.html" aria-current="page">Engineering lab</a><a href="resume.html">Background</a
-        ><a href="contact.html">Contact <span aria-hidden="true">↗</span></a>
-      </nav>
+      <nav id="main-navigation" aria-label="Main navigation"><a href="index.html">Overview</a><a href="visuals.html" aria-current="page">Atlas Lab</a><a href="platform.html">Event Lab</a><a href="resume.html">Resume</a><a href="contact.html">Contact <span aria-hidden="true">↗</span></a></nav>
       <button
         class="icon-btn js-only"
         id="theme"
@@ -132,18 +129,17 @@
           <div class="workspace-heading">
             <div>
               <p class="atlas-kicker">
-                PLATFORM OPERATIONS <span>/</span> SERVICE PORTFOLIO
+                ATLAS <span>/</span> OPERATIONAL INTELLIGENCE LAB
               </p>
               <h1 id="workspace-title">
-                See the signal.<span> Understand the system.</span>
+                Find the signal.<span> Trace the impact.</span>
               </h1>
               <p class="workspace-subtitle">
-                Five connected services. One view from performance to
-                dependencies.
+                Explore how service performance, reliability, and dependencies connect across one system.
               </p>
             </div>
             <span class="synthetic-label"
-              ><span aria-hidden="true">◇</span> Synthetic dataset</span
+              ><span aria-hidden="true">◇</span> Interactive simulation</span
             >
           </div>
           <div
@@ -188,22 +184,11 @@
               ><span aria-hidden="true">↗</span></a
             >
           </div>
-          <noscript
-            ><div class="atlas-message">
-              Atlas uses JavaScript to link its charts and dependency model.
-              This independent demonstration contains five fictional services
-              and a fixed 180-day synthetic dataset. The portfolio, resume, and
-              contact pages remain available.
-            </div></noscript
-          >
-          <div id="atlas-error" class="atlas-message" role="alert" hidden>
-            <strong>The workspace could not initialize.</strong>
-            <p>
-              Reload this page to try again. Your portfolio and resume are still
-              available.
-            </p>
-            <a href="visuals.html">Reload workspace ↻</a>
-          </div>
+          <section class="architecture-banner" aria-labelledby="atlas-architecture-title"><h2 id="atlas-architecture-title">System Architecture &amp; Operational Impact</h2><p>A deterministic browser engine connects service telemetry, SLO error budgets, and directed dependency analysis—so you can investigate reliability signals and test latency exposure without a backend.</p><p class="architecture-meta">Synthetic snapshot · 5 services · 900 daily records · 180 days · 99.9% SLO target</p></section>
+          <noscript><p class="atlas-message">Enable JavaScript to explore the workspace. Atlas demonstrates five connected services and a fixed synthetic snapshot; the architecture summary and model definitions remain available below.</p></noscript>
+          <div id="atlas-error" class="atlas-message" role="alert" hidden></div>
+          <div class="scenario-bar js-only" role="group" aria-label="Guided Atlas scenarios"><span class="scenario-label">Start with a scenario</span><button class="scenario-pill" data-atlas-scenario="slowdown" aria-pressed="false">Oct 08 · Storage slowdown<small>Trace three exposed callers</small></button><button class="scenario-pill" data-atlas-scenario="latency" aria-pressed="false">Storage +150 ms<small>Explore the modeled blast radius</small></button><button class="scenario-pill" data-atlas-scenario="slo" aria-pressed="false">Inspect SLO burn<small>99.9% success target</small></button><button id="scenario-reset" class="scenario-pill scenario-reset">Reset workspace ↻</button></div>
+          <p id="atlas-scenario-status" class="scenario-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
           <div class="atlas-toolbar" aria-label="Analytics filters">
             <div class="filter-field">
               <label for="service">Service</label
@@ -448,10 +433,7 @@
               >Dated synthetic orders · Linked filters</span
             >
           </div>
-          <div id="journey-error" class="atlas-message" role="alert" hidden>
-            This demonstration could not initialize.
-            <a href="visuals.html#journey">Reload to try again ↻</a>
-          </div>
+          <div id="journey-error" class="atlas-message" role="alert" hidden></div>
           <div class="atlas-panel journey-workbench">
             <div class="journey-toolbar">
               <label for="journey-scenario"
@@ -658,19 +640,10 @@
                 </p>
               </div>
               <details class="model-assumptions">
-                <summary>Model assumptions &amp; data definitions</summary>
+                <summary>Model Assumptions &amp; Graph Math</summary>
                 <p>
-                  Illustrative sensitivity analysis, not a forecast. Added
-                  latency propagates through the directed call graph using fixed
-                  synchronous exposure weights: gateway → data 65%; gateway →
-                  identity 35%; data → storage 80%; identity → storage 50%.
-                  Asynchronous telemetry has zero latency exposure. Portfolio
-                  impact is weighted by selected request volumes. Throughput and
-                  failure rates stay fixed; queueing, retries, and saturation
-                  are not modeled. Metrics count service-level requests, so one
-                  user action may contribute to several services. All records
-                  and service relationships are synthetic.
-                </p>
+                  A sensitivity model for exploring dependency exposure, rather than a production forecast. Directed edges run from caller to dependency: Gateway → Data 65%; Gateway → Identity 35%; Data → Storage 80%; Identity → Storage 50%. Exposure multiplies along each synchronous path and adds across paths (capped at 100%). Gateway’s Storage exposure is (0.65 × 0.80) + (0.35 × 0.50) = 0.695. Portfolio latency impact is weighted by request volume in the selected scope. Asynchronous telemetry contributes no latency exposure. Throughput and failure rates stay fixed; queueing, retry amplification, and saturation are outside this model. Error-budget consumption compares observed failures with the failures permitted by the 99.9% success target. Counts represent service calls, so one user action may contribute to several services. All records and relationships are synthetic.
+              </p>
               </details>
             </div>
           </div>

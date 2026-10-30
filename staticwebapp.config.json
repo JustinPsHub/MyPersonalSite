@@ -51,6 +51,13 @@
       }
     },
     {
+      "route": "/resume/*.pdf",
+      "headers": {
+        "Cache-Control": "no-cache",
+        "X-Robots-Tag": "noindex, noarchive"
+      }
+    },
+    {
       "route": "/*.html",
       "headers": {
         "Cache-Control": "no-cache"
@@ -67,7 +74,8 @@
   },
   "mimeTypes": {
     ".woff": "font/woff",
-    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".pdf": "application/pdf"
   },
   "platform": {
     "apiRuntime": "node:22"

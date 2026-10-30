@@ -73,3 +73,5 @@ Professional copy generalizes experience without publishing employer project det
 [Systems Studio release and verification](docs/systems-studio.md)
 
 [Coordinated order intelligence filters](docs/order-intelligence-filters.md)
+
+Architecture and interaction contracts: [Architecture labs](docs/architecture-labs.md).
