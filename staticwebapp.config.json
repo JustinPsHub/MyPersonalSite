@@ -1,19 +1,46 @@
 {
   "routes": [
     {
-      "route": "/admin",
-      "rewrite": "/admin.html",
+      "route": "/api/observatory/public-key",
+      "methods": [
+        "GET"
+      ],
+      "headers": {
+        "Cache-Control": "public, max-age=60",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/api/observatory/*",
+      "allowedRoles": [
+        "authenticated"
+      ],
       "headers": {
         "Cache-Control": "no-store",
         "X-Robots-Tag": "noindex, noarchive, nosnippet"
       }
     },
     {
+      "route": "/admin",
+      "rewrite": "/api/observatory/page",
+      "headers": {
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex, noarchive, nosnippet"
+      },
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
       "route": "/admin.html",
       "headers": {
         "Cache-Control": "no-store",
         "X-Robots-Tag": "noindex, noarchive, nosnippet"
-      }
+      },
+      "rewrite": "/api/observatory/page",
+      "allowedRoles": [
+        "authenticated"
+      ]
     },
     {
       "route": "/privacy",
@@ -101,5 +128,11 @@
   },
   "platform": {
     "apiRuntime": "node:22"
+  },
+  "responseOverrides": {
+    "401": {
+      "redirect": "/.auth/login/github?post_login_redirect_uri=.referrer",
+      "statusCode": 302
+    }
   }
 }

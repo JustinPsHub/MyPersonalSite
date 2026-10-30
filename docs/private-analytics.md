@@ -2,7 +2,9 @@
 
 The portfolio stays on Azure Static Web Apps Free, with its existing Node 22 contact API and anti-scraping protections. No DNS migration, GoDaddy API change, paid plan, Application Insights or Log Analytics resource is required.
 
-The isolated service, Palmer Observatory, is maintained through the connected Sites source repository and D1 migrations. Origin: `https://palmer-observatory.happy-mink-8142.chatgpt.site`. `/admin` on the portfolio is a noindex convenience redirect. It excludes this browser before redirecting and contains no private data. The service requires the owner's ChatGPT identity, exact email allowlist, pinned Site-scoped user ID and a signed 30-minute session for every data query.
+The isolated service, Palmer Observatory, is maintained through the connected Sites source repository and D1 migrations. Origin: `https://palmer-observatory.happy-mink-8142.chatgpt.site`. `/admin` is served by the existing Azure API on the portfolio origin. It is not a redirect or iframe. Azure's built-in GitHub sign-in authenticates the visitor; the server requires the verified `JustinPsHub` account, an authenticated platform principal and a valid 30-minute HttpOnly session. D1 pins the app-specific owner ID. All other identities are denied. The footer shows an administration link only to the signed-in owner. Page markup is packaged with the API, never the public static files.
+
+Every server-to-server data request is signed with Ed25519, timestamped and single-use. The signing seed is domain-separated from the existing CONTACT_SESSION_SECRET; no private key or shared secret leaves Azure. The backend obtains only the public verification key from the fixed existing Azure application's HTTPS endpoint, `/api/observatory/public-key`. Public keys cannot sign requests or authorize a visitor. The backend rejects stale signatures, changed payloads, replays and a different pinned identity. No new runtime secret or paid resource is needed. The standalone service's previous owner-only ChatGPT access remains as a fallback.
 
 ## Collection and privacy
 
