@@ -69,21 +69,21 @@ test('reduced motion retains the full Atlas workflow and live chart values',()=>
 test('keyboard focus survives cross filtering from a failure contribution',()=>{const ui=setup('visuals'),b=ui.doc.querySelector('.failure-row[data-service="storage"]');b.focus();b.click();assert.equal(ui.doc.activeElement.dataset.service,'storage');assert.ok(ui.doc.activeElement.classList.contains('failure-row'));ui.close()});
 
 test('journey scenarios change derived measures and reveal rejected provenance without altering telemetry',()=>{
- const ui=setup('visuals'),{doc,w}=ui,requests=doc.querySelector('#requests').textContent;
+ const ui=setup('visuals',{query:'?service=API+Gateway&days=7&date=2026-10-14'}),{doc,w}=ui,requests=doc.querySelector('#requests').textContent;
  assert.equal(doc.querySelector('#journey-total').textContent,'$1,729.00');
  const scenario=doc.querySelector('#journey-scenario');scenario.value='drift';scenario.dispatchEvent(new w.Event('change'));
  assert.equal(doc.querySelector('#journey-total').textContent,'$1,340.50');assert.equal(doc.querySelector('#journey-orders').textContent,'9');
  doc.querySelector('#journey-ledger [data-event="3"]').click();assert.match(doc.querySelector('#journey-code').textContent,/quarantined/);assert.match(doc.querySelector('#journey-code').textContent,/safe integer/);
  assert.equal(doc.activeElement.dataset.event,'3');assert.equal(doc.querySelector('#requests').textContent,requests);
  scenario.value='retry';scenario.dispatchEvent(new w.Event('change'));doc.querySelector('#journey-ledger [data-event="10"]').click();assert.match(doc.querySelector('#journey-code').textContent,/skipped/);
- assert.equal(doc.querySelector('#journey-total').textContent,'$1,356.00');assert.deepEqual(ui.errors,[]);ui.close();
+ assert.equal(doc.querySelector('#journey-total').textContent,'$0.00');doc.querySelector('#journey-clear-selection').click();assert.equal(doc.querySelector('#journey-total').textContent,'$1,356.00');assert.deepEqual(ui.errors,[]);ui.close();
 });
 test('journey share state survives analytical filters, browser navigation and reset',()=>{
  const ui=setup('visuals',{query:'?journey=drift&stage=1&event=7'}),{doc,w}=ui;
  assert.equal(doc.querySelector('#journey-scenario').value,'drift');assert.match(doc.querySelector('#journey-code').textContent,/USD/);
- doc.querySelector('[data-days="7"]').click();assert.match(w.location.search,/journey=drift/);assert.match(w.location.search,/stage=1/);assert.match(w.location.search,/event=7/);
+ doc.querySelector('[data-days="7"]').click();assert.match(w.location.search,/journey=drift/);assert.match(w.location.search,/stage=1/);assert.match(w.location.search,/event=0/);
  w.history.replaceState(null,'','?journey=retry&stage=2&event=10');w.dispatchEvent(new w.PopStateEvent('popstate'));assert.match(doc.querySelector('#journey-code').textContent,/skipped/);
- doc.querySelector('#reset-filters').click();assert.equal(doc.querySelector('#journey-scenario').value,'clean');assert.equal(doc.querySelector('#journey-total').textContent,'$1,729.00');ui.close();
+ doc.querySelector('#reset-filters').click();assert.equal(doc.querySelector('#journey-scenario').value,'clean');assert.equal(doc.querySelector('#journey-total').textContent,'$350,589.69');ui.close();
 });
 test('matrix keyboard movement and selection coordinate the exact service and day',()=>{
  const ui=setup('visuals'),{doc,w}=ui;let cell=doc.querySelector('[data-cell="49"]');cell.focus();cell.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true}));
@@ -109,7 +109,7 @@ test('replay can be paused and scenario changes cancel an in-flight sequence',()
  doc.querySelector('#journey-replay').click();assert.equal(doc.querySelector('#journey-progress').textContent,'1 of 5 · Replaying');assert.equal(timers.size,1);
  const advance=[...timers.values()][0];timers.clear();advance();assert.equal(doc.querySelector('#journey-progress').textContent,'2 of 5 · Replaying');
  doc.querySelector('#journey-replay').click();assert.equal(timers.size,0);assert.equal(doc.querySelector('#journey-progress').textContent,'2 of 5');
- doc.querySelector('#journey-replay').click();const scenario=doc.querySelector('#journey-scenario');scenario.value='retry';scenario.dispatchEvent(new w.Event('change'));assert.equal(timers.size,0);assert.equal(doc.querySelector('#journey-progress').textContent,'5 of 5');assert.equal(doc.querySelector('#journey-total').textContent,'$1,356.00');ui.close();
+ doc.querySelector('#journey-replay').click();const scenario=doc.querySelector('#journey-scenario');scenario.value='retry';scenario.dispatchEvent(new w.Event('change'));assert.equal(timers.size,0);assert.equal(doc.querySelector('#journey-progress').textContent,'5 of 5');assert.equal(doc.querySelector('#journey-total').textContent,'$274,956.27');ui.close();
 });
 
 test('Systems Studio routes perspectives and node activation without losing focus',()=>{
@@ -130,11 +130,11 @@ test('Systems Studio reduced motion schedules no frames and retains navigation',
  assert.equal(doc.querySelectorAll('.project-preview').length,2);ui.close();
 });
 test('scenario comparison derives exact outcomes and opens the first exclusion with URL state and focus',()=>{
- const ui=setup('visuals'),{doc,w}=ui;const before=doc.querySelector('#requests').textContent;
+ const ui=setup('visuals',{query:'?service=API+Gateway&days=7&date=2026-10-14'}),{doc,w}=ui;const before=doc.querySelector('#requests').textContent;
  assert.equal(doc.querySelectorAll('[data-compare-scenario]').length,3);
  assert.match(doc.querySelector('[data-compare-scenario=drift]').textContent,/9 accepted · 3 quarantined · 0 duplicates/);
  assert.match(doc.querySelector('[data-compare-scenario=drift]').textContent,/\$1,340\.50/);
- doc.querySelector('[data-compare-scenario=drift]').click();assert.match(w.location.search,/journey=drift/);assert.match(w.location.search,/event=3/);assert.match(w.location.search,/stage=1/);assert.match(doc.querySelector('#journey-code').textContent,/quarantined/);assert.equal(doc.activeElement.id,'journey-stage-title');
+ doc.querySelector('[data-compare-scenario=drift]').click();assert.match(w.location.search,/journey=drift/);assert.match(w.location.search,/event=3/);assert.match(w.location.search,/stage=4/);assert.match(doc.querySelector('#journey-code').textContent,/quarantined/);assert.equal(doc.activeElement.id,'journey-stage-title');
  doc.querySelector('[data-compare-scenario=retry]').click();assert.match(doc.querySelector('#journey-code').textContent,/skipped/);assert.match(w.location.search,/event=10/);assert.match(doc.querySelector('#journey-total').textContent,/1,356\.00/);
  assert.equal(doc.querySelectorAll('[data-compare-scenario][aria-pressed=true]').length,1);assert.equal(doc.querySelector('#requests').textContent,before);
  doc.querySelector('#reset-filters').click();assert.equal(doc.querySelector('[data-compare-scenario=clean]').getAttribute('aria-pressed'),'true');ui.close();
@@ -142,4 +142,45 @@ test('scenario comparison derives exact outcomes and opens the first exclusion w
 test('the homepage has no WCAG semantic accessibility violations',async()=>{
  const ui=setup('index'),{doc,w}=ui;w.eval(require('axe-core').source);
  const result=await w.axe.run(doc,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']},rules:{'color-contrast':{enabled:false}}});assert.equal(result.violations.length,0,JSON.stringify(result.violations.map(v=>v.id)));ui.close();
+});
+
+test('order intelligence recalculates for service, period, day slider, map and reset selections',()=>{
+ const ui=setup('visuals'),{doc,w}=ui;
+ assert.equal(doc.querySelector('#journey-orders').textContent,'1,800');
+ const initial=doc.querySelector('#journey-total').textContent;
+ const service=doc.querySelector('#service');service.value='Identity';service.dispatchEvent(new w.Event('change'));
+ assert.equal(doc.querySelector('#journey-orders').textContent,'360');assert.notEqual(doc.querySelector('#journey-total').textContent,initial);
+ doc.querySelector('[data-days="7"]').click();assert.equal(doc.querySelector('#journey-orders').textContent,'84');
+ assert.equal(doc.querySelector('#journey-total').textContent,'$15,867.06');
+ const slider=doc.querySelector('#inspect-day');slider.value='0';slider.dispatchEvent(new w.Event('input'));
+ assert.equal(doc.querySelector('#journey-orders').textContent,'12');assert.match(doc.querySelector('#journey-scope').textContent,/Oct 8/);
+ doc.querySelector('[data-map-node="storage"]').click();assert.equal(doc.querySelector('#journey-total').textContent,'$2,579.67');
+ doc.querySelector('#reset-filters').click();assert.equal(doc.querySelector('#journey-total').textContent,initial);assert.equal(doc.querySelector('#journey-orders').textContent,'1,800');assert.deepEqual(ui.errors,[]);ui.close();
+});
+test('delivery selection filters measures, stages expose processing state, and clearing retains workspace filters',()=>{
+ const ui=setup('visuals',{query:'?service=API+Gateway&days=7&date=2026-10-14'}),{doc,w}=ui;
+ doc.querySelector('#journey-ledger [data-event="0"]').click();assert.equal(doc.querySelector('#journey-total').textContent,'$129.00');assert.equal(doc.querySelector('#journey-orders').textContent,'1');assert.match(w.location.search,/order=selected/);assert.match(doc.querySelector('[data-journey-stage="0"]').textContent,/1 delivery/);assert.match(doc.querySelector('[data-journey-stage="4"]').textContent,/1 order/);
+ doc.querySelector('#journey-contributions [data-event="1"]').click();assert.equal(doc.querySelector('#journey-total').textContent,'$84.50');
+ doc.querySelector('[data-journey-stage="0"]').click();assert.equal(doc.querySelector('#journey-total').textContent,'Pending');assert.equal(doc.querySelector('#journey-count-label').textContent,'Received deliveries');
+ doc.querySelector('[data-journey-stage="4"]').click();assert.equal(doc.querySelector('#journey-total').textContent,'$84.50');
+ doc.querySelector('#journey-clear-selection').click();assert.equal(doc.querySelector('#journey-total').textContent,'$1,729.00');assert.equal(doc.querySelector('#journey-clear-selection').hidden,true);assert.equal(doc.querySelector('#service').value,'API Gateway');assert.doesNotMatch(w.location.search,/order=selected/);ui.close();
+});
+test('scoped order URLs, history, paging, comparison and exclusions stay coordinated',()=>{
+ const ui=setup('visuals',{query:'?service=Storage&days=7&date=2026-10-08&journey=drift&stage=4&event=399&order=selected'}),{doc,w}=ui;
+ assert.equal(doc.querySelector('#journey-total').textContent,'$0.00');assert.equal(doc.querySelector('#journey-orders').textContent,'0');assert.match(doc.querySelector('#journey-code').textContent,/quarantined/);
+ doc.querySelector('#journey-clear-selection').click();assert.equal(doc.querySelector('#journey-total').textContent,'$2,000.03');
+ assert.match(doc.querySelector('[data-compare-scenario=drift]').textContent,/9 accepted · 3 quarantined/);
+ const date=doc.querySelector('#clear-date');date.click();assert.equal(doc.querySelector('#journey-orders').textContent,'63');
+ doc.querySelector('#journey-page-next').click();assert.match(doc.querySelector('#journey-page').textContent,/Page 2 of 7/);assert.equal(doc.querySelectorAll('#journey-ledger button').length,12);
+ w.history.replaceState(null,'','?service=API+Gateway&days=7&date=2026-10-14&event=0&order=selected');w.dispatchEvent(new w.PopStateEvent('popstate'));
+ assert.equal(doc.querySelector('#journey-total').textContent,'$129.00');assert.match(doc.querySelector('#journey-page').textContent,/Page 1 of 1/);
+ const before=doc.querySelector('#journey-total').textContent;const delta=doc.querySelector('#latency-delta');delta.value='100';delta.dispatchEvent(new w.Event('input'));assert.equal(doc.querySelector('#journey-total').textContent,before);assert.match(w.location.search,/order=selected/);assert.deepEqual(ui.errors,[]);ui.close();
+});
+test('public Resume labels use plain lettering',()=>{
+ for(const page of ['index','resume','contact','visuals','platform']){
+  const dom=new JSDOM(fs.readFileSync(path.join(root,page+'.html'),'utf8'));
+  assert.doesNotMatch(dom.window.document.documentElement.textContent,/r[ée]sum[é]/i);
+  if(page==='resume')assert.match(dom.window.document.querySelector('main').textContent,/Download resume/);
+  dom.window.close();
+ }
 });

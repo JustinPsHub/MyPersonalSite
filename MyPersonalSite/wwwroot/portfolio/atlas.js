@@ -62,6 +62,7 @@
         p.set("journey", view.key);
         p.set("stage", view.stage);
         p.set("event", view.selected);
+        if (new URLSearchParams(location.search).get('order') === 'selected') p.set('order', 'selected');
       }
       history.replaceState(
         null,
@@ -213,7 +214,7 @@
             `<text class="chart-text" x="${x(i)}" y="${h - 8}" text-anchor="${i === 0 ? "start" : i === dailySeries.length - 1 ? "end" : "middle"}">${dateLabel(dailySeries[i].date)}</text>`,
         )
         .join("");
-      host.innerHTML = `<svg viewBox="0 0 ${w} ${h}" role="img" aria-labelledby="trend-title trend-desc"><title id="trend-title">${metric === "latency" ? "Average latency" : title}</title><desc id="trend-desc">${state.days} days ending October 14, 2026, compared with the previous ${state.days} days. Use the Inspect day slider for exact values and Focus this day to filter all views. CSV exports contain the selected records.</desc>${grid}<polygon class="chart-area" points="${left},${h - bottom} ${points(dailySeries)} ${w - right},${h - bottom}"/><polyline class="previous-line" points="${points(previousSeries)}"/><polyline class="current-line" points="${points(dailySeries)}"/>${ticks}<line id="chart-cursor" class="chart-cursor" x1="0" x2="0" y1="${top}" y2="${h - bottom}"/><circle id="chart-point" class="chart-point" r="4" cx="0" cy="0"/><rect class="chart-hit" x="${left}" y="${top}" width="${w - left - right}" height="${h - top - bottom}"/></svg>`;
+      host.innerHTML = `<svg viewBox="0 0 ${w} ${h}" role="img" aria-labelledby="trend-title trend-desc"><title id="trend-title">${metric === "latency" ? "Average latency" : title}</title><desc id="trend-desc">${state.days} days ending October 14, 2026, compared with the previous ${state.days} days. Use the day slider to select a date and immediately filter linked views. CSV exports contain the selected records.</desc>${grid}<polygon class="chart-area" points="${left},${h - bottom} ${points(dailySeries)} ${w - right},${h - bottom}"/><polyline class="previous-line" points="${points(previousSeries)}"/><polyline class="current-line" points="${points(dailySeries)}"/>${ticks}<line id="chart-cursor" class="chart-cursor" x1="0" x2="0" y1="${top}" y2="${h - bottom}"/><circle id="chart-point" class="chart-point" r="4" cx="0" cy="0"/><rect class="chart-hit" x="${left}" y="${top}" width="${w - left - right}" height="${h - top - bottom}"/></svg>`;
       const slider = one("#inspect-day");
       slider.max = dailySeries.length - 1;
       inspectedIndex = state.date
@@ -451,6 +452,7 @@
     one("#inspect-day").addEventListener("input", (e) => {
       inspectedIndex = Number(e.target.value);
       inspectDay();
+      update({ date: dailySeries[inspectedIndex].date });
     });
     one("#focus-day").addEventListener("click", () =>
       update(
