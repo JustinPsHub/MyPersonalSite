@@ -2,3 +2,5 @@
 const {app}=require('@azure/functions');
 const {createContactHandler}=require('./contact');
 app.http('contact',{route:'contact',authLevel:'anonymous',methods:['GET','POST','HEAD','PUT','DELETE','OPTIONS'],handler:createContactHandler()});
+const {createObservatoryHandler}=require('./observatory');
+app.http('observatory',{route:'observatory/{action}',authLevel:'anonymous',methods:['GET','POST','HEAD','PUT','DELETE','OPTIONS'],handler:createObservatoryHandler()});

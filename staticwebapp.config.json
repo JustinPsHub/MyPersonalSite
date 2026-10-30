@@ -1,6 +1,55 @@
 {
   "routes": [
     {
+      "route": "/api/observatory/public-key",
+      "methods": [
+        "GET"
+      ],
+      "headers": {
+        "Cache-Control": "public, max-age=60",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/api/observatory/*",
+      "allowedRoles": [
+        "authenticated"
+      ],
+      "headers": {
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex, noarchive, nosnippet"
+      }
+    },
+    {
+      "route": "/admin",
+      "rewrite": "/api/observatory/page",
+      "headers": {
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex, noarchive, nosnippet"
+      },
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/admin.html",
+      "headers": {
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex, noarchive, nosnippet"
+      },
+      "rewrite": "/api/observatory/page",
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/privacy",
+      "rewrite": "/privacy.html",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
       "route": "/",
       "rewrite": "/index.html",
       "headers": {
@@ -51,6 +100,13 @@
       }
     },
     {
+      "route": "/resume/*.pdf",
+      "headers": {
+        "Cache-Control": "no-cache",
+        "X-Robots-Tag": "noindex, noarchive"
+      }
+    },
+    {
       "route": "/*.html",
       "headers": {
         "Cache-Control": "no-cache"
@@ -59,7 +115,7 @@
   ],
   "trailingSlash": "never",
   "globalHeaders": {
-    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'",
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self' https://palmer-observatory.happy-mink-8142.chatgpt.site; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'",
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
@@ -67,9 +123,16 @@
   },
   "mimeTypes": {
     ".woff": "font/woff",
-    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".pdf": "application/pdf"
   },
   "platform": {
     "apiRuntime": "node:22"
+  },
+  "responseOverrides": {
+    "401": {
+      "redirect": "/.auth/login/github?post_login_redirect_uri=.referrer",
+      "statusCode": 302
+    }
   }
 }
