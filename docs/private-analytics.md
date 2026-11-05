@@ -1,33 +1,20 @@
-# Private analytics integration
+# Palmer Observatory
 
-The portfolio stays on Azure Static Web Apps Free, with its existing Node 22 contact API and anti-scraping protections. No DNS migration, GoDaddy API change, paid plan, Application Insights or Log Analytics resource is required.
+Open `/admin/telemetry` and sign in as the GitHub owner. The existing Azure platform session establishes the account, and a verified passkey unlocks a separate 30-minute dashboard session. On first use, the authorized owner registers one passkey. Use a device or synced password manager you can recover. The service pins the Azure identity and rejects a replacement enrollment. Loss of the credential requires a controlled reset by the service administrator.
 
-The isolated service, Palmer Observatory, is maintained through the connected Sites source repository and D1 migrations. Origin: `https://palmer-observatory.happy-mink-8142.chatgpt.site`. `/admin` is served by the existing Azure API on the portfolio origin. It is not a redirect or iframe. Azure's built-in GitHub sign-in authenticates the visitor; the server requires the verified `JustinPsHub` account, an authenticated platform principal and a valid 30-minute HttpOnly session. D1 pins the app-specific owner ID. All other identities are denied. The footer shows an administration link only to the signed-in owner. Page markup is packaged with the API, never the public static files.
+The page and APIs require the exact GitHub account, Azure platform authentication, and the bound passkey session. Credential challenges expire in five minutes and are tied to the owner and origin. Passkey assertions require user verification, and accepted challenges cannot be replayed. Data and settings never ship with the public site. The app uses Secure, HttpOnly, SameSite cookies, same-origin write checks, no-store responses, and bounded request processing. The owner’s browser is excluded from public analytics after opening the administration page.
 
-Every server-to-server data request is signed with Ed25519, timestamped and single-use. The signing seed is domain-separated from the existing CONTACT_SESSION_SECRET; no private key or shared secret leaves Azure. The backend obtains only the public verification key from the fixed existing Azure application's HTTPS endpoint, `/api/observatory/public-key`. Public keys cannot sign requests or authorize a visitor. The backend rejects stale signatures, changed payloads, replays and a different pinned identity. No new runtime secret or paid resource is needed. The standalone service's previous owner-only ChatGPT access remains as a fallback.
+## Measurements
 
-## Collection and privacy
+- Opted-in page views, per-tab sessions, approximate browser counts, first-observed and repeat browser activity, navigation, foreground engagement, résumé clicks, lab interactions and redacted browser errors. Browser identifiers rotate after 30 days. Historical identifiers rotated daily. IDs and sessions approximate browser activity. They do not identify a person or organization.
+- Approximate edge country, region and city when supplied, coarse device/browser/OS, referrer domains, campaign labels, and supported Web Vitals. Geography can reflect VPN and proxy exits. Referrer suppression can make a visit appear direct. Web Vitals coverage varies by browser.
+- Contact rejection, honeypots, early challenge use, rate limits, address reveals, selected probe routes and application-level authorization outcomes. Security records may include a keyed, day-rotated network label, coarse automation hints, status and processing time. No raw addresses, user agents, tokens, message bodies, or unrestricted URLs are retained. Security samples cannot estimate the full bot share of Azure edge traffic.
+- The contact flow opens the visitor’s mail app after a guarded address reveal. No mail is sent by the website. The Security tab can compare a manually entered email time against the prior hour of observed activity. The comparison stays in the browser and timing does not establish attribution. Azure edge logs, provider sign-in failures, mailbox data, continuous uptime and legacy .NET server health are outside the collection path.
 
-Shared `telemetry.js` starts only after opt-in. Do Not Track, Global Privacy Control, local/test hosts and automated browsers disable it. `/privacy` discloses fields, providers, retention and controls. Declining analytics does not affect any portfolio feature. Browser IDs rotate after 24 hours, and per-tab sessions expire after 30 minutes of inactivity.
+## Retention and deployment
 
-Events cover page opens, lab opens, deliberately named interactions, simulation start/completion from actual run code, résumé interest/file clicks, contact interest/actions, visible active time, supported performance entries and redacted first-party error categories. Payloads include allowed paths, limited campaign labels, entry referrer origin, coarse dimensions and random IDs. Contact tokens, addresses, form contents, exception messages, stacks and sensitive query strings never enter telemetry.
+Azure Static Web Apps Free continues to serve the portfolio and existing API. Palmer Observatory reuses the existing Cloudflare Worker and D1 database. The bridge uses signed, expiring requests. Its machine diagnostics scope can write only bounded events. The Worker’s standalone dashboard is disabled in production so data access goes through the portfolio passkey flow.
 
-The tracker is approximately 4 KB gzip, batches, limits its queue/session volume, supports navigation-safe delivery and absorbs collector failure. No replay or advertising SDK is loaded. Only the collector origin is added to connect-src; existing script restrictions remain.
+Detailed usage is queryable for 30 days, aggregated usage for 365 days, security details for seven days and daily audit counters for 90 days. Traffic-triggered cleanup may physically delete expired rows later. Application caps include 3,000 browser events, 6,000 validated batches and 1,200 security observations per UTC day. Dashboard results disclose truncation. The release adds no new paid resources or subscription. Hosting-provider billing beyond the known Azure Free plan is outside the application.
 
-## Interpretation and capacity
-
-Visitor-days count distinct random IDs per UTC day, not people. New/returning people are unavailable. Active counts mean recently observed sessions. Acquisition is partial when referrers are stripped; email needs utm_medium=email. Geography is approximate trusted edge metadata when available. The map plots country centroids, not precise visitor positions. LCP/CLS use browser observers; largest observed interaction latency approximates INP and is labeled accordingly. These are not comprehensive Azure server, WAF, contact or uptime logs.
-
-Résumé clicks do not confirm downloads; contact actions do not confirm sent email. The funnel requires ordered actions within a session. Details are retained for 30 days, aggregates 365 days and audit counters 90 days. Traffic-triggered cleanup may physically delete later during inactivity; expired details are excluded from queries immediately.
-
-Application caps: 3,000 stored events and 6,000 admitted batches per UTC day, 12 events / 12 KiB per batch, 60 batches per source per 10 minutes, 120 events per browser session. An atomic SQL trigger enforces the event cap. Detailed queries stop at 12,000 events and disclose truncation. Audit counts cap at 500 per signal/day.
-
-Managed hosting billing and account-wide quotas are not exposed by this connection. No paid or metered Azure telemetry resource was enabled. Published Cloudflare Free allowances are reference limits, not a verified managed-account plan; the dashboard states this. A paid Cloudflare account can bill overages and must not be substituted under the $0 requirement.
-
-## Release
-
-Run `npm --prefix tests test` and `node scripts/build-static.mjs`; publish static output and `api` together through the existing Azure SWA CLI workflow. Build on the newer deployed architecture-labs revision, not an older main-branch snapshot.
-
-After activation, verify both domains, privacy/administration routes, non-consent and opt-in, a real lab journey and owner login. Verify denial with another identity and forged-header stripping at the platform boundary before claiming complete end-to-end authorization verification. Never seed fake production traffic.
-
-Authoring status: Azure CLI access encountered a network approval cancellation, and the Azure browser is at sign-in. Passing source tests does not prove the public instrumentation is deployed. Refer to the deployment handoff for actual completion state.
+Run `npm --prefix tests ci`, `npm --prefix api ci`, `npm --prefix tests test`, and `node scripts/build-static.mjs`. Deploy the static and API artifacts together. Deploy the Observatory Worker migration before activating the corresponding Azure API.

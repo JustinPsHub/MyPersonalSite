@@ -10,7 +10,7 @@ const output=path.join(root,'artifacts/static-site');
 test('static release preserves page links, fonts, downloads, and route targets without publishing server files',()=>{
   execFileSync(process.execPath,[path.join(root,'scripts/build-static.mjs')]);
   const config=JSON.parse(fs.readFileSync(path.join(output,'staticwebapp.config.json'),'utf8'));
-  for(const route of config.routes.filter(r=>r.rewrite)){if(route.rewrite.startsWith('/api/')){assert.equal(route.rewrite,'/api/observatory/page');assert.ok(route.allowedRoles.includes('authenticated'));continue;}assert.ok(fs.existsSync(path.join(output,route.rewrite)),route.route);}
+  for(const route of config.routes.filter(r=>r.rewrite)){if(route.rewrite==='/api/observatory-probe'){assert.ok(!route.allowedRoles);continue;}if(route.rewrite.startsWith('/api/')){assert.equal(route.rewrite,'/api/observatory/page');assert.ok(route.allowedRoles.includes('authenticated'));continue;}assert.ok(fs.existsSync(path.join(output,route.rewrite)),route.route);}
   for(const page of ['index','visuals','platform','resume','contact']){
     const dom=new JSDOM(fs.readFileSync(path.join(output,page+'.html'),'utf8'));
     for(const element of dom.window.document.querySelectorAll('[href],[src]')){

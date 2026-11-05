@@ -2,6 +2,7 @@
 const {createHash,createHmac,createPrivateKey,createPublicKey,randomBytes,sign,timingSafeEqual}=require('node:crypto');
 const {readFile}=require('node:fs/promises');
 const path=require('node:path');
+const {createPasskeyHandler}=require('./observatory-passkey');
 const SERVICE='https://palmer-observatory.happy-mink-8142.chatgpt.site';
 const OWNER='justinpshub';
 const COOKIE='__Host-jp-admin';
@@ -30,7 +31,7 @@ function createObservatoryHandler(options={}){
  const secret=options.secret??process.env.CONTACT_SESSION_SECRET,request=options.fetch||global.fetch,now=options.now||Date.now;
  const counters=new Map();
  const json=(status,value,extra={})=>({status,headers:{...HEADERS,...extra,'Content-Type':'application/json; charset=utf-8'},jsonBody:value});
- const mac=s=>createHmac('sha256',secret).update('admin-session-v1|'+s).digest('base64url');
+ const mac=s=>createHmac('sha256',secret).update('admin-passkey-session-v2|'+s).digest('base64url');
  function validSession(req,p){const value=(req.headers.get('cookie')||'').match(/(?:^|;\s*)__Host-jp-admin=([^;]+)/)?.[1];if(!value)return false;const [expiry,sig,...extra]=value.split('.'),age=Number(expiry)-now();if(extra.length||age<=0||age>1800000||!sig)return false;const a=Buffer.from(sig),b=Buffer.from(mac(p.userId+'|'+expiry));return a.length===b.length&&timingSafeEqual(a,b)}
  function rate(p){for(const [key,v] of counters)if(v.until<=now())counters.delete(key);const b=counters.get(p.userId)||{count:0,until:now()+60000};b.count++;counters.set(p.userId,b);return b.count<=60}
  async function bridge(action,p,query='',body=''){
@@ -39,6 +40,11 @@ function createObservatoryHandler(options={}){
   if(!response.ok){const e=new Error('bridge');e.status=response.status;throw e}
   return response.json();
  }
+ function sessionCookie(p){
+  const expiry=String(now()+1800000);
+  return COOKIE+'='+expiry+'.'+mac(p.userId+'|'+expiry)+'; Path=/; Max-Age=1800; Secure; HttpOnly; SameSite=Strict';
+ }
+ const passkey=createPasskeyHandler({secret,bridge,now,json,boundedBody,sessionCookie,verifier:options.webauthn});
  return async function observatory(req){
   const url=new URL(req.url),action=req.params?.action||url.pathname.split('/').at(-1),page=action==='page';
   if(action==='public-key'){
@@ -48,13 +54,22 @@ function createObservatoryHandler(options={}){
   }
   const p=principal(req);
   if(!p){
-   if(page&&req.method==='GET'&&!req.headers.get('x-ms-client-principal'))return {status:302,headers:{...HEADERS,Location:'/.auth/login/github?post_login_redirect_uri='+encodeURIComponent((ORIGINS.has(url.origin)?url.origin:'https://justinraypalmer.com')+'/admin')}};
+   if(page&&req.method==='GET'&&!req.headers.get('x-ms-client-principal'))return {status:302,headers:{...HEADERS,Location:'/.auth/login/github?post_login_redirect_uri='+encodeURIComponent((ORIGINS.has(url.origin)?url.origin:'https://justinraypalmer.com')+'/admin/telemetry')}};
    return json(req.headers.get('x-ms-client-principal')?403:401,{error:'unauthorized'});
   }
   if(typeof secret!=='string'||secret.length<32)return json(503,{error:'configuration_unavailable'});
   if(!rate(p))return json(429,{error:'limited'},{'Retry-After':'60'});
   if(page&&req.method==='GET'){
-   try{await bridge('authorize',p);const expiry=String(now()+1800000),body=options.html??await readFile(path.join(__dirname,'../assets/observatory.html'),'utf8');return {status:200,headers:{...HEADERS,'Content-Type':'text/html; charset=utf-8','Set-Cookie':COOKIE+'='+expiry+'.'+mac(p.userId+'|'+expiry)+'; Path=/; Max-Age=1800; Secure; HttpOnly; SameSite=Strict'},body};}catch{return json(503,{error:'analytics_temporarily_unavailable'})}
+   try {
+    const unlocked=validSession(req,p);
+    await bridge('authorize',p);
+    const body=(unlocked?options.html:options.passkeyHtml)??await readFile(path.join(__dirname,unlocked?'../assets/observatory.html':'../assets/observatory-passkey.html'),'utf8');
+    return {status:200,headers:{...HEADERS,'Content-Type':'text/html; charset=utf-8'},body};
+   } catch {return json(503,{error:'analytics_temporarily_unavailable'})}
+  }
+  if(action==='passkey-options'||action==='passkey-finish')return passkey(req,p,action);
+  if(action==='logout'&&req.method==='POST'&&ORIGINS.has(req.headers.get('origin'))){
+   return {status:303,headers:{...HEADERS,Location:'/.auth/logout?post_logout_redirect_uri=/','Set-Cookie':COOKIE+'=; Path=/; Max-Age=0; Secure; HttpOnly; SameSite=Strict'}};
   }
   if(!validSession(req,p))return json(401,{error:'session_expired'});
   if(action==='data'&&req.method==='GET'){

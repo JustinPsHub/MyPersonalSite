@@ -21,6 +21,17 @@
       }
     },
     {
+      "route": "/admin/telemetry",
+      "rewrite": "/api/observatory/page",
+      "headers": {
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex, noarchive, nosnippet"
+      },
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
       "route": "/admin",
       "rewrite": "/api/observatory/page",
       "headers": {
@@ -41,6 +52,30 @@
       "allowedRoles": [
         "authenticated"
       ]
+    },
+    {
+      "route": "/wp-login.php",
+      "rewrite": "/api/observatory-probe"
+    },
+    {
+      "route": "/wp-admin/*",
+      "rewrite": "/api/observatory-probe"
+    },
+    {
+      "route": "/xmlrpc.php",
+      "rewrite": "/api/observatory-probe"
+    },
+    {
+      "route": "/.env",
+      "rewrite": "/api/observatory-probe"
+    },
+    {
+      "route": "/.git/*",
+      "rewrite": "/api/observatory-probe"
+    },
+    {
+      "route": "/admin/*",
+      "rewrite": "/api/observatory-probe"
     },
     {
       "route": "/privacy",

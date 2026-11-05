@@ -8,3 +8,19 @@ test('tokens require the matching signed session, valid signature, allowed origi
 test('honeypots, oversized bodies, unsupported fields, content types and methods are rejected without revealing contact',async()=>{for(const scenario of ['honeypot','oversized','extra','array','type','method']){const s=setup(),issued=await s.issue();s.advance(1300);const headers={Cookie:issued.cookie};let body={token:issued.token},method='POST';if(scenario==='honeypot')body.company='automated';if(scenario==='oversized')body.company='a'.repeat(3000);if(scenario==='extra')body.recipient='someone@example.test';if(scenario==='array')body=[];if(scenario==='type')headers['Content-Type']='text/plain';if(scenario==='method')method='PUT';const response=await s.handler(s.request(method,body,headers));assert.ok([400,405,415].includes(response.status),scenario);assert.ok(!JSON.stringify(response).includes(recipient),scenario)}});
 test('native HTML contact works without JavaScript and does not disclose the address on GET',async()=>{const s=setup();const get=await s.handler(s.request('GET',undefined,{Accept:'text/html'}));assert.equal(get.status,200);assert.ok(!get.body.includes(recipient));assert.match(get.headers['Set-Cookie'],/HttpOnly; Secure; SameSite=Strict/);const token=/name="token" value="([^"]+)"/.exec(get.body)[1],cookie=get.headers['Set-Cookie'].split(';')[0];s.advance(1300);const post=await s.handler(s.request('POST',new URLSearchParams({token,company:''}).toString(),{Accept:'text/html',Cookie:cookie,'Content-Type':'application/x-www-form-urlencoded'}));assert.equal(post.status,200);assert.match(post.body,/mailto:owner%40example.test/);assert.match(post.body,/Open email app/)});
 test('request limits and missing configuration fail closed',async()=>{const s=setup(),first=await s.issue();let last;for(let i=0;i<11;i++)last=await s.handler(s.request('GET',undefined,{Cookie:first.cookie}));assert.equal(last.status,429);assert.equal(last.headers['Retry-After'],'600');const absent=createContactHandler({secret:'',email:recipient});const result=await absent(s.request());assert.equal(result.status,503);assert.ok(!JSON.stringify(result).includes(recipient))});
+
+test('contact diagnostics receive only fixed outcomes and preserve successful and rejected responses',async()=>{
+ let time=1000000;
+ const signals=[];
+ const handler=createContactHandler({secret:'test-secret-with-at-least-thirty-two-characters',email:recipient,now:()=>time,
+  diagnostic:async(_req,kind,status)=>signals.push({kind,status})});
+ const s=setup();
+ const get=await handler(s.request());
+ const cookie=get.headers['Set-Cookie'].split(';')[0];
+ const token=get.jsonBody.token;
+ assert.equal((await handler(s.request('POST',{token},{Cookie:cookie}))).status,425);
+ time+=1300;
+ assert.equal((await handler(s.request('POST',{token,company:'filled by bot'},{Cookie:cookie}))).status,400);
+ assert.equal((await handler(s.request('POST',{token},{Cookie:cookie}))).status,200);
+ assert.deepEqual(signals,[{kind:'contact_early_attempt',status:425},{kind:'contact_honeypot',status:400},{kind:'contact_address_revealed',status:200}]);
+});
