@@ -3,7 +3,7 @@ const {createHash,createHmac,createPrivateKey,createPublicKey,randomBytes,sign,t
 const {readFile}=require('node:fs/promises');
 const path=require('node:path');
 const {createPasskeyHandler}=require('./observatory-passkey');
-const SERVICE='https://palmer-observatory.happy-mink-8142.chatgpt.site';
+const SERVICE='https://palmer-observatory.justinraypalmer.chatgpt.site';
 const OWNER='justinpshub';
 const COOKIE='__Host-jp-admin';
 const HEADERS={'Cache-Control':'no-store, private','X-Robots-Tag':'noindex, noarchive, nosnippet','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"};
@@ -83,4 +83,4 @@ function createObservatoryHandler(options={}){
   return json(404,{error:'not_found'});
  };
 }
-module.exports={createObservatoryHandler,principal,publicKey,signedHeaders,canonical};
+module.exports={createObservatoryHandler,principal,publicKey,signedHeaders,canonical,SERVICE};

@@ -1,7 +1,7 @@
 /* Optional first-party portfolio instrumentation. No secrets; never blocks the app. */
 (() => {
  'use strict';
- const ENDPOINT='https://palmer-observatory.happy-mink-8142.chatgpt.site/collect',RELEASE='portfolio-2026.11.05-observatory',ALLOWED=['justinraypalmer.com','www.justinraypalmer.com','icy-beach-0aa64750f.1.azurestaticapps.net'];
+ const ENDPOINT='https://palmer-observatory.justinraypalmer.chatgpt.site/collect',RELEASE='portfolio-2026.11.05-observatory',ALLOWED=['justinraypalmer.com','www.justinraypalmer.com','icy-beach-0aa64750f.1.azurestaticapps.net'];
  const CHOICE='jp.analytics.choice.v1',VISITOR='jp.analytics.visitor.v1',SESSION='jp.analytics.session.v1',EXCLUDE='jp.analytics.exclude.v1';
  const read=(s,k)=>{try{return JSON.parse(s.getItem(k))}catch{return null}},write=(s,k,v)=>{try{s.setItem(k,JSON.stringify(v))}catch{}},remove=(s,k)=>{try{s.removeItem(k)}catch{}};
  const path=()=>{let p=location.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/';if(p==='/index')p='/';return ['/','/visuals','/platform','/resume','/contact','/privacy'].includes(p)?p:'[other]'};

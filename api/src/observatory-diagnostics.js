@@ -2,9 +2,8 @@
 
 const {createHmac} = require('node:crypto');
 const {isIP} = require('node:net');
-const {signedHeaders} = require('./observatory');
+const {signedHeaders, SERVICE} = require('./observatory');
 
-const SERVICE = 'https://palmer-observatory.happy-mink-8142.chatgpt.site';
 const PATH = '/bridge/diagnostic';
 const PRINCIPAL = {provider: 'azure', purpose: 'diagnostics'};
 
