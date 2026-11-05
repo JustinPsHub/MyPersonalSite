@@ -36,9 +36,9 @@ function createObservatoryHandler(options={}){
  function rate(p){for(const [key,v] of counters)if(v.until<=now())counters.delete(key);const b=counters.get(p.userId)||{count:0,until:now()+60000};b.count++;counters.set(p.userId,b);return b.count<=60}
  async function bridge(action,p,query='',body=''){
   const pathname='/bridge/'+action+query,method=body?'POST':'GET';
-  const response=await request(SERVICE+pathname,{method,headers:signedHeaders(secret,method,pathname,p,body,now()),...(body?{body}:{}),signal:AbortSignal.timeout(15000),redirect:'error',cache:'no-store'});
+  const response=await request(SERVICE+pathname,{method,headers:signedHeaders(secret,method,pathname,p,body,now()),...(body?{body}:{}),signal:AbortSignal.timeout(15000),redirect:'error',cache:'no-store'}).catch(()=>{throw Object.assign(new Error('bridge_unavailable'),{status:503})});
   if(!response.ok){const e=new Error('bridge');e.status=response.status;throw e}
-  return response.json();
+  return response.json().catch(()=>{throw Object.assign(new Error('bridge_unavailable'),{status:503})});
  }
  function sessionCookie(p){
   const expiry=String(now()+1800000);
@@ -62,10 +62,11 @@ function createObservatoryHandler(options={}){
   if(page&&req.method==='GET'){
    try {
     const unlocked=validSession(req,p);
-    await bridge('authorize',p);
     const body=(unlocked?options.html:options.passkeyHtml)??await readFile(path.join(__dirname,unlocked?'../assets/observatory.html':'../assets/observatory-passkey.html'),'utf8');
     return {status:200,headers:{...HEADERS,'Content-Type':'text/html; charset=utf-8'},body};
-   } catch {return json(503,{error:'analytics_temporarily_unavailable'})}
+   } catch {
+    return {status:503,headers:{...HEADERS,'Content-Type':'text/html; charset=utf-8'},body:'<!doctype html><html lang="en"><meta charset="utf-8"><title>Palmer Observatory</title><main><h1>Dashboard temporarily unavailable</h1><p><a href="/admin/telemetry">Try again</a></p></main></html>'};
+   }
   }
   if(action==='passkey-options'||action==='passkey-finish')return passkey(req,p,action);
   if(action==='logout'&&req.method==='POST'&&ORIGINS.has(req.headers.get('origin'))){

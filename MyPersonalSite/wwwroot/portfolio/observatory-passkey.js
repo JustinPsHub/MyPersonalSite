@@ -9,7 +9,8 @@
       method:'POST', credentials:'same-origin', redirect:'manual',
       headers:{'Content-Type':'application/json', 'X-Observatory-Action':'passkey'}, body:JSON.stringify(body)
     });
-    if (!response.ok) throw new Error('Passkey verification was unavailable. Reload this page and try again.');
+    if (response.status === 503) throw new Error('The dashboard service is temporarily unavailable. Reload to try again.');
+    if (!response.ok) throw new Error('Passkey verification could not be completed. Reload the page and try again.');
     return response.json();
   }
   function convert(options, register) {
