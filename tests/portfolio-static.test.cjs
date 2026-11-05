@@ -11,14 +11,22 @@ test('static release preserves page links, fonts, downloads, and route targets w
   execFileSync(process.execPath,[path.join(root,'scripts/build-static.mjs')]);
   const config=JSON.parse(fs.readFileSync(path.join(output,'staticwebapp.config.json'),'utf8'));
   for(const route of config.routes.filter(r=>r.rewrite)){if(route.rewrite==='/api/observatory-probe'){assert.ok(!route.allowedRoles);continue;}if(route.rewrite.startsWith('/api/')){assert.equal(route.rewrite,'/api/observatory/page');assert.ok(route.allowedRoles.includes('authenticated'));continue;}assert.ok(fs.existsSync(path.join(output,route.rewrite)),route.route);}
-  for(const page of ['index','visuals','platform','resume','contact']){
+  const ownerRoute=config.routes.find(route=>route.route==='/admin/telemetry');
+  assert.equal(ownerRoute?.rewrite,'/api/observatory/page');
+  assert.ok(ownerRoute.allowedRoles.includes('authenticated'));
+  for(const page of ['index','visuals','platform','resume','contact','privacy']){
     const dom=new JSDOM(fs.readFileSync(path.join(output,page+'.html'),'utf8'));
+    const ownerLinks=dom.window.document.querySelectorAll('a[href="/admin/telemetry"]');
+    assert.equal(ownerLinks.length,1,page);
+    assert.equal(ownerLinks[0].textContent,'Owner sign-in');
     for(const element of dom.window.document.querySelectorAll('[href],[src]')){
       const value=element.getAttribute('href')||element.getAttribute('src');
       if(!value||/^[a-z]+:/i.test(value))continue;
+      if(value===ownerRoute.route)continue;
       if(value==='/api/contact'){assert.ok(fs.existsSync(path.join(root,'api/src/azure.js')));continue;}
       const url=new URL(value,'https://example.com/'+page+'.html');
-      const target=path.join(output,decodeURIComponent(url.pathname));assert.ok(fs.existsSync(target),`${page}: ${value}`);
+      const rewrite=config.routes.find(route=>route.route===url.pathname)?.rewrite;
+      const target=path.join(output,decodeURIComponent(rewrite||url.pathname));assert.ok(fs.existsSync(target),`${page}: ${value}`);
       if(url.hash&&target.endsWith('.html')){const targetDom=new JSDOM(fs.readFileSync(target,'utf8'));assert.ok(targetDom.window.document.getElementById(decodeURIComponent(url.hash.slice(1))),`${page}: missing fragment ${value}`);targetDom.window.close();}
     }
     dom.window.close();
