@@ -14,7 +14,7 @@ for (const page of pages) {
 }
 // Explicitly include the public frontend assets, never the host, configuration,
 // database, or other files in wwwroot.
-for (const file of ['telemetry.js','telemetry.css','admin-session.js','observatory-admin.css','observatory-admin.js','observatory-passkey.js','preferences.js', 'engine.js', 'app.js', 'modern.js', 'contact.js', 'style.css', 'studio.css', 'studio.js', 'product.css', 'lab-previews.js', 'event-lab.js', 'atlas.css', 'journey.css', 'journey.js', 'journey-engine.js', 'atlas-engine.js', 'atlas.js', 'favicon.svg', 'fonts']) {
+for (const file of ['telemetry.js','telemetry.css','admin-session.js','observatory-admin.css','observatory-admin.js','observatory-passkey.js','preferences.js', 'engine.js', 'app.js', 'modern.js', 'contact.js', 'style.css', 'design.css', 'studio.css', 'studio.js', 'product.css', 'lab-previews.js', 'event-lab.js', 'atlas.css', 'journey.css', 'journey.js', 'journey-engine.js', 'atlas-engine.js', 'atlas.js', 'favicon.svg', 'fonts']) {
   await cp(path.join(source, 'portfolio', file), path.join(output, 'portfolio', file), { recursive: true });
 }
 await mkdir(path.join(output, 'resume'), { recursive: true });
