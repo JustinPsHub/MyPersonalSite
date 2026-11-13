@@ -1,6 +1,8 @@
 # Connected by design — November 2026 visual release
 
-The public production frontend now uses an ivory, ink-blue and lime design system across the homepage, resume, contact, Atlas, Event Lab and privacy pages. The retained .NET/Blazor projects and all backend/authentication code are unchanged.
+This release has been superseded by the [minimal refinement](minimal-design-2026-11.md).
+
+This earlier release used an ivory, ink-blue and lime design system across the homepage, resume, contact, Atlas, Event Lab and privacy pages. The retained .NET/Blazor projects and all backend/authentication code are unchanged.
 
 The homepage adds an editorial introduction, a responsive portfolio index, orbit geometry around the working architecture study, signal artwork, refined project studies and a dark contact panel. The resume adds section navigation, a career timeline and distinct skill/education surfaces. Contact receives a new composition while retaining the protected address-release flow. Both labs share the typography, palette and surface treatment while retaining their engines and controls. Motion is bounded and disabled for reduced-motion preferences; there are no new JavaScript dependencies, remote fonts or image requests.
 

@@ -32,20 +32,18 @@
     <link rel="stylesheet" href="/portfolio/atlas.css?v=18" />
     <script src="/portfolio/engine.js?v=22" defer></script>
     <script src="/portfolio/app.js?v=17" defer></script>
-    <script src="/portfolio/modern.js?v=22" defer></script>
+    <script src="/portfolio/modern.js?v=23" defer></script>
     <script src="/portfolio/atlas-engine.js?v=17" defer></script>
     <link rel="stylesheet" href="/portfolio/journey.css?v=20" />
     <script src="/portfolio/journey-engine.js?v=20" defer></script>
     <script src="/portfolio/atlas.js?v=22" defer></script>
     <script src="/portfolio/journey.js?v=22" defer></script>
-  <link rel="stylesheet" href="/portfolio/product.css?v=22"><link rel="stylesheet" href="/portfolio/telemetry.css?v=1"><script defer src="/portfolio/telemetry.js?v=2"></script><link rel="stylesheet" href="/portfolio/design.css?v=20261112"></head>
+  <link rel="stylesheet" href="/portfolio/product.css?v=22"><link rel="stylesheet" href="/portfolio/telemetry.css?v=1"><script defer src="/portfolio/telemetry.js?v=2"></script><link rel="stylesheet" href="/portfolio/design.css?v=20261113"></head>
   <body class="atlas-page">
     <a class="skip" href="#main">Skip to content</a>
     <header class="header wrap">
       <a class="brand" href="index.html" aria-label="Justin Palmer home"
-        ><span class="mark" aria-hidden="true">jp.</span>Justin Palmer
-        <span class="portfolio-divider">/</span
-        ><span class="portfolio-context">Engineering lab</span></a
+        >Justin Palmer</a
       ><button
         class="nav-toggle js-only"
         id="nav-toggle"
@@ -56,7 +54,7 @@
       >
         <span id="nav-toggle-label">Menu</span><span aria-hidden="true">≡</span>
       </button>
-      <nav id="main-navigation" aria-label="Main navigation"><a href="index.html">Overview</a><a href="visuals.html" aria-current="page">Atlas Lab</a><a href="platform.html">Event Lab</a><a href="resume.html">Resume</a><a href="contact.html">Contact <span aria-hidden="true">↗</span></a></nav>
+      <nav id="main-navigation" aria-label="Main navigation"><a href="index.html">Overview</a><a href="resume.html">Resume</a><a href="visuals.html" aria-current="page">Atlas Lab</a><a href="platform.html">Event Lab</a><a href="contact.html">Contact</a></nav>
       <button
         class="icon-btn js-only"
         id="theme"
@@ -142,49 +140,8 @@
               ><span aria-hidden="true">◇</span> Interactive simulation</span
             >
           </div>
-          <div
-            class="experience-shortcuts"
-            aria-label="Explore engineering capabilities"
-          >
-            <a href="#journey"
-              ><span class="shortcut-art" aria-hidden="true"
-                ><svg viewBox="0 0 64 30">
-                  <path d="M8 15h14m10 0h18" />
-                  <circle cx="5" cy="15" r="4" />
-                  <path d="m27 9 6 6-6 6-6-6Z" />
-                  <rect
-                    x="50"
-                    y="9"
-                    width="12"
-                    height="12"
-                    rx="1"
-                  /></svg></span
-              ><span
-                ><strong>Follow the data</strong
-                ><small>Contracts → trusted measures</small></span
-              ><span aria-hidden="true">↗</span></a
-            >
-            <a href="#reliability"
-              ><span class="shortcut-matrix" aria-hidden="true"
-                ><i></i><i></i><i></i><i></i><i></i><i></i></span
-              ><span
-                ><strong>Find the signal</strong
-                ><small>Reliability across services</small></span
-              ><span aria-hidden="true">↗</span></a
-            >
-            <a href="#dependencies"
-              ><span class="shortcut-art" aria-hidden="true"
-                ><svg viewBox="0 0 56 30">
-                  <path
-                    d="M5 23 18 10m-10 0h10v10M28 16h8l4-6 5 12 5-6h5"
-                  /></svg></span
-              ><span
-                ><strong>Trace the impact</strong
-                ><small>Explore a dependency model</small></span
-              ><span aria-hidden="true">↗</span></a
-            >
-          </div>
-          <section class="architecture-banner" aria-labelledby="atlas-architecture-title"><h2 id="atlas-architecture-title">System Architecture &amp; Operational Impact</h2><p>A deterministic browser engine connects service telemetry, SLO error budgets, and directed dependency analysis—so you can investigate reliability signals and test latency exposure without a backend.</p><p class="architecture-meta">Synthetic snapshot · 5 services · 900 daily records · 180 days · 99.9% SLO target</p></section>
+
+          <details class="study-context"><summary>About this study</summary><div><p>A deterministic browser engine connects service telemetry, SLO error budgets, and directed dependency analysis—so you can investigate reliability signals and test latency exposure without a backend.</p><p class="architecture-meta">Synthetic snapshot · 5 services · 900 daily records · 180 days · 99.9% SLO target</p></div></details>
           <noscript><p class="atlas-message">Enable JavaScript to explore the workspace. Atlas demonstrates five connected services and a fixed synthetic snapshot; the architecture summary and model definitions remain available below.</p></noscript>
           <div id="atlas-error" class="atlas-message" role="alert" hidden></div>
           <div class="scenario-bar js-only" role="group" aria-label="Guided Atlas scenarios"><span class="scenario-label">Start with a scenario</span><button class="scenario-pill" data-atlas-scenario="slowdown" aria-pressed="false">Oct 08 · Storage slowdown<small>Trace three exposed callers</small></button><button class="scenario-pill" data-atlas-scenario="latency" aria-pressed="false">Storage +150 ms<small>Explore the modeled blast radius</small></button><button class="scenario-pill" data-atlas-scenario="slo" aria-pressed="false">Inspect SLO burn<small>99.9% success target</small></button><button id="scenario-reset" class="scenario-pill scenario-reset">Reset workspace ↻</button></div>

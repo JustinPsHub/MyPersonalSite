@@ -1,6 +1,6 @@
 (()=>{
  'use strict';
- const one=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)],engine=PortfolioEngine;
+ const one=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)];
  document.documentElement.classList.add('enhanced');
  // Mobile navigation is a disclosure; links stay visible when JavaScript is unavailable.
  const navToggle=one('#nav-toggle'),nav=one('#main-navigation'),siteHeader=one('.header');

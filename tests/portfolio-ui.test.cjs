@@ -29,7 +29,6 @@ test('invalid events are isolated with their reasons and never produce downstrea
 test('profile and contact remain available without scripts',()=>{const dom=new JSDOM(fs.readFileSync(path.join(root,'index.html'),'utf8'));const doc=dom.window.document;assert.equal(doc.querySelectorAll('.expertise-row').length,3);assert.equal(doc.querySelector('.case-study'),null);assert.ok(doc.querySelector('a[href="contact.html"]'));assert.ok(doc.querySelector('.actions a[href="resume.html"]'));assert.ok(doc.querySelector('nav a[href="visuals.html"]'));assert.ok(doc.querySelector('footer a[href="visuals.html"]'));dom.window.close()});
 test('professional introduction omits employer-specific project narratives while retaining career context',()=>{for(const page of ['index','resume','visuals','platform']){const dom=new JSDOM(fs.readFileSync(path.join(root,page+'.html'),'utf8')),doc=dom.window.document,text=doc.querySelector('main').textContent;assert.doesNotMatch(text,/25 fact tables|90 dimensions|VM quarantine|PL\/SQL/i);if(page!=='resume')assert.doesNotMatch(text,/Treasury|Internal Revenue Service|federal government/i);else{assert.match(text,/U.S. Department of the Treasury/);assert.match(text,/Internal Revenue Service/);assert.equal(doc.querySelectorAll('.experience').length,3);assert.equal(doc.querySelectorAll('.experience li').length,8)}dom.window.close()}});
 test('theme changes persist and dashboard colors update without losing filters',()=>{const ui=setup('visuals',{query:'?service=Identity&days=7'}),{doc,w}=ui;doc.querySelector('#theme').click();assert.equal(doc.documentElement.dataset.theme,'dark');assert.equal(w.localStorage.getItem('jp-theme'),'dark');assert.equal(doc.querySelector('#service').value,'Identity');assert.equal(doc.querySelector('#requests').title,'470,013 service requests');doc.querySelector('#theme').click();assert.equal(w.localStorage.getItem('jp-theme'),'light');ui.close()});
-test('perspective controls work with reduced motion while profile content stays visible',()=>{const ui=setup('index',{reduced:true}),{doc}=ui;assert.equal(doc.querySelector('.is-pending'),null);for(const [key,phrase] of [['data','Confident decisions'],['delivery','Reliable delivery'],['software','Dependable software']]){doc.querySelector(`[data-perspective="${key}"]`).click();assert.equal(doc.querySelector('.system-figure').dataset.system,key);assert.equal(doc.querySelectorAll('[data-perspective][aria-pressed="true"]').length,1);assert.match(doc.querySelector('#system-caption').textContent,new RegExp(phrase))}assert.equal(doc.querySelector('#system-caption').getAttribute('aria-live'),'polite');assert.deepEqual(ui.errors,[]);ui.close()});
 test('resume printing uses the browser and retains printable contact identity',()=>{const ui=setup('resume');let called=false;ui.w.print=()=>{called=true};ui.doc.querySelector('#print-resume').click();assert.equal(called,true);assert.match(ui.doc.querySelector('.print-contact').textContent,/Justin Palmer.*justinraypalmer\.com\/contact/);assert.ok(ui.doc.querySelector('a[href="/resume/jrp_resume_20260128.docx"]'));ui.close()});
 
 
@@ -112,23 +111,6 @@ test('replay can be paused and scenario changes cancel an in-flight sequence',()
  doc.querySelector('#journey-replay').click();const scenario=doc.querySelector('#journey-scenario');scenario.value='retry';scenario.dispatchEvent(new w.Event('change'));assert.equal(timers.size,0);assert.equal(doc.querySelector('#journey-progress').textContent,'5 of 5');assert.equal(doc.querySelector('#journey-total').textContent,'$274,956.27');ui.close();
 });
 
-test('Systems Studio routes perspectives and node activation without losing focus',()=>{
- const ui=setup('index'),{doc}=ui;
- for(const [key,target] of [['data','#journey'],['delivery','#dependencies'],['software','#journey']]){
-  const button=doc.querySelector(`[data-perspective="${key}"]`);button.focus();button.click();
-  assert.equal(doc.activeElement,button);assert.equal(doc.querySelectorAll('[data-perspective][aria-pressed=true]').length,1);
-  assert.match(doc.querySelector('#studio-deep-link').getAttribute('href'),new RegExp(target+'$'));
- }
- const node=doc.querySelector('[data-lens="data"]');node.focus();node.click();
- assert.equal(doc.querySelector('.studio').dataset.system,'data');assert.equal(doc.activeElement,node);
- assert.equal(doc.querySelector('#studio-label').textContent,'02 / DATA ARCHITECTURE');assert.equal(doc.querySelector('#studio-tech').textContent,'SQLData modelsPower BI');assert.deepEqual(ui.errors,[]);ui.close();
-});
-test('Systems Studio reduced motion schedules no frames and retains navigation',()=>{
- const ui=setup('index',{reduced:true}),{doc,w}=ui;
- doc.querySelector('.studio').dispatchEvent(new w.MouseEvent('pointermove',{clientX:20,clientY:20}));
- assert.equal(ui.raf.size,0);doc.querySelector('[data-perspective="delivery"]').click();assert.match(doc.querySelector('#studio-tech').textContent,/Azure/);
- assert.equal(doc.querySelectorAll('.project-preview').length,2);ui.close();
-});
 test('scenario comparison derives exact outcomes and opens the first exclusion with URL state and focus',()=>{
  const ui=setup('visuals',{query:'?service=API+Gateway&days=7&date=2026-10-14'}),{doc,w}=ui;const before=doc.querySelector('#requests').textContent;
  assert.equal(doc.querySelectorAll('[data-compare-scenario]').length,3);
@@ -186,11 +168,6 @@ test('public Resume labels use plain lettering',()=>{
 });
 
 
-test('homepage lab previews derive their measures from the actual engines',()=>{
- const ui=setup('index'),{w,doc}=ui,E=w.AtlasEngine,rows=E.select(E.parse('')),totals=E.summarize(rows),model=E.model('storage',150,rows);
- assert.equal(doc.querySelector('#preview-callers').textContent,String(model.affected.length));assert.equal(doc.querySelector('#preview-gateway').textContent,'+'+(150*model.weights.gateway).toFixed(1)+' ms');assert.equal(doc.querySelector('#preview-success').textContent,totals.success.toFixed(3)+'%');
- assert.equal(doc.querySelector('#preview-events').textContent,'2');assert.equal(doc.querySelector('#preview-accepted').textContent,'1');assert.equal(doc.querySelector('#preview-rejected').textContent,'1');assert.match(doc.querySelector('#preview-event-value').textContent,/129.00/);assert.equal(doc.querySelectorAll('.simulation-status').length,2);assert.deepEqual(ui.errors,[]);ui.close();
-});
 test('shared navigation exposes both labs and exactly one active page without leaking biography',()=>{
  for(const page of ['index','visuals','platform','resume','contact']){const dom=new JSDOM(fs.readFileSync(path.join(root,page+'.html'),'utf8')),doc=dom.window.document,nav=doc.querySelector('#main-navigation');
  assert.equal(nav.querySelectorAll('a').length,5);assert.equal(nav.querySelectorAll('[aria-current=page]').length,1);assert.equal(nav.querySelector('[aria-current=page]').getAttribute('href'),page+'.html');
@@ -198,7 +175,7 @@ test('shared navigation exposes both labs and exactly one active page without le
 });
 
 test('background leads with experience and places credentials last',()=>{
- const ui=setup('resume'),{doc}=ui;assert.deepEqual([...doc.querySelectorAll('.background-section h2')].map(x=>x.textContent),['Selected Technical Leadership & Experience','Technical Range','Business Perspective','Education','Microsoft Azure Credentials']);assert.equal(doc.querySelectorAll('.experience li').length,8);assert.match(doc.querySelector('.actions a').getAttribute('href'),/\.pdf$/);assert.equal(doc.querySelectorAll('.credential-list li').length,3);assert.deepEqual(ui.errors,[]);ui.close();
+ const ui=setup('resume'),{doc}=ui;assert.deepEqual([...doc.querySelectorAll('.background-section h2')].map(x=>x.textContent),['Experience','Technical expertise','Education','Microsoft Azure Credentials']);assert.equal(doc.querySelectorAll('.experience li').length,8);assert.match(doc.querySelector('.actions a').getAttribute('href'),/\.pdf$/);assert.equal(doc.querySelectorAll('.credential-list li').length,3);assert.deepEqual(ui.errors,[]);ui.close();
 });
 
 test('guided Atlas scenarios replace stale state and produce reproducible views and announcements',()=>{
@@ -220,4 +197,14 @@ test('burst scenarios reconcile 100 events, support inspection and paging, and r
 });
 test('background and event workspace have no WCAG semantic accessibility violations',async()=>{
  for(const page of ['resume','platform']){const ui=setup(page),{doc,w}=ui;if(page==='platform')doc.querySelector('[data-event-preset=burst]').click();w.eval(require('axe-core').source);const result=await w.axe.run(doc,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']},rules:{'color-contrast':{enabled:false}}});assert.equal(result.violations.length,0,JSON.stringify(result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)}))));ui.close();}
+});
+
+// The landing page intentionally presents links, not a second simulation surface.
+test('minimal homepage stays usable with reduced motion without loading the lab engines',()=>{
+ const ui=setup('index',{reduced:true}),{doc}=ui;
+ assert.equal(ui.raf.size,0);
+ assert.equal(doc.querySelector('script[src*="atlas-engine"],script[src*="lab-previews"],script[src*="studio.js"]'),null);
+ assert.deepEqual([...doc.querySelectorAll('.work-study')].map(a=>a.getAttribute('href')),['visuals.html','platform.html']);
+ assert.match(doc.querySelector('h1').textContent,/Resilient software.*Connected by design/);
+ assert.deepEqual(ui.errors,[]);ui.close();
 });
