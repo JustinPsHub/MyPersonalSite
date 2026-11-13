@@ -1,6 +1,6 @@
 # Connected by design — November 2026 visual release
 
-The public production frontend now uses an ivory, ink-blue and lime design system across the homepage, resume, contact, Atlas, Event Lab and privacy pages. The retained .NET/Blazor projects and all backend/authentication code are unchanged.
+The prepared public frontend release uses an ivory, ink-blue and lime design system across the homepage, resume, contact, Atlas, Event Lab and privacy pages. The retained .NET/Blazor projects and all backend/authentication code are unchanged.
 
 The homepage adds an editorial introduction, a responsive portfolio index, orbit geometry around the working architecture study, signal artwork, refined project studies and a dark contact panel. The resume adds section navigation, a career timeline and distinct skill/education surfaces. Contact receives a new composition while retaining the protected address-release flow. Both labs share the typography, palette and surface treatment while retaining their engines and controls. Motion is bounded and disabled for reduced-motion preferences; there are no new JavaScript dependencies, remote fonts or image requests.
 
@@ -20,3 +20,9 @@ The homepage adds an editorial introduction, a responsive portfolio index, orbit
 Production remains Azure Static Web Apps with the existing Node 22 API. No GitHub Actions workflow exists in the repository. Deploy the static build and `api/` together using the existing authenticated SWA CLI command documented in `contact-security.md`. Do not publish the local responsive review harness.
 
 A successful source commit does not establish production deployment. Verify the live HTML includes `/portfolio/design.css?v=20261112` and that the deployed stylesheet matches the built source before claiming release success.
+
+## Deployment status
+
+The redesign source is committed to `main` as `ebdd69d43c8be05184355a2d288cb793e74775eb`. Production publication remains pending because Microsoft account verification has not completed. The most recent successful live HTML check did not contain the new design stylesheet. This documentation does not claim a successful deployment.
+
+After authentication, deploy the tested commit with the existing SWA CLI workflow, verify both portfolio domains and the versioned stylesheet, and confirm the contact endpoint and unauthenticated owner-route protection. Update this section with the actual outcome and verification timestamp before marking deployment complete.
