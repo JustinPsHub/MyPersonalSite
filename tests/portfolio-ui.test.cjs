@@ -205,6 +205,6 @@ test('minimal homepage stays usable with reduced motion without loading the lab 
  assert.equal(ui.raf.size,0);
  assert.equal(doc.querySelector('script[src*="atlas-engine"],script[src*="lab-previews"],script[src*="studio.js"]'),null);
  assert.deepEqual([...doc.querySelectorAll('.work-study')].map(a=>a.getAttribute('href')),['visuals.html','platform.html']);
- assert.match(doc.querySelector('h1').textContent,/Software engineer.*Data architect/);
+ assert.match(doc.querySelector('h1').textContent,/Software, data.*applied AI/);
  assert.deepEqual(ui.errors,[]);ui.close();
 });

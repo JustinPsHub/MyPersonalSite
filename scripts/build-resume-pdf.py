@@ -62,7 +62,7 @@ def page(canvas, doc):
     canvas.drawString(44, 750, 'Justin Palmer')
     canvas.setFont('PortfolioSans', 9)
     canvas.setFillColor(MUTED)
-    canvas.drawString(44, 732, 'Software Engineering / Cloud & Data Architecture')
+    canvas.drawString(44, 732, 'Software Engineering / Data / Applied AI')
     canvas.drawRightString(568, 750, 'justinraypalmer.com/contact')
     canvas.linkURL('https://justinraypalmer.com/contact', (420, 745, 568, 760))
     canvas.line(44, 43, 568, 43)
