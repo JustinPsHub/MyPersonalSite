@@ -160,9 +160,11 @@
           Math.round(host.getBoundingClientRect().width) || 650,
         ),
         h = 240;
-      const left = 43,
+      // Reserve space for the current axis font, including larger phone preferences.
+      const axisSize = parseFloat(getComputedStyle(host).fontSize) || 12;
+      const left = Math.max(43, Math.ceil(axisSize * 3.7)),
         right = 10,
-        top = 13,
+        top = Math.max(13, axisSize),
         bottom = 34,
         metric = state.metric;
       const peak = Math.max(
@@ -205,7 +207,7 @@
       const ticks = [
         ...new Set([
           0,
-          Math.floor((dailySeries.length - 1) / 2),
+          ...(w - left - right >= axisSize * 16 ? [Math.floor((dailySeries.length - 1) / 2)] : []),
           dailySeries.length - 1,
         ]),
       ]

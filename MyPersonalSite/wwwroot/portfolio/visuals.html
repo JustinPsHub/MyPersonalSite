@@ -36,9 +36,9 @@
     <script src="/portfolio/atlas-engine.js?v=17" defer></script>
     <link rel="stylesheet" href="/portfolio/journey.css?v=20" />
     <script src="/portfolio/journey-engine.js?v=20" defer></script>
-    <script src="/portfolio/atlas.js?v=22" defer></script>
-    <script src="/portfolio/journey.js?v=22" defer></script>
-  <link rel="stylesheet" href="/portfolio/product.css?v=22"><link rel="stylesheet" href="/portfolio/telemetry.css?v=1"><script defer src="/portfolio/telemetry.js?v=2"></script><link rel="stylesheet" href="/portfolio/design.css?v=20261118"></head>
+    <script src="/portfolio/atlas.js?v=23" defer></script>
+    <script src="/portfolio/journey.js?v=23" defer></script>
+  <link rel="stylesheet" href="/portfolio/product.css?v=22"><link rel="stylesheet" href="/portfolio/telemetry.css?v=1"><script defer src="/portfolio/telemetry.js?v=2"></script><link rel="stylesheet" href="/portfolio/design.css?v=20261123"></head>
   <body class="atlas-page">
     <a class="skip" href="#main">Skip to content</a>
     <div class="masthead"><header class="header wrap">
@@ -127,14 +127,14 @@
           <div class="workspace-heading">
             <div>
               <h1 id="workspace-title">Atlas</h1>
-              <p class="workspace-subtitle">Investigate a slowdown across five connected services. Choose a scenario to see how latency and failures spread.</p>
+              <p class="workspace-subtitle">Trace a slowdown across five services. Find where it starts and see which callers feel the delay.</p>
             </div>
           </div>
 
           <details class="study-context"><summary>About this study</summary><div><p>A deterministic browser engine connects service telemetry, SLO error budgets, and directed dependency analysis—so you can investigate reliability signals and test latency exposure without a backend.</p><p class="architecture-meta">Synthetic snapshot · 5 services · 900 daily records · 180 days · 99.9% SLO target</p></div></details>
           <noscript><p class="atlas-message">Enable JavaScript to explore the workspace. Atlas demonstrates five connected services and a fixed synthetic snapshot; the architecture summary and model definitions remain available below.</p></noscript>
           <div id="atlas-error" class="atlas-message" role="alert" hidden></div>
-          <div class="scenario-bar js-only" role="group" aria-label="Guided Atlas scenarios"><span class="scenario-label">Start with a scenario</span><button class="scenario-pill" data-atlas-scenario="slowdown" aria-pressed="false">Oct 08 · Storage slowdown<small>Trace three exposed callers</small></button><button class="scenario-pill" data-atlas-scenario="latency" aria-pressed="false">Storage +150 ms<small>Explore the modeled blast radius</small></button><button class="scenario-pill" data-atlas-scenario="slo" aria-pressed="false">Inspect SLO burn<small>99.9% success target</small></button><button id="scenario-reset" class="scenario-pill scenario-reset">Reset workspace ↻</button></div>
+          <div class="scenario-bar js-only" role="group" aria-label="Guided Atlas scenarios"><span class="scenario-label">Start with a scenario</span><button class="scenario-pill" data-atlas-scenario="slowdown" aria-pressed="false">Storage slowdown<small>Trace the October 8 spike</small></button><button class="scenario-pill" data-atlas-scenario="latency" aria-pressed="false">Add 150 ms<small>Model a slower storage service</small></button><button class="scenario-pill" data-atlas-scenario="slo" aria-pressed="false">Inspect SLO burn<small>99.9% success target</small></button><button id="scenario-reset" class="scenario-pill scenario-reset">Reset workspace</button></div>
           <p id="atlas-scenario-status" class="scenario-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
           <div class="atlas-toolbar" aria-label="Analytics filters">
             <div class="filter-field">
@@ -291,7 +291,7 @@
                   <p class="atlas-kicker">RELIABILITY DRIVERS</p>
                   <h2>Follow the failures.</h2>
                 </div>
-                <span class="mini-label">PORTFOLIO</span>
+
               </div>
               <p class="panel-intro">
                 Each service’s share of failed requests. Select a service to
@@ -311,7 +311,7 @@
           >
             <div class="panel-heading">
               <div>
-                <p class="atlas-kicker">A DIFFERENT VIEW / SAME RECORDS</p>
+
                 <h2 id="matrix-title">Reliability, day by day.</h2>
               </div>
               <span class="mini-label" id="matrix-scope">LAST 14 DAYS</span>
@@ -668,7 +668,7 @@
         </section>
         <footer class="site-footer">
   <div class="footer-signature"><a href="index.html">Justin Palmer</a><small>© 2026 · Views are my own.</small></div>
-  <nav aria-label="Footer"><a href="contact.html">Contact</a><a href="https://github.com/JustinPsHub" rel="noopener" target="_blank">GitHub ↗</a><a href="/privacy" data-privacy-link>Privacy &amp; analytics</a><a href="/admin/telemetry">Owner sign-in</a></nav>
+  <nav aria-label="Footer"><a href="contact.html">Contact</a><a href="https://github.com/JustinPsHub" rel="noopener" target="_blank">GitHub</a><a href="/privacy" data-privacy-link>Privacy &amp; analytics</a><a href="/admin/telemetry">Owner sign-in</a></nav>
 </footer>
       </main>
     </div>

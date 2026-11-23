@@ -287,7 +287,21 @@
       dialog.showModal();
       $("#command-search").focus();
     }
-    $("#open-command").addEventListener("click", openCommand);
+    const commandTrigger = $("#open-command");
+    const narrowScreen = matchMedia("(max-width: 700px)");
+    function placeCommandTrigger() {
+      const hadFocus = document.activeElement === commandTrigger;
+      if (narrowScreen.matches) {
+        $("#workspace-title").after(commandTrigger);
+      } else {
+        $(".rail-bottom").before(commandTrigger);
+      }
+      $(".atlas-shell").classList.toggle("command-in-title", narrowScreen.matches);
+      if (hadFocus) commandTrigger.focus({ preventScroll: true });
+    }
+    commandTrigger.addEventListener("click", openCommand);
+    placeCommandTrigger();
+    narrowScreen.addEventListener("change", placeCommandTrigger);
     $("#close-command").addEventListener("click", closeCommand);
     dialog.addEventListener("close", () =>
       commandOpener?.focus?.({ preventScroll: true }),
